@@ -1,15 +1,11 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.06")
+script_version("0.1")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.04 [18.07.2018]
-* Уменьшен буфер поля ввода у мессенджеров.
-* Несколько мелких фиксов.
-
-	v1.03 [17.07.2018]
-* /hh для чата.]]
+script_changelog = [[	v0.01 [xx.08.2018]
+* Что нового? Много чего.]]
 --require
 do
   -- This is your secret 67-bit key (any random bits are OK)
@@ -103,7 +99,7 @@ do
   function r_smart_lib_imgui()
     if not pcall(function() imgui = require 'imgui' end) then
       waiter = true
-      local prefix = "[Support's Heaven]: "
+      local prefix = "[SMES]: "
       local color = 0xffa500
       sampAddChatMessage(prefix.."Модуль Dear ImGui загружен неудачно. Для работы скрипта этот модуль обязателен.", color)
       sampAddChatMessage(prefix.."Средство автоматического исправления ошибок может попробовать скачать модуль за вас.", color)
@@ -162,7 +158,7 @@ do
   function r_smart_lib_samp_events()
     if not pcall(function() RPC = require 'lib.samp.events' end) then
       waiter = true
-      local prefix = "[Support's Heaven]: "
+      local prefix = "[SMES]: "
       local color = 0xffa500
       sampAddChatMessage(prefix.."Модуль SAMP.Lua загружен неудачно. Для работы скрипта этот модуль обязателен.", color)
       sampAddChatMessage(prefix.."Средство автоматического исправления ошибок может попробовать скачать модуль за вас.", color)
@@ -225,85 +221,32 @@ do
     while waiter do wait(100) end
   end
 
-  function r_smart_get_projectresources()
-    if not doesDirectoryExist(getGameDirectory().."\\moonloader\\resource\\sup\\"..mode) then
-      local prefix = "[Support's Heaven]: "
-      local color = 0xffa500
-      sampAddChatMessage(prefix.."Для работы скрипта нужна папка с ресурсами, заготовленными для вашего проекта.", color)
-      sampAddChatMessage(prefix.."Нажмите F2, чтобы запустить скачивание файлов для проекта "..mode, color)
-      while not wasKeyPressed(113) do wait(10) end
-      if wasKeyPressed(113) then
-        createDirectory(getGameDirectory().."\\moonloader\\resource\\sup\\"..mode)
-        local path = getGameDirectory().."\\moonloader\\resource\\sup\\"..mode.."\\"
-        local webpath = "http://rubbishman.ru/dev/moonloader/support's_heaven/resource/sup/"..mode.."/"
-        resourcesf = {
-          [path.."house.txt"] = webpath.."house.txt",
-          [path.."vehicle.txt"] = webpath.."vehicle.txt",
-          [path.."spur.txt"] = webpath.."spur.txt",
-        }
-        for k, v in pairs(resourcesf) do
-          sampAddChatMessage(prefix..v.." -> "..k, color)
-          pass = false
-          wait(100)
-          downloadUrlToFile(v, k,
-            function(id, status, p1, p2)
-              if status == 5 then
-                sampAddChatMessage(string.format(prefix..k..' - Загружено %d KB из %d KB.', p1 / 1000, p2 / 1000), color)
-              elseif status == 58 then
-                sampAddChatMessage(prefix..k..' - Загрузка завершена.', color)
-                pass = true
-              end
-            end
-          )
-          while pass == false do wait(1) end
-        end
-        kol = 0
-        for _ in io.lines(path.."spur.txt") do
-          kol = kol + 1
-        end
-        for i = 1, kol do
-          k = path..i..".png"
-          v = webpath..i..".png"
-          sampAddChatMessage(prefix..v.." -> "..k, color)
-          pass = false
-          wait(100)
-          downloadUrlToFile(v, k,
-            function(id, status, p1, p2)
-              if status == 5 then
-                sampAddChatMessage(string.format(prefix..k..' - Загружено %d KB из %d KB.', p1 / 1000, p2 / 1000), color)
-              elseif status == 58 then
-                sampAddChatMessage(prefix..k..' - Загрузка завершена.', color)
-                pass = true
-              end
-            end
-          )
-          while pass == false do wait(1) end
-        end
-      end
-    end
-  end
-
   function r_smart_get_sounds()
-    if not doesDirectoryExist(getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\") then
-      createDirectory(getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\")
+    if not doesDirectoryExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\") then
+      createDirectory(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\")
     end
     kols = 0
-    for i = 1, currentaudiokol do
-      local file = getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\"..i..".mp3"
+    if PREMIUM then
+      currentaudiokolDD = currentaudiokol
+    else
+      currentaudiokolDD = 10
+    end
+    for i = 1, currentaudiokolDD do
+      local file = getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\"..i..".mp3"
       if not doesFileExist(file) then
         kols = kols + 1
       end
     end
     if kols > 0 then
-      local prefix = "[Support's Heaven]: "
+      local prefix = "[SMES]: "
       local color = 0xffa500
       sampAddChatMessage(prefix.."Для работы скрипта нужно докачать "..kols.." аудиофайлов.", color)
       sampAddChatMessage(prefix.."Нажмите F2, чтобы запустить скачивание аудиофайлов.", color)
       while not wasKeyPressed(113) do wait(10) end
       if wasKeyPressed(113) then
-        createDirectory(getGameDirectory().."\\moonloader\\resource\\sup\\"..mode)
-        for i = 1, 100 do
-          local file = getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\"..i..".mp3"
+        createDirectory(getGameDirectory().."\\moonloader\\resource\\smes\\"..mode)
+        for i = 1, currentaudiokolDD do
+          local file = getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\"..i..".mp3"
           if not doesFileExist(file) then
             v = "http://rubbishman.ru/dev/moonloader/support's_heaven/resource/sup/sounds/"..i..".mp3"
             k = file
@@ -2057,7 +2000,7 @@ function var_require()
   while isSampfuncsLoaded() ~= true do wait(100) end
   while not isSampAvailable() do wait(10) end
   if getMoonloaderVersion() < 026 then
-    local prefix = "[Support's Heaven]: "
+    local prefix = "[SMES]: "
     local color = 0xffa500
     sampAddChatMessage(prefix.."Ваша версия MoonLoader не поддерживается.", color)
     sampAddChatMessage("Пожалуйста, скачайте последнюю версию MoonLoader.", color)
@@ -2070,7 +2013,6 @@ function var_require()
   wait(2500)
   while not sampIsLocalPlayerSpawned() do wait(1) end
   chklsn()
-  PREMIUM = true
   while PROVERKA ~= true do wait(100) end
   imgui_init()
   ihk._SETTINGS.noKeysMessage = ("-")
@@ -2086,24 +2028,23 @@ function var_require()
   var_imgui_ImInt()
   var_imgui_ImBuffer()
   var_main()
-  r_smart_get_projectresources()
   r_smart_get_sounds()
   r_smart_lib_samp_events()
   RPC_init()
 end
 
 function chklsn()
-  if not doesDirectoryExist(getGameDirectory().."\\moonloader\\resource\\sup\\sounds") then
-    createDirectory(getGameDirectory().."\\moonloader\\resource\\sup\\sounds")
+  if not doesDirectoryExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds") then
+    createDirectory(getGameDirectory().."\\moonloader\\resource\\smes\\sounds")
   end
-  if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\granted.mp3") then
-    downloadUrlToFile("http://rubbishman.ru/dev/moonloader/support\'s_heaven/resource/sup/sounds/granted.mp3", getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\granted.mp3")
+  if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3") then
+    downloadUrlToFile("http://rubbishman.ru/dev/moonloader/support\'s_heaven/resource/sup/sounds/granted.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
   end
-  if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\denied.mp3") then
-    downloadUrlToFile("http://rubbishman.ru/dev/moonloader/support\'s_heaven/resource/sup/sounds/denied.mp3", getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\denied.mp3")
+  if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3") then
+    downloadUrlToFile("http://rubbishman.ru/dev/moonloader/support\'s_heaven/resource/sup/sounds/denied.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
   end
-  Sgranted = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\granted.mp3")
-  Sdenied = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\sup\\sounds\\denied.mp3")
+  Sgranted = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
+  Sdenied = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
   inicfg = require "inicfg"
   price = 250
   licensefile = getGameDirectory().."\\moonloader\\config\\SMES.license"
@@ -2142,7 +2083,7 @@ function chkupd()
   math.randomseed(os.time())
   createDirectory(getWorkingDirectory() .. '\\config\\')
   local json = getWorkingDirectory() .. '\\config\\'..math.random(1, 93482)..".json"
-  local php = decode("20c2c5364cc91b8e7f07e31509c5f2d19e219a2c82368824baa17675dd7e2c3655a45046deb4cd")
+  local php = decode("20c2c5364cc91b8e7f07e31509c5f2d19e219a2c82368824baa17675dd7ecbf342a50113e17842")
   hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
   if hosts then
     if string.find(hosts:read("*a"), "gitlab") or string.find(hosts:read("*a"), "1733018") then
@@ -2185,58 +2126,34 @@ function chkupd()
   while waiter1 do wait(0) end
 end
 
+function getmode(args)
+  local servers = {
+    ["185.169.134.20"] = "samp-rp",
+    ["185.169.134.11"] = "samp-rp",
+    ["185.169.134.34"] = "samp-rp",
+    ["185.169.134.22"] = "samp-rp"
+  }
+  return servers[args]
+end
+
 function nokey()
-  local prefix = "[Support's Heaven]: "
+  local prefix = "[SMES]: "
   local color = 0xffa500
-  a1234 = loadAudioStream([[http://www.rubbishman.ru/dev/moonloader/support's_heaven/resource/sup/sounds/kupi.mp3]])
-  while not sampIsLocalPlayerSpawned() do wait(1) end
-  if getAudioStreamState(a1234) ~= 1 then
-    setAudioStreamState(a1234, 1)
-  end
-  sampAddChatMessage("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", 0xff0000)
-  sampAddChatMessage(" ВНИМАНИЕ ВНИМАНИЕ ВНИМАНИЕ ВНИМАНИЕ ВНИМАНИЕ ВНИМАНИЕ ВНИМАНИЕ ", 0xff0000)
-  sampAddChatMessage(prefix.."Лицензионный ключ для активации скрипта не был найден.", color)
-  sampAddChatMessage(prefix.."Введите /buysup, чтобы купить лицензию скрипта.", color)
-  sampAddChatMessage(prefix.."Лицензия привязывается к вашему нику и серверу навсегда.", color)
-  sampAddChatMessage(prefix.."Введите /buysup [КЛЮЧ] для сохранения лицензионного ключа.", color)
-  sampAddChatMessage(prefix.."Ключ будет сохранён в moonloader\\config\\SMES.license", color)
-  sampAddChatMessage(prefix.."Текущая цена лицензии: "..currentprice.." (если без промокода).", color)
-  sampAddChatMessage("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", 0xff0000)
-  sampRegisterChatCommand("buysup",
-    function(param)
-      if param:len() == 16 then
-        sampAddChatMessage(prefix..decode("22f669861e3ec2a8bc")..param.." "..decode("379dd8918914fc4063910d57047246e029ae9444cfc5db56b84d6e627ad4984e44d5eae79597fea7a376"), color)
-        if chk[sampGetCurrentServerAddress()] == nil then chk[sampGetCurrentServerAddress()] = {} end
-        asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-        chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = param
-        table.save(chk, licensefile)
-        thisScript():reload()
-      elseif param == "" then
-        local ffi = require 'ffi'
-        ffi.cdef [[
-					void* __stdcall ShellExecuteA(void* hwnd, const char* op, const char* file, const char* params, const char* dir, int show_cmd);
-					uint32_t __stdcall CoInitializeEx(void*, uint32_t);
-				]]
-        local shell32 = ffi.load 'Shell32'
-        local ole32 = ffi.load 'Ole32'
-        ole32.CoInitializeEx(nil, 2 + 4) -- COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE
-        print(shell32.ShellExecuteA(nil, 'open', currentbuylink, nil, nil, 1))
-        thisScript():reload()
-      else
-        sampAddChatMessage(prefix..decode("2264fe029c736c72953d8e8cf4e205e0ab97f0dae3a156b5bbdedcd093a07150e22fec5dd152a4afc5be1980ff04f061ce98187155c4d5f9b8bc"), color)
-      end
-    end
-  )
+  sampAddChatMessage(prefix.."Лицензионный ключ для активации скрипта не был найден.", 0xff0000)
+  sampAddChatMessage(prefix.."Запущена Lite версия (/smes). Текущая цена лицензии: "..currentprice, 0xff0000)
+  PREMIUM = false
+  mode = getmode(sampGetCurrentServerAddress())
+  PROVERKA = true
 end
 
 function checkkey()
-  local prefix = "[Support's Heaven]: "
+  local prefix = "[SMES]: "
   asdsadasads, myidasdasas = sampGetPlayerIdByCharHandle(PLAYER_PED)
   sampAddChatMessage(prefix..decode("b90bd127287b3fa74f50c8")..sampGetPlayerNickname(myidasdasas)..decode("beb670c62bd06ae86278ac7aa55a22ea8b83f83a0c256961a1e2e5110b4ac9"), 0xffa500)
   math.randomseed(os.time())
   createDirectory(getWorkingDirectory() .. '\\config\\')
   local json = getWorkingDirectory() .. '\\config\\'..math.random(1, 93482)..".json"
-  local php = decode("20c2c5369f941b0d30a4bba654a069b9fc6a072c37e89ac1a12f133e585979f0a7b1a841f00083fe4b4c45e11d879c1ff473ae3abf45444f92d3a591ce0d49e9")
+  local php = decode("20c2c5369f941b0d30a4bba654a069b9fc6a072c37e89ac1a12f133e585979f0a7b1a841f028fa130b810c4fbf6f6ac817cfccd5")
   local ffi = require 'ffi'
   ffi.cdef[[
 	int __stdcall GetVolumeInformationA(
@@ -2360,7 +2277,7 @@ function checkkey()
               hosts:close()
               _213, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
               if licensenick == sampGetPlayerNickname(myid) and server == licenseserver then
-                local prefix = "[Support's Heaven]: "
+                local prefix = "[SMES]: "
                 sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68cb01b44ee7470fb9c3ff084ff465702e57e37dfa2898d2e8fb65348")..licensemod..decode("beb6715ca0d00958014710efd83b69cf06006d")..currentprice..".", 0xffa500)
                 if chk.license.sound == 1 then setAudioStreamState(Sgranted, 1) end
                 mode = licensemod
@@ -2370,6 +2287,7 @@ function checkkey()
                     table.save(chk, licensefile)
                   end
                 end
+                PREMIUM = true
                 PROVERKA = true
               end
               waiter1 = false
@@ -2395,15 +2313,16 @@ function checkkey()
   if waitforunload then
     if chk.license.sound == 1 then
       setAudioStreamState(Sdenied, 1)
-      wait(2000)
     end
-    thisScript():unload()
+    PREMIUM = false
+    mode = getmode(sampGetCurrentServerAddress())
+    PROVERKA = true
   end
 end
 
 function goupdate()
   local color = -1
-  local prefix = "[Support's Heaven]: "
+  local prefix = "[SMES]: "
   sampAddChatMessage((prefix..'Обнаружено обновление. Пытаюсь обновиться c '..thisScript().version..' на '..updateversion), color)
   wait(250)
   hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
@@ -2461,9 +2380,9 @@ function var_cfg()
       SoundAnswer = true,
       SoundAnswerNumber = 88,
       SoundSmsIn = false,
-      SoundSmsInNumber = 22,
+      SoundSmsInNumber = 6,
       SoundSmsOut = true,
-      SoundSmsOutNumber = 88,
+      SoundSmsOutNumber = 8,
       settingstab = 1,
       debug = false,
     },
@@ -2595,6 +2514,7 @@ function var_imgui_ImInt()
 end
 
 function var_imgui_ImBuffer()
+  toActivate = imgui.ImBuffer(17)
   toAnswerSMS = imgui.ImBuffer(140)
   iSMSfilter = imgui.ImBuffer(64)
   iSMSAddDialog = imgui.ImBuffer(64)
@@ -2625,7 +2545,7 @@ function var_main()
   russian_characters = {
     [168] = 'Ё', [184] = 'ё', [192] = 'А', [193] = 'Б', [194] = 'В', [195] = 'Г', [196] = 'Д', [197] = 'Е', [198] = 'Ж', [199] = 'З', [200] = 'И', [201] = 'Й', [202] = 'К', [203] = 'Л', [204] = 'М', [205] = 'Н', [206] = 'О', [207] = 'П', [208] = 'Р', [209] = 'С', [210] = 'Т', [211] = 'У', [212] = 'Ф', [213] = 'Х', [214] = 'Ц', [215] = 'Ч', [216] = 'Ш', [217] = 'Щ', [218] = 'Ъ', [219] = 'Ы', [220] = 'Ь', [221] = 'Э', [222] = 'Ю', [223] = 'Я', [224] = 'а', [225] = 'б', [226] = 'в', [227] = 'г', [228] = 'д', [229] = 'е', [230] = 'ж', [231] = 'з', [232] = 'и', [233] = 'й', [234] = 'к', [235] = 'л', [236] = 'м', [237] = 'н', [238] = 'о', [239] = 'п', [240] = 'р', [241] = 'с', [242] = 'т', [243] = 'у', [244] = 'ф', [245] = 'х', [246] = 'ц', [247] = 'ч', [248] = 'ш', [249] = 'щ', [250] = 'ъ', [251] = 'ы', [252] = 'ь', [253] = 'э', [254] = 'ю', [255] = 'я',
   }
-  file = getGameDirectory()..'\\moonloader\\resource\\sup\\suplog.csv'
+  file = getGameDirectory()..'\\moonloader\\resource\\smes\\suplog.csv'
   color = 0xffa500
   selected = 1
   selectedTAB = ""
@@ -2675,23 +2595,9 @@ function main()
     main_init_hotkeys()
     main_ImColorToHEX()
     main_copyright()
-    sampRegisterChatCommand("sup",
+    sampRegisterChatCommand("smes",
       function()
         main_window_state.v = not main_window_state.v
-      end
-    )
-
-    sampRegisterChatCommand("smsblacklist",
-      function()
-        blockedlist = "Для удаления из списка создайте диалог в мессендежере и разблокируйте собеседника по правой кнопке мыши.\n\nСписок:\n"
-        i = 0
-        for k, v in pairs(sms) do
-          if v["Blocked"] == 1 then i = i + 1 blockedlist = blockedlist..i..". "..tostring(k).."\n" end
-        end
-        if blockedlist == "Для удаления из списка создайте диалог в мессендежере и разблокируйте собеседника по правой кнопке мыши.\n\nСписок:\n" then
-          blockedlist = "Список пуст"
-        end
-        sampShowDialog(1231, "Чёрный список sms", blockedlist, "Ок")
       end
     )
     lua_thread.create(imgui_messanger_scrollkostil)
@@ -2700,7 +2606,7 @@ function main()
     while true do
       wait(0)
       asdsadasads, myidasdas = sampGetPlayerIdByCharHandle(PLAYER_PED)
-      if licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver then
+      if PREMIUM and (licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver) then
         thisScript():unload()
       end
       main_while_debug()
@@ -2737,21 +2643,7 @@ function main_init_hotkeys()
     end
   )
 
-  if cfg.messanger.activesms and cfg.messanger.hotkey3 then
-    hotkeys["hkm3"] = {}
-    for i = 1, #cfg.hkm3 do
-      table.insert(hotkeys["hkm3"], cfg["hkm3"][i])
-    end
-    hk.unRegisterHotKey(hotkeys["hkm3"])
-    hk.registerHotKey(hotkeys["hkm3"], true,
-      function()
-        if not sampIsChatInputActive() and not sampIsDialogActive() and not isSampfuncsConsoleActive() then
-          imgui_messanger_FO(3)
-        end
-      end
-    )
-  end
-  if cfg.messanger.activesms and cfg.messanger.hotkey4 then
+  if PREMIUM and cfg.messanger.activesms and cfg.messanger.hotkey4 then
     hotkeys["hkm4"] = {}
     for i = 1, #cfg.hkm4 do
       table.insert(hotkeys["hkm4"], cfg["hkm4"][i])
@@ -2765,7 +2657,7 @@ function main_init_hotkeys()
       end
     )
   end
-  if cfg.messanger.activesms and cfg.messanger.hotkey5 then
+  if PREMIUM and cfg.messanger.activesms and cfg.messanger.hotkey5 then
     hotkeys["hkm5"] = {}
     for i = 1, #cfg.hkm5 do
       table.insert(hotkeys["hkm5"], cfg["hkm5"][i])
@@ -2795,8 +2687,8 @@ function main_ImColorToHEX()
 end
 
 function main_copyright()
-  local prefix = "[Support's Heaven]: "
-  sampAddChatMessage(prefix.."Все системы готовы. Версия скрипта: "..thisScript().version..". Активация: /sup. Приятной игры, "..licensenick..".", 0xffa500)
+  local prefix = "[SMES]: "
+  if PREMIUM then sampAddChatMessage(prefix.."Все системы готовы. Версия скрипта: "..thisScript().version..". Активация: /smes. Приятной игры, "..licensenick..".", 0xffa500) end
 end
 
 function main_while_debug()
@@ -2804,37 +2696,18 @@ function main_while_debug()
 end
 
 function main_while_playsounds()
-  if PLAYQ then
-    PLAYQ = false
-    a1 = loadAudioStream(getGameDirectory()..[[\moonloader\resource\sup\sounds\]]..iSoundQuestionNumber.v..[[.mp3]])
-    if getAudioStreamState(a1) ~= as_action.PLAY then
-      setAudioStreamState(a1, as_action.PLAY)
-    end
-  end
-  if PLAYA1 then
-    PLAYA1 = false
-    a2 = loadAudioStream(getGameDirectory()..[[\moonloader\resource\sup\sounds\]]..iSoundAnswerOthersNumber.v..[[.mp3]])
-    if getAudioStreamState(a2) ~= as_action.PLAY then
-      setAudioStreamState(a2, as_action.PLAY)
-    end
-  end
-  if PLAYA then
-    PLAYA = false
-    a3 = loadAudioStream(getGameDirectory()..[[\moonloader\resource\sup\sounds\]]..iSoundAnswerNumber.v..[[.mp3]])
-    if getAudioStreamState(a3) ~= as_action.PLAY then
-      setAudioStreamState(a3, as_action.PLAY)
-    end
-  end
   if PLAYSMSIN then
     PLAYSMSIN = false
-    a4 = loadAudioStream(getGameDirectory()..[[\moonloader\resource\sup\sounds\]]..iSoundSmsInNumber.v..[[.mp3]])
+    if not PREMIUM and iSoundSmsInNumber.v > 10 then iSoundSmsInNumber.v = math.random(1, 10) end
+    a4 = loadAudioStream(getGameDirectory()..[[\moonloader\resource\smes\sounds\]]..iSoundSmsInNumber.v..[[.mp3]])
     if getAudioStreamState(a4) ~= as_action.PLAY then
       setAudioStreamState(a4, as_action.PLAY)
     end
   end
   if PLAYSMSOUT then
     PLAYSMSOUT = false
-    a5 = loadAudioStream(getGameDirectory()..[[\moonloader\resource\sup\sounds\]]..iSoundSmsOutNumber.v..[[.mp3]])
+    if not PREMIUM and iSoundSmsOutNumber.v > 10 then iSoundSmsOutNumber.v = math.random(1, 10) end
+    a5 = loadAudioStream(getGameDirectory()..[[\moonloader\resource\smes\sounds\]]..iSoundSmsOutNumber.v..[[.mp3]])
     if getAudioStreamState(a5) ~= as_action.PLAY then
       setAudioStreamState(a5, as_action.PLAY)
     end
@@ -3028,7 +2901,11 @@ function imgui_init()
       else
         beginflags = imgui.WindowFlags.NoCollapse + imgui.WindowFlags.MenuBar
       end
-      imgui.Begin(u8:encode(thisScript().name.." v"..thisScript().version), main_window_state, beginflags)
+      if PREMIUM then
+        imgui.Begin(u8:encode(thisScript().name.." Premium v"..thisScript().version), main_window_state, beginflags)
+      else
+        imgui.Begin(u8:encode(thisScript().name.." Lite v"..thisScript().version), main_window_state, beginflags)
+      end
       imgui_saveposandsize()
       imgui_messanger()
       imgui.End()
@@ -3038,17 +2915,17 @@ end
 
 function imgui_menu()
   imgui.BeginMenuBar()
-  if imgui.MenuItem(u8'В меню') then
-    cfg.only.messanger = false
-    cfg.only.notepad = false
-    cfg.only.logviewer = false
-    cfg.only.histogram = false
-    cfg.only.settings = false
-    cfg.only.counter = false
-    cfg.only.info = false
+  if imgui.MenuItem(u8'Купить лицензию') then
+    cfg.messanger.mode = 1
+    selectedTAB = 8
     inicfg.save(cfg, "support")
   end
   imgui.EndMenuBar()
+end
+
+function imgui_itspremiuim()
+  cfg.messanger.mode = 1
+  selectedTAB = 8
 end
 
 function imgui_saveposandsize()
@@ -3335,6 +3212,9 @@ function imgui_messanger_sup_player_list()
   imgui_messanger_sup_showdialogs(3, "Звуки")
   imgui_messanger_sup_showdialogs(4, "Хоткеи")
   imgui_messanger_sup_showdialogs(5, "Разное")
+  if not PREMIUM then imgui_messanger_sup_showdialogs(8, "Активировать код") else
+    imgui_messanger_sup_showdialogs(9, "Чёрный список")
+  end
   imgui_messanger_sup_showdialogs(7, "Менеджер лицензий")
   imgui_messanger_sup_showdialogs(6, "О скрипте")
   imgui.EndChild()
@@ -3461,10 +3341,14 @@ function imgui_messanger_sms_player_list_contextmenu(k, typ)
   if imgui.BeginPopupContextItem("item context menu"..k) then
     if typ == "NotPinned" then
       if imgui.Selectable(u8"Закрепить") then
-        sms[k]["Pinned"] = 1
-        SSDB_trigger = true
-        table.insert(sms[k]["Chat"], {text = "Собеседник закреплён", Nick = "мессенджер", type = "service", time = os.time()})
-        ScrollToDialogSMS = true
+        if PREMIUM then
+          sms[k]["Pinned"] = 1
+          SSDB_trigger = true
+          table.insert(sms[k]["Chat"], {text = "Собеседник закреплён", Nick = "мессенджер", type = "service", time = os.time()})
+          ScrollToDialogSMS = true
+        else
+          imgui_itspremiuim()
+        end
       end
     else
       if imgui.Selectable(u8"Открепить") then
@@ -3483,10 +3367,14 @@ function imgui_messanger_sms_player_list_contextmenu(k, typ)
       end
     else
       if imgui.Selectable(u8"Заблокировать") then
-        sms[k]["Blocked"] = 1
-        table.insert(sms[k]["Chat"], {text = "Собеседник заблокирован", Nick = "мессенджер", type = "service", time = os.time()})
-        SSDB_trigger = true
-        ScrollToDialogSMS = true
+        if PREMIUM then
+          sms[k]["Blocked"] = 1
+          table.insert(sms[k]["Chat"], {text = "Собеседник заблокирован", Nick = "мессенджер", type = "service", time = os.time()})
+          SSDB_trigger = true
+          ScrollToDialogSMS = true
+        else
+          imgui_itspremiuim()
+        end
       end
     end
     if imgui.Selectable(u8"Очистить") then
@@ -3662,7 +3550,23 @@ function imgui_messanger_sup_dialog()
   if selectedTAB == 5 then imgui_settings_15_extra() end
   if selectedTAB == 6 then imgui_info() end
   if selectedTAB == 7 then imgui_licensemen() end
+  if selectedTAB == 8 then imgui_activate() end
+  if selectedTAB == 9 then imgui_blacklist() end
   imgui.EndChild()
+end
+
+function imgui_blacklist()
+  imgui.TextWrapped(u8"Здесь отображается ваш чёрный список.")
+  imgui.TextWrapped(u8"Щёлкните правой кнопкой, чтобы удалить.")
+	imgui.Text("")
+  for k, v in pairs(sms) do
+    if v["Blocked"] ~= nil and v["Blocked"] == 1 then imgui.Text(u8:encode(k)) end
+    if imgui.IsItemHovered() and imgui.IsMouseClicked(1) then
+			v["Blocked"] = nil
+			table.insert(v["Chat"], {text = "Собеседник разблокирован", Nick = "мессенджер", type = "service", time = os.time()})
+			SSDB_trigger = true
+    end
+  end
 end
 
 function imgui_messanger_sms_dialog()
@@ -3900,7 +3804,7 @@ end
 function imgui_messanger_sms_loadDB()
   _213, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
   smsfile = getGameDirectory()..'\\moonloader\\config\\smsmessanger\\'..sampGetCurrentServerAddress().."-"..sampGetPlayerNickname(myid)..'.sms'
-  if cfg.messanger.storesms or ingamelaunch then
+  if PREMIUM and (cfg.messanger.storesms or ingamelaunch) then
     ingamelaunch = nil
     if doesFileExist(smsfile) then
       sms = table.load(smsfile)
@@ -3915,7 +3819,7 @@ function imgui_messanger_sms_loadDB()
 end
 
 function imgui_messanger_sms_saveDB()
-  if cfg.messanger.storesms then
+  if PREMIUM and cfg.messanger.storesms then
     if type(sms) == "table" and doesFileExist(smsfile) then
       table.save(sms, smsfile)
     end
@@ -3953,13 +3857,13 @@ function imgui_info_content()
     imgui.TreePop()
   end
   imgui.Text("")
-  imgui.TextWrapped(u8:encode("Лицензия принадлежит: "..licensenick..", сервер: "..licenseserver..", купленный мод: "..mode.."."))
+  if PREMIUM then imgui.TextWrapped(u8:encode("Лицензия принадлежит: "..licensenick..", сервер: "..licenseserver..", купленный мод: "..mode..".")) end
   imgui.TextWrapped(u8:encode("Текущая цена: "..currentprice..", (с промокодом скидка "..currentpromodis.."). Купить можно тут: "..currentbuylink))
   imgui_info_open(currentbuylink)
   imgui.Text("")
   imgui.Text(u8:encode("В скрипте задействованы следующие сампотехнологии:"))
 
-  imgui.BeginChild("##credits", imgui.ImVec2(580, 175), true)
+  imgui.BeginChild("##credits", imgui.ImVec2(580, 158), true)
   imgui.Columns(4, nil, false)
 
   cp1 = 25
@@ -4104,23 +4008,6 @@ function imgui_info_content()
   imgui.Text("DonHomka")
   imgui_info_open("https://blast.hk/members/161656/")
   imgui.NextColumn()
-
-  imgui.Text("9")
-  imgui.SetColumnWidth(-1, cp1)
-  imgui.NextColumn()
-  imgui.SetColumnWidth(-1, cp2)
-  imgui.Text("SupportTools")
-  imgui.NextColumn()
-  imgui.SetColumnWidth(-1, cp3)
-  link = "https://github.com/Yafis/SupportTools/"
-  imgui.Text(link)
-  imgui_info_open(link)
-  imgui.NextColumn()
-  imgui.SetColumnWidth(-1, cp4)
-  imgui.Text("Yafis")
-  imgui_info_open("https://github.com/Yafis/")
-  imgui.NextColumn()
-
   imgui.Columns(1)
   imgui.EndChild()
 end
@@ -4184,6 +4071,7 @@ function imgui_licensemen()
           end
         end
       end
+      table.save(chk, licensefile)
       textSpur.v = u8:encode(licensestr)
     end
   end
@@ -4192,6 +4080,38 @@ function imgui_licensemen()
   else
     lockPlayerControl(false)
   end
+end
+
+function imgui_activate()
+  imgui.TextWrapped(u8:encode([[SMES Lite доступен бесплатно, но для тех, кто не хочет себя ничем ограничивать, предусмотрена возможность поддержать разработку скрипта и взамен получить дополнительные, премиальные функции.
+Покупая лицензию, вы поддерживаете разработчика, получаете кучу крутых функций и стимулируете выпуск обновлений, которые для пользователей с лицензией всегда будут бесплатными.
+
+Лицензия привязывается навсегда к нику и IP сервера (с которых был активирован код через это окно), т.е. вы сможете играть с любого устройства.
+Если вы хотите пользоваться полноценным мессенджером с нескольких аккаунтов, для каждого из них вам нужно купить лицензию, иначе PREMIUM будет только у одного.]]))
+  imgui.Text("")
+  imgui.PushItemWidth(200)
+  if imgui.InputText(u8"Введите код", toActivate, imgui.InputTextFlags.EnterReturnsTrue) then
+    if toActivate.v:len() == 16 then
+      if chk == nil then chk = {} end
+      if chk[sampGetCurrentServerAddress()] == nil then chk[sampGetCurrentServerAddress()] = {} end
+      asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+      chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = toActivate.v
+      table.save(chk, licensefile)
+      thisScript():reload()
+    end
+  end
+  imgui.Text("")
+  imgui.TextWrapped(u8:encode(string.format([[Список ништяков, которые вы получите при покупке:
+1. Все ваши диалоги будут сохранятся после выхода из игры.
+2. У вас будет %s звуковых уведомлений вместо 10.
+3. Вы сможете настроить хоткей для быстрого ответа на последнюю смс.
+4. Вы сможете настроить хоткей для быстрого создания диалога.
+5. Появится возможность закрепить собеседника (для друзей).
+6. Появится возможность заблокировать собеседника (для врагов).
+7. Промокод, который даст скидку %s вам или вашему другу.
+8. Бесплатные обновления.
+9. Приоритетная техническая поддержка.]], currentaudiokol, currentpromodis)))
+
 end
 
 function imgui_settings()
@@ -4426,10 +4346,15 @@ function imgui_settings_6_sms_messanger()
     end
   end
   if imgui.Checkbox("##включить сохранение бд смс", iStoreSMS) then
-    if cfg.messanger.storesms == false then ingamelaunch = true imgui_messanger_sms_loadDB() end
-    cfg.messanger.storesms = iStoreSMS.v
-    inicfg.save(cfg, "support")
+    if PREMIUM then
+      if cfg.messanger.storesms == false then ingamelaunch = true imgui_messanger_sms_loadDB() end
+      cfg.messanger.storesms = iStoreSMS.v
+      inicfg.save(cfg, "support")
+    else
+      imgui_itspremiuim()
+    end
   end
+  if not PREMIUM then iStoreSMS.v = false end
   if iStoreSMS.v then
     imgui.SameLine()
     kol = 0
@@ -4455,6 +4380,8 @@ function imgui_settings_6_sms_messanger()
 end
 
 function imgui_settings_13_sms_sounds()
+  if not PREMIUM and iSoundSmsInNumber.v > 10 then iSoundSmsInNumber.v = math.random(1, 10) end
+  if not PREMIUM and iSoundSmsOutNumber.v > 10 then iSoundSmsOutNumber.v = math.random(1, 10) end
   if imgui.Checkbox("##SoundSmsIn", iSoundSmsIn) then
     cfg.options.SoundSmsIn = iSoundSmsIn.v
     inicfg.save(cfg, "support")
@@ -4462,7 +4389,7 @@ function imgui_settings_13_sms_sounds()
   if iSoundSmsIn.v then
     imgui.SameLine()
     imgui.PushItemWidth(300)
-    imgui.SliderInt(u8"Звук входящего сообщения", iSoundSmsInNumber, 1, 100)
+    imgui.SliderInt(u8"Звук входящего сообщения", iSoundSmsInNumber, 1, currentaudiokolDD)
     if iSoundSmsInNumber.v ~= cfg.options.SoundSmsInNumber then
       PLAYSMSIN = true
       cfg.options.SoundSmsInNumber = iSoundSmsInNumber.v
@@ -4480,7 +4407,7 @@ function imgui_settings_13_sms_sounds()
   if iSoundSmsOut.v then
     imgui.SameLine()
     imgui.PushItemWidth(300)
-    imgui.SliderInt(u8"Звук исходящего сообщения", iSoundSmsOutNumber, 1, 100)
+    imgui.SliderInt(u8"Звук исходящего сообщения", iSoundSmsOutNumber, 1, currentaudiokolDD)
     if iSoundSmsOutNumber.v ~= cfg.options.SoundSmsOutNumber then
       PLAYSMSOUT = true
       cfg.options.SoundSmsOutNumber = iSoundSmsOutNumber.v
@@ -4516,10 +4443,15 @@ function imgui_settings_14_hotkeys()
   if imgui.IsItemHovered() then
     imgui.SetTooltip(u8"По нажатию хоткея открывается окно скрипта.")
   end
+  if not PREMIUM then imhk4.v = false end
   if imgui.Checkbox("##imhk4", imhk4) then
-    cfg.messanger.hotkey4 = imhk4.v
-    main_init_hotkeys()
-    inicfg.save(cfg, "support")
+    if PREMIUM then
+      cfg.messanger.hotkey4 = imhk4.v
+      main_init_hotkeys()
+      inicfg.save(cfg, "support")
+    else
+      imgui_itspremiuim()
+    end
   end
   imgui.SameLine()
   if imhk4.v then
@@ -4530,10 +4462,14 @@ function imgui_settings_14_hotkeys()
   imgui.SameLine()
   imgui.TextDisabled("(?)")
   if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8"По нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
+    if PREMIUM then
+      imgui.SetTooltip(u8"По нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
+    else
+      imgui.SetTooltip(u8"Только для PREMIUM-пользователей.\nПо нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
+    end
   end
 
-  if imhk4.v then
+  if imhk4.v and PREMIUM then
     hotk.v = {}
     hotke.v = hotkeys["hkm4"]
     if ihk.HotKey(u8"##hkm4", hotke, hotk, 100) then
@@ -4558,12 +4494,16 @@ function imgui_settings_14_hotkeys()
       imgui.SetTooltip(u8"По нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
     end
   end
-
   if imgui.Checkbox("##imhk5", imhk5) then
-    cfg.messanger.hotkey5 = imhk5.v
-    main_init_hotkeys()
-    inicfg.save(cfg, "support")
+    if PREMIUM then
+      cfg.messanger.hotkey5 = imhk5.v
+      main_init_hotkeys()
+      inicfg.save(cfg, "support")
+    else
+      imgui_itspremiuim()
+    end
   end
+  if not PREMIUM then imhk5.v = false end
   imgui.SameLine()
   if imhk5.v then
     imgui.Text(u8("Хоткей создания диалога через sms мессенджер включен."))
@@ -4573,10 +4513,15 @@ function imgui_settings_14_hotkeys()
   imgui.SameLine()
   imgui.TextDisabled("(?)")
   if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8"По нажатию хоткея открывается мессенджер смс с фокусом на ввод ника/id нового собеседника.")
+    if PREMIUM then
+      imgui.SetTooltip(u8"По нажатию хоткея открывается мессенджер смс с фокусом на ввод ника/id нового собеседника.")
+    else
+      imgui.SetTooltip(u8"Только для PREMIUM-пользователей.\nПо нажатию хоткея открывается мессенджер смс с фокусом на ввод ника/id нового собеседника.")
+    end
   end
 
-  if imhk5.v then
+
+  if imhk5.v and PREMIUM then
     hotk.v = {}
     hotke.v = hotkeys["hkm5"]
     if ihk.HotKey(u8"##hkm5", hotke, hotk, 100) then
