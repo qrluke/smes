@@ -2120,12 +2120,15 @@ function chklsn()
   if chk[sampGetCurrentServerAddress()] ~= nil then
     local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
     if chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] ~= nil then
-      if chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] == "-" or chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)]:len() ~= 16 then
+      if chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] == "-" or chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)]:len() < 16 then
         nokey()
       else
-
-				licensekey = chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)]
-				checkkey()
+        if string.find(chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)], ":::") then
+          licensekey = string.match(chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)], "(.+):::")
+        else
+          licensekey = chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)]
+        end
+        checkkey()
       end
     else
       nokey()
@@ -2361,6 +2364,12 @@ function checkkey()
                 sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68cb01b44ee7470fb9c3ff084ff465702e57e37dfa2898d2e8fb65348")..licensemod..decode("beb6715ca0d00958014710efd83b69cf06006d")..currentprice..".", 0xffa500)
                 if chk.license.sound == 1 then setAudioStreamState(Sgranted, 1) end
                 mode = licensemod
+                if chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] ~= nil then
+                  if not string.find(chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)], ":::") and string.match(chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)], ":::(.+)") ~= mode then
+                    chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)]..":::"..mode
+                    table.save(chk, licensefile)
+                  end
+                end
                 PROVERKA = true
               end
               waiter1 = false
@@ -2650,6 +2659,15 @@ function main()
   if not isSampfuncsLoaded() or not isSampLoaded() then return end
   while not isSampAvailable() do wait(100) end
   while require_status:status() ~= "dead" do wait(10) end
+  licensestr = ""
+  for k, v in pairs(chk) do
+    if k ~= "license" then
+      for k1, v1 in pairs(v) do
+        licensestr = licensestr..string.format("Проект: %s. Сервер: %s. Никнейм: %s. Код: %s.\n", string.match(v1, ":::(.+)"), k, k1, string.match(v1, "(.+):::"))
+      end
+    end
+  end
+  textSpur.v = u8:encode(licensestr)
   if waitforreload then thisScript():reload() wait(1000) end
   while PROVERKA ~= true do wait(10) end
   if PROVERKA == true then
@@ -3057,95 +3075,21 @@ function imgui_messanger_scrollkostil()
 end
 
 function imgui_messanger_FO(mode)
-  --mode = 1 => открыть sup
-  --mode = 2 => открыть sup на последнем вопросе
-  --mode = 3 => открыть sms
   --mode = 4 => открыть смс на последней смс
   --mode = 5 => открыть смс на создании диалога
-  if mode == 1 then
-    if not cfg.only.messanger then
-      main_window_state.v = true
-    elseif cfg.messanger.mode == 2 then
-      cfg.messanger.mode = 1
-    else
-      main_window_state.v = not main_window_state.v
-    end
-    if cfg.messanger.activesduty and cfg.messanger.hotkey1 then
-      cfg.only.messanger = true
-      cfg.messanger.mode = 1
-      cfg.only.notepad = false
-      cfg.only.logviewer = false
-      cfg.only.histogram = false
-      cfg.only.settings = false
-      cfg.only.counter = false
-      inicfg.save(cfg, "support")
-    end
-  end
-  if mode == 2 then
-    if not cfg.only.messanger then
-      main_window_state.v = true
-    elseif cfg.messanger.mode == 2 then
-      cfg.messanger.mode = 1
-    elseif selectedTAB ~= LASTNICK then
-      --do nothing
-      if not main_window_state.v then main_window_state.v = true end
-    else
-      main_window_state.v = not main_window_state.v
-    end
-    if cfg.messanger.activesduty and cfg.messanger.hotkey2 then
-      cfg.only.messanger = true
-      if sampIsPlayerConnected(LASTID) and sampGetPlayerNickname(LASTID) == LASTNICK then
-        online = "Онлайн"
-      else
-        online = "Оффлайн"
-      end
-      selectedTAB = LASTNICK
-      if not isCharInAnyCar(playerPed) then keyboard = true end
-      cfg.messanger.mode = 1
-      cfg.only.notepad = false
-      cfg.only.logviewer = false
-      ScrollToDialogSDUTY = true
-      cfg.only.histogram = false
-      cfg.only.settings = false
-      cfg.only.counter = false
-      inicfg.save(cfg, "support")
-    end
-  end
-  if mode == 3 then
-    if not cfg.only.messanger then
-      main_window_state.v = true
-    elseif cfg.messanger.mode == 1 then
-      cfg.messanger.mode = 2
-    else
-      main_window_state.v = not main_window_state.v
-    end
-    if cfg.messanger.activesms and cfg.messanger.hotkey3 then
-      cfg.only.messanger = true
-      cfg.messanger.mode = 2
-      cfg.only.notepad = false
-      cfg.only.logviewer = false
-      cfg.only.histogram = false
-      cfg.only.counter = false
-      cfg.only.settings = false
-      inicfg.save(cfg, "support")
-    end
-  end
   if mode == 4 then
     if LASTNICK_SMS == " " then
       sampAddChatMessage("Ошибка: вам/вы ещё не писали смс.", color)
     else
-      if not cfg.only.messanger then
-        main_window_state.v = true
-      elseif cfg.messanger.mode == 1 then
-        cfg.messanger.mode = 2
-      elseif selecteddialogSMS ~= LASTNICK_SMS then
+      main_window_state.v = true
+      cfg.messanger.mode = 2
+      if selecteddialogSMS ~= LASTNICK_SMS then
         --do nothing
         if not main_window_state.v then main_window_state.v = true end
       else
         main_window_state.v = not main_window_state.v
       end
       if cfg.messanger.activesms and cfg.messanger.hotkey4 then
-        cfg.only.messanger = true
         if sampIsPlayerConnected(LASTID_SMS) and sampGetPlayerNickname(LASTID_SMS) == LASTNICK_SMS then
           online = "Онлайн"
         else
@@ -3155,34 +3099,20 @@ function imgui_messanger_FO(mode)
         smsafk[selecteddialogSMS] = "CHECK AFK"
         if not isCharInAnyCar(playerPed) then keyboard = true end
         cfg.messanger.mode = 2
-        cfg.only.notepad = false
         ScrollToDialogSMS = true
-        cfg.only.logviewer = false
-        cfg.only.histogram = false
-        cfg.only.counter = false
-        cfg.only.settings = false
         inicfg.save(cfg, "support")
       end
     end
   end
   if mode == 5 then
-    if not cfg.only.messanger then
-      main_window_state.v = true
-    elseif cfg.messanger.mode == 1 then
+    if cfg.messanger.mode == 1 then
       cfg.messanger.mode = 2
-    else
-      main_window_state.v = not main_window_state.v
     end
+    if not main_window_state.v then main_window_state.v = true end
     if cfg.messanger.activesms and cfg.messanger.hotkey5 then
-      cfg.only.messanger = true
       iAddSMS = true
       if not isCharInAnyCar(playerPed) then KeyboardFocusResetForNewDialog = true end
       cfg.messanger.mode = 2
-      cfg.only.notepad = false
-      cfg.only.counter = false
-      cfg.only.logviewer = false
-      cfg.only.histogram = false
-      cfg.only.settings = false
       inicfg.save(cfg, "support")
     end
   end
@@ -4220,10 +4150,9 @@ function imgui_licensemen()
   imgui.SameLine()
   imgui.TextDisabled(u8"Как настроить?")
   if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8:encode([[Файл заполняется так:
-"картинка" = "имя в подменю" = "меню"
-Заполняйте в том порядке, в каком хотите, чтобы у вас отображалось в меню.
-Сохранить - Ctrl + Enter, отменить изменения - Esc.]]))
+    imgui.SetTooltip(u8:encode([[Вручную отредактируйте файл лицензии.
+Будьте предельно аккуратны.
+Сохранить - Ctrl + Enter.]]))
   end
   if read_only.v then
     flagsS = imgui.InputTextFlags.EnterReturnsTrue + imgui.InputTextFlags.ReadOnly
@@ -4231,15 +4160,31 @@ function imgui_licensemen()
     flagsS = imgui.InputTextFlags.EnterReturnsTrue
   end
   if imgui.InputTextMultiline("##notepad4", textSpur, imgui.ImVec2(-1, imgui.GetContentRegionAvail().y), flagsS) then
-    local file = io.open( getGameDirectory().."\\moonloader\\config\\SMES.license", "w" )
-
-    if file then
-      file:write(u8:decode(textSpur.v))
+    if not read_only.v then
+      --text
+      tempchk = chk.license.sound
+      chk = {}
+      chk.license = {}
+      chk.license.sound = tempchk
+      for line in u8:decode(textSpur.v):gmatch("([^\n]*)\n?") do
+        if string.match(line, "Проект: (.+). Сервер: (.+). Никнейм: (.+). Код: (.+).") then
+          a1, a2, a3, a4 = string.match(line, "Проект: (.+). Сервер: (.+). Никнейм: (.+). Код: (.+).")
+          if a4:len() == 16 then
+            if chk[a2] == nil then chk[a2] = {} end
+            chk[a2][a3] = a4..":::"..a1
+          end
+        end
+      end
       printStringNow("Text saved", 1000)
-      file:close()
-      main_init_supdoc()
-    else
-      printStringNow("Text not saved", 1000)
+      licensestr = ""
+      for k, v in pairs(chk) do
+        if k ~= "license" then
+          for k1, v1 in pairs(v) do
+            licensestr = licensestr..string.format("Проект: %s. Сервер: %s. Никнейм: %s. Код: %s.\n", string.match(v1, ":::(.+)"), k, k1, string.match(v1, "(.+):::"))
+          end
+        end
+      end
+      textSpur.v = u8:encode(licensestr)
     end
   end
   if imgui.IsItemActive() then
@@ -4396,44 +4341,6 @@ function imgui_settings_2_sms_hideandcol()
 end
 
 function imgui_settings_6_sms_messanger()
-
-
-  if imgui.Checkbox("##imhk4", imhk4) then
-    cfg.messanger.hotkey4 = imhk4.v
-    if cfg.messanger.hotkey4 then main_init_hotkeys() end
-    inicfg.save(cfg, "support")
-  end
-  imgui.SameLine()
-  if imhk4.v then
-    imgui.Text(u8("Хоткей быстрого ответа через мессенджер sms включен."))
-  else
-    imgui.TextDisabled(u8"Включить хоткей быстрого ответа через мессенджер sms?")
-  end
-  imgui.SameLine()
-  imgui.TextDisabled("(?)")
-  if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8"По нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
-  end
-
-
-  if imgui.Checkbox("##imhk5", imhk5) then
-    cfg.messanger.hotkey5 = imhk5.v
-    if cfg.messanger.hotkey5 then main_init_hotkeys() end
-    inicfg.save(cfg, "support")
-  end
-  imgui.SameLine()
-  if imhk5.v then
-    imgui.Text(u8("Хоткей создания диалога через sms мессенджер включен."))
-  else
-    imgui.TextDisabled(u8"Включить хоткей создания диалога через sms мессенджер?")
-  end
-  imgui.SameLine()
-  imgui.TextDisabled("(?)")
-  if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8"По нажатию хоткея открывается мессенджер смс с фокусом на ввод ника/id нового собеседника.")
-  end
-
-
   imgui.Text(u8("Цвета входящих смс в диалогах:"))
   imgui.SameLine(210)
   imgui.Text("")
@@ -4609,6 +4516,22 @@ function imgui_settings_14_hotkeys()
   if imgui.IsItemHovered() then
     imgui.SetTooltip(u8"По нажатию хоткея открывается окно скрипта.")
   end
+  if imgui.Checkbox("##imhk4", imhk4) then
+    cfg.messanger.hotkey4 = imhk4.v
+    main_init_hotkeys()
+    inicfg.save(cfg, "support")
+  end
+  imgui.SameLine()
+  if imhk4.v then
+    imgui.Text(u8("Хоткей быстрого ответа через мессенджер sms включен."))
+  else
+    imgui.TextDisabled(u8"Включить хоткей быстрого ответа через мессенджер sms?")
+  end
+  imgui.SameLine()
+  imgui.TextDisabled("(?)")
+  if imgui.IsItemHovered() then
+    imgui.SetTooltip(u8"По нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
+  end
 
   if imhk4.v then
     hotk.v = {}
@@ -4634,6 +4557,23 @@ function imgui_settings_14_hotkeys()
     if imgui.IsItemHovered() then
       imgui.SetTooltip(u8"По нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
     end
+  end
+
+  if imgui.Checkbox("##imhk5", imhk5) then
+    cfg.messanger.hotkey5 = imhk5.v
+    main_init_hotkeys()
+    inicfg.save(cfg, "support")
+  end
+  imgui.SameLine()
+  if imhk5.v then
+    imgui.Text(u8("Хоткей создания диалога через sms мессенджер включен."))
+  else
+    imgui.TextDisabled(u8"Включить хоткей создания диалога через sms мессенджер?")
+  end
+  imgui.SameLine()
+  imgui.TextDisabled("(?)")
+  if imgui.IsItemHovered() then
+    imgui.SetTooltip(u8"По нажатию хоткея открывается мессенджер смс с фокусом на ввод ника/id нового собеседника.")
   end
 
   if imhk5.v then
