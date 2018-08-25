@@ -884,8 +884,6 @@ do
   end
 
   function r_lib_encoding()
-
-
     local iconv = require 'iconv'
 
     local encoding = {
@@ -973,6 +971,7 @@ do
 
     return encoding
   end
+
   function r_lib_lockbox()
     local Lockbox = {};
 
@@ -2359,38 +2358,21 @@ function var_cfg()
   cfg = inicfg.load({
     options =
     {
-      ReplaceQuestionColor = true,
       MouseDrawCursor = false,
-      ReplaceAnswerColor = false,
-      ReplaceAnswerOthersColor = false,
       ReplaceSmsInColor = true,
       ReplaceSmsOutColor = false,
       ReplaceSmsReceivedColor = false,
-      ShowTimeToUpdateCSV = false,
-      HideQuestion = false,
-      HideAnswer = false,
-      HideAnswerOthers = false,
       HideSmsIn = false,
       HideSmsOut = false,
       HideSmsReceived = true,
-      SoundQuestion = false,
-      SoundQuestionNumber = 1,
-      SoundAnswerOthers = false,
-      SoundAnswerOthersNumber = 22,
-      SoundAnswer = true,
-      SoundAnswerNumber = 88,
       SoundSmsIn = false,
       SoundSmsInNumber = 6,
       SoundSmsOut = true,
       SoundSmsOutNumber = 8,
       settingstab = 1,
-      debug = false,
     },
     hkMainMenu = {
       [1] = 90
-    },
-    hkm3 = {
-      [1] = 54
     },
     hkm4 = {
       [1] = 55
@@ -2400,9 +2382,6 @@ function var_cfg()
     },
     colors =
     {
-      QuestionColor = imgui.ImColor(0, 255, 38):GetU32(),
-      AnswerColor = imgui.ImColor(255, 255, 255):GetU32(),
-      AnswerColorOthers = imgui.ImColor(255, 255, 255):GetU32(),
       SmsInColor = imgui.ImColor(0, 255, 166):GetU32(),
       SmsOutColor = imgui.ImColor(255, 255, 255):GetU32(),
       SmsReceivedColor = imgui.ImColor(255, 255, 255):GetU32(),
@@ -2414,26 +2393,11 @@ function var_cfg()
       PosX = 80,
       PosY = 310,
     },
-    spur = {
-      active = true,
-      autoresize = true,
-      Width = 800,
-      Height = 400,
-      PosX = 80,
-      PosY = 310,
-      tab = 1,
-      mode = 1,
-      proportion = true,
-      lupa = true,
-      onlyresized = true,
-    },
     messanger =
     {
-      hotkey3 = true,
       hotkey4 = true,
       hotkey5 = true,
       storesms = true,
-      activesduty = true,
       iSMSfilterBool = false,
       activesms = true,
       mode = 1,
@@ -2462,17 +2426,10 @@ function var_imgui_ImBool()
   else
     iSoundGranted = imgui.ImBool(false)
   end
-  iAutoResize = imgui.ImBool(cfg.spur.autoresize)
   read_only = imgui.ImBool(true)
-  iReplaceQuestionColor = imgui.ImBool(cfg.options.ReplaceQuestionColor)
-  iReplaceAnswerColor = imgui.ImBool(cfg.options.ReplaceAnswerColor)
-  iReplaceAnswerOthersColor = imgui.ImBool(cfg.options.ReplaceAnswerOthersColor)
   iReplaceSmsInColor = imgui.ImBool(cfg.options.ReplaceSmsInColor)
   iReplaceSmsOutColor = imgui.ImBool(cfg.options.ReplaceSmsOutColor)
   iReplaceSmsReceivedColor = imgui.ImBool(cfg.options.ReplaceSmsReceivedColor)
-  iHideQuestion = imgui.ImBool(cfg.options.HideQuestion)
-  iHideAnswer = imgui.ImBool(cfg.options.HideAnswer)
-  iHideAnswerOthers = imgui.ImBool(cfg.options.HideAnswerOthers)
   iHideSmsIn = imgui.ImBool(cfg.options.HideSmsIn)
   iHideSmsOut = imgui.ImBool(cfg.options.HideSmsOut)
   iHideSmsReceived = imgui.ImBool(cfg.options.HideSmsReceived)
@@ -2481,7 +2438,6 @@ function var_imgui_ImBool()
   iChangeScrollSMS = imgui.ImBool(cfg.messanger.iChangeScrollSMS)
   iSetKeyboardSMS = imgui.ImBool(cfg.messanger.iSetKeyboardSMS)
   iShowSHOWOFFLINESMS = imgui.ImBool(cfg.messanger.iShowSHOWOFFLINESMS)
-  iShowTimeToUpdateCSV = imgui.ImBool(cfg.options.ShowTimeToUpdateCSV)
   iSoundSmsIn = imgui.ImBool(cfg.options.SoundSmsIn)
   iSoundSmsOut = imgui.ImBool(cfg.options.SoundSmsOut)
   iStoreSMS = imgui.ImBool(cfg.messanger.storesms)
@@ -2528,20 +2484,6 @@ function var_main()
   hotk = {}
   hotke = {}
   smsafk = {}
-  iMonths = {
-    [1] = "Январь",
-    [2] = "Февраль",
-    [3] = "Март",
-    [4] = "Апрель",
-    [5] = "Май",
-    [6] = "Июнь",
-    [7] = "Июль",
-    [8] = "Август",
-    [9] = "Сентябрь",
-    [10] = "Октябрь",
-    [11] = "Ноябрь",
-    [12] = "Декабрь"
-  }
   russian_characters = {
     [168] = 'Ё', [184] = 'ё', [192] = 'А', [193] = 'Б', [194] = 'В', [195] = 'Г', [196] = 'Д', [197] = 'Е', [198] = 'Ж', [199] = 'З', [200] = 'И', [201] = 'Й', [202] = 'К', [203] = 'Л', [204] = 'М', [205] = 'Н', [206] = 'О', [207] = 'П', [208] = 'Р', [209] = 'С', [210] = 'Т', [211] = 'У', [212] = 'Ф', [213] = 'Х', [214] = 'Ц', [215] = 'Ч', [216] = 'Ш', [217] = 'Щ', [218] = 'Ъ', [219] = 'Ы', [220] = 'Ь', [221] = 'Э', [222] = 'Ю', [223] = 'Я', [224] = 'а', [225] = 'б', [226] = 'в', [227] = 'г', [228] = 'д', [229] = 'е', [230] = 'ж', [231] = 'з', [232] = 'и', [233] = 'й', [234] = 'к', [235] = 'л', [236] = 'м', [237] = 'н', [238] = 'о', [239] = 'п', [240] = 'р', [241] = 'с', [242] = 'т', [243] = 'у', [244] = 'ф', [245] = 'х', [246] = 'ц', [247] = 'ч', [248] = 'ш', [249] = 'щ', [250] = 'ъ', [251] = 'ы', [252] = 'ь', [253] = 'э', [254] = 'ю', [255] = 'я',
   }
@@ -2553,24 +2495,15 @@ function var_main()
   getfr = {}
   players = {}
   iYears = {}
-  iMessanger = {}
   countall = 0
-  ScrollToDialogSDUTY = false
   ScrollToDialogSMS = false
-  LASTNICK = " "
-  LASTID = -1
   LASTNICK_SMS = " "
   LASTID_SMS = -1
-  PLAYA = false
   iAddSMS = false
-  PLAYQ = false
-  PLAYA1 = false
   PLAYSMSIN = false
   PLAYSMSOUT = false
   SSDB_trigger = false
   SSDB1_trigger = false
-  DEBUG = cfg.options.debug
-  spurtab = cfg.spur.tab
   math.randomseed(os.time())
 end
 -------------------------------------MAIN---------------------------------------
@@ -2602,14 +2535,12 @@ function main()
     )
     lua_thread.create(imgui_messanger_scrollkostil)
     inicfg.save(cfg, "support")
-    if DEBUG then First = true end
     while true do
       wait(0)
       asdsadasads, myidasdas = sampGetPlayerIdByCharHandle(PLAYER_PED)
       if PREMIUM and (licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver) then
         thisScript():unload()
       end
-      main_while_debug()
       main_while_playsounds()
       imgui.Process = main_window_state.v
     end
@@ -2637,7 +2568,6 @@ function main_init_hotkeys()
   hk.registerHotKey(hotkeys["hkMainMenu"], true,
     function()
       if not sampIsChatInputActive() and not sampIsDialogActive() and not isSampfuncsConsoleActive() then
-        if DEBUG then First = false end
         main_window_state.v = not main_window_state.v
       end
     end
@@ -2691,10 +2621,6 @@ function main_copyright()
   if PREMIUM then sampAddChatMessage(prefix.."Все системы готовы. Версия скрипта: "..thisScript().version..". Активация: /smes. Приятной игры, "..licensenick..".", 0xffa500) end
 end
 
-function main_while_debug()
-  if SSDB_trigger == true then if DEBUG then sampAddChatMessage("сохраняем", color) end imgui_messanger_sms_saveDB() SSDB_trigger = false end
-end
-
 function main_while_playsounds()
   if PLAYSMSIN then
     PLAYSMSIN = false
@@ -2733,7 +2659,6 @@ function RPC_init()
         end
         return false
       end
-      if DEBUG then DEBUG_simulateSupport(text) end
       if text:find("SMS") then
         text = string.gsub(text, "{FFFF00}", "")
         text = string.gsub(text, "{FF8000}", "")
@@ -2810,81 +2735,6 @@ function RPC_init()
           end
         else
           return false
-        end
-      end
-      if color == -5963521 then
-        if text:find("->Вопрос", 1, true) then
-          sup_AddQ(text)
-          if iSoundQuestion.v then PLAYQ = true end
-          if not iHideQuestion.v then
-            if iReplaceQuestionColor.v then
-              sampAddChatMessage(text, Qcolor_HEX)
-              return false
-            else
-              --do nothing
-            end
-          else
-            return false
-          end
-        end
-        if text:find("<-", 1, true) and text:find("to", 1, true) then
-          sup_AddA(text)
-          SupportNick, SupportID, ClientNick, ClientID, Answer = string.match(text, "<%-(%a.+)%[(%d+)%] to ([%a_]+)%[(%d+)%]: (.+)")
-          asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-          if SupportNick == sampGetPlayerNickname(myid) then
-            if iSoundAnswer.v then PLAYA = true end
-            if not iHideAnswer.v then
-              if iReplaceAnswerColor.v then
-                sampAddChatMessage(text, Acolor_HEX)
-                return false
-              else
-                --do nothing
-              end
-            else
-              return false
-            end
-          else
-            if iSoundAnswerOthers.v then PLAYA1 = true end
-            if not iHideAnswerOthers.v then
-              if iReplaceAnswerOthersColor.v then
-                sampAddChatMessage(text, Acolor1_HEX)
-                return false
-              else
-                --do nothing
-              end
-            else
-              return false
-            end
-          end
-        end
-      end
-      if DEBUG then return false end
-    end
-  end
-  --считаем активность саппорта
-  function RPC.onSendCommand(text)
-    if mode == "samp-rp" then
-      if string.find(text, '/pm') then
-        if text:match('/pm (%d+) $') then
-          lua_thread.create(sup_FastRespond_via_dialog, text:match('/pm (%d+) $'))
-          return false
-        else
-          if string.match(text, "(%d+) (.+)") then
-            sup_logger_HostAnswer(text)
-            if iSoundAnswer.v then PLAYA = true end
-            id, text = string.match(text, "(%d+) (.+)")
-            if sampIsPlayerConnected(id) then
-              if iMessanger ~= nil and iMessanger[sampGetPlayerNickname(id)] ~= nil and iMessanger[sampGetPlayerNickname(id)]["Checked"] ~= nil then
-                iMessanger[sampGetPlayerNickname(id)]["Checked"] = os.time()
-              end
-              if selectedTAB == sampGetPlayerNickname(id) then ScrollToDialogSDUTY = true end
-              if DEBUG then
-                local _asdasd, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-                DEBUG_simulateSupportAnswer("<-"..sampGetPlayerNickname(myid).."["..myid.."]".." to "..sampGetPlayerNickname(id).."["..id.."]: "..text)
-              end
-              sup_AddA(text)
-            end
-          end
         end
       end
     end
@@ -3007,7 +2857,7 @@ function imgui_messanger_content()
   if cfg.messanger.mode == 2 then imgui_messanger_sms_settings() end
   if cfg.messanger.mode == 1 then imgui_messanger_sup_player_list() end
   if cfg.messanger.mode == 2 then imgui_messanger_sms_player_list() end
-  if cfg.messanger.activesduty and cfg.messanger.activesms then imgui_messanger_switchmode() end
+   imgui_messanger_switchmode()
   imgui.NextColumn()
   if cfg.messanger.mode == 1 then imgui_messanger_sup_header() end
   if cfg.messanger.mode == 2 then imgui_messanger_sms_header() end
@@ -3415,17 +3265,6 @@ end
 function imgui_messanger_switchmode()
   imgui.BeginChild("Переключатель режимов", imgui.ImVec2(192, 35), true)
   kolvo1 = 0
-  for k in pairs(iMessanger) do
-    if #iMessanger[k]["A"] == 0 then
-      if #iMessanger[k]["Chat"] ~= 0 then
-        for i, z in pairs(iMessanger[k]["Chat"]) do
-          if z["type"] ~= "support" and z["time"] > iMessanger[k]["Checked"] then
-            kolvo1 = kolvo1 + 1
-          end
-        end
-      end
-    end
-  end
   if cfg.messanger.mode == 1 then
     imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(0, 0, 0, 200):GetVec4())
     imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(255, 255, 255, 255):GetVec4())
@@ -3474,29 +3313,7 @@ end
 
 function imgui_messanger_sup_header()
   imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
-  if iMessanger[selectedTAB] ~= nil and iMessanger[selectedTAB]["Chat"] ~= nil and iMessanger[selectedTAB]["Q"] ~= nil then
-    for id = 0, sampGetMaxPlayerId() do
-      if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selectedTAB) then
-        sId = id
-        break
-        if id == sampGetMaxPlayerId() then sId = "-" end
-      end
-    end
-    if iMessanger[selectedTAB] ~= nil and iMessanger[selectedTAB]["Q"] ~= nil and iMessanger[selectedTAB]["Q"][#iMessanger[selectedTAB]["Q"]] ~= nil and iMessanger[selectedTAB]["Q"][#iMessanger[selectedTAB]["Q"]]["time"] ~= nil then
-      qtime = os.time() - iMessanger[selectedTAB]["Q"][#iMessanger[selectedTAB]["Q"]]["time"]
-    else
-      qtime = "-"
-    end
-    imgui.Text(u8:encode("["..tostring(online).."] Ник: "..tostring(selectedTAB)..". ID: "..tonumber(sId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(sId)))..". Время: "..tostring(qtime).." сек."))
-    imgui.SameLine(imgui.GetContentRegionAvailWidth() - 10)
-    if imgui.Checkbox("##iHideOtherAnswers", iHideOtherAnswers) then
-      cfg.messanger.HideOthersAnswers = iHideOtherAnswers.v
-      inicfg.save(cfg, "support")
-    end
-    if imgui.IsItemHovered() then
-      imgui.SetTooltip(u8"Скрывать ответы других саппортов?")
-    end
-  end
+	imgui.Text("")
   imgui.EndChild()
 end
 
@@ -3553,20 +3370,6 @@ function imgui_messanger_sup_dialog()
   if selectedTAB == 8 then imgui_activate() end
   if selectedTAB == 9 then imgui_blacklist() end
   imgui.EndChild()
-end
-
-function imgui_blacklist()
-  imgui.TextWrapped(u8"Здесь отображается ваш чёрный список.")
-  imgui.TextWrapped(u8"Щёлкните правой кнопкой, чтобы удалить.")
-	imgui.Text("")
-  for k, v in pairs(sms) do
-    if v["Blocked"] ~= nil and v["Blocked"] == 1 then imgui.Text(u8:encode(k)) end
-    if imgui.IsItemHovered() and imgui.IsMouseClicked(1) then
-			v["Blocked"] = nil
-			table.insert(v["Chat"], {text = "Собеседник разблокирован", Nick = "мессенджер", type = "service", time = os.time()})
-			SSDB_trigger = true
-    end
-  end
 end
 
 function imgui_messanger_sms_dialog()
@@ -3678,77 +3481,7 @@ end
 
 function imgui_messanger_sup_keyboard()
   imgui.BeginChild("##keyboard", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
-  if iMessanger[selectedTAB] == nil then
-
-  else
-    if KeyboardFocusReset then
-      imgui.SetKeyboardFocusHere()
-      KeyboardFocusReset = false
-    end
-    if keyboard and iSetKeyboard.v then
-      imgui.SetKeyboardFocusHere()
-      keyboard = false
-    end
-    imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - 70)
-    if imgui.InputText("##keyboard", toAnswerSDUTY, imgui.InputTextFlags.EnterReturnsTrue) then
-      if gethh ~= nil and toAnswerSDUTY.v:find("/hh (%d+)") then
-        imgui_messanger_sup_keyboard_gethh(1)
-      elseif gethc ~= nil and toAnswerSDUTY.v:find("/hc (%d+)") then
-        imgui_messanger_sup_keyboard_gethc(1)
-      elseif gethc ~= nil and toAnswerSDUTY.v:find("/hc (%S+)") then
-        imgui_messanger_sup_keyboard_gethc(1)
-      elseif getfr ~= nil and toAnswerSDUTY.v:find("/fr (%d+)") then
-        imgui_messanger_sup_keyboard_getfr(1)
-      elseif getfr ~= nil and toAnswerSDUTY.v:find("/fr (%S+)") then
-        imgui_messanger_sup_keyboard_getfr(1)
-      else
-        for i = 0, sampGetMaxPlayerId() do
-          if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selectedTAB then k = i break end
-          if i == sampGetMaxPlayerId() then k = "-" end
-        end
-        if k ~= "-" then
-          if mode == "samp-rp" then
-            sampSendChat("/pm " .. k .. " " .. u8:decode(toAnswerSDUTY.v))
-            toAnswerSDUTY.v = ''
-          end
-        end
-        KeyboardFocusReset = true
-      end
-    end
-    if imgui.IsItemActive() then
-      lockPlayerControl(true)
-      imgui_messanger_sup_keyboard_gethh(2)
-      imgui_messanger_sup_keyboard_gethc(2)
-      imgui_messanger_sup_keyboard_getfr(2)
-    else
-      lockPlayerControl(false)
-    end
-    if imgui.SameLine() or imgui.Button(u8"Отправить") then
-      if gethh ~= nil and toAnswerSDUTY.v:find("/hh (%d+)") then
-        imgui_messanger_sup_keyboard_gethh(1)
-      elseif gethc ~= nil and toAnswerSDUTY.v:find("/hc (%d+)") then
-        imgui_messanger_sup_keyboard_gethc(1)
-      elseif gethc ~= nil and toAnswerSDUTY.v:find("/hc (%S+)") then
-        imgui_messanger_sup_keyboard_gethc(1)
-      elseif getfr ~= nil and toAnswerSDUTY.v:find("/fr (%d+)") then
-        imgui_messanger_sup_keyboard_getfr(1)
-      elseif getfr ~= nil and toAnswerSDUTY.v:find("/fr (%S+)") then
-        imgui_messanger_sup_keyboard_getfr(1)
-      else
-        for i = 0, sampGetMaxPlayerId() do
-          if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selectedTAB then k = i break end
-          if i == sampGetMaxPlayerId() then k = "-" end
-        end
-        if k ~= "-" then
-          if mode == "samp-rp" then
-            sampSendChat("/pm " .. k .. " " .. u8:decode(toAnswerSDUTY.v))
-          end
-          toAnswerSDUTY.v = ''
-        end
-        KeyboardFocusReset = true
-      end
-    end
-  end
+	imgui.Text("")
   imgui.EndChild()
 end
 
@@ -4037,9 +3770,7 @@ function imgui_licensemen()
   imgui.SameLine()
   imgui.TextDisabled(u8"Как настроить?")
   if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8:encode([[Вручную отредактируйте файл лицензии.
-Будьте предельно аккуратны.
-Сохранить - Ctrl + Enter.]]))
+    imgui.SetTooltip(u8:encode("Вручную отредактируйте файл лицензии.\nБудьте предельно аккуратны.\nСохранить - Ctrl + Enter."))
   end
   if read_only.v then
     flagsS = imgui.InputTextFlags.EnterReturnsTrue + imgui.InputTextFlags.ReadOnly
@@ -4082,12 +3813,22 @@ function imgui_licensemen()
   end
 end
 
-function imgui_activate()
-  imgui.TextWrapped(u8:encode([[SMES Lite доступен бесплатно, но для тех, кто не хочет себя ничем ограничивать, предусмотрена возможность поддержать разработку скрипта и взамен получить дополнительные, премиальные функции.
-Покупая лицензию, вы поддерживаете разработчика, получаете кучу крутых функций и стимулируете выпуск обновлений, которые для пользователей с лицензией всегда будут бесплатными.
+function imgui_blacklist()
+  imgui.TextWrapped(u8"Здесь отображается ваш чёрный список.")
+  imgui.TextWrapped(u8"Щёлкните правой кнопкой, чтобы удалить.")
+  imgui.Text("")
+  for k, v in pairs(sms) do
+    if v["Blocked"] ~= nil and v["Blocked"] == 1 then imgui.Text(u8:encode(k)) end
+    if imgui.IsItemHovered() and imgui.IsMouseClicked(1) then
+      v["Blocked"] = nil
+      table.insert(v["Chat"], {text = "Собеседник разблокирован", Nick = "мессенджер", type = "service", time = os.time()})
+      SSDB_trigger = true
+    end
+  end
+end
 
-Лицензия привязывается навсегда к нику и IP сервера (с которых был активирован код через это окно), т.е. вы сможете играть с любого устройства.
-Если вы хотите пользоваться полноценным мессенджером с нескольких аккаунтов, для каждого из них вам нужно купить лицензию, иначе PREMIUM будет только у одного.]]))
+function imgui_activate()
+  imgui.TextWrapped(u8:encode("SMES Lite доступен бесплатно, но для тех, кто не хочет себя ничем ограничивать, предусмотрена возможность поддержать разработку скрипта и взамен получить дополнительные, премиальные функции.\nПокупая лицензию, вы поддерживаете разработчика, получаете кучу крутых функций и стимулируете выпуск обновлений, которые для пользователей с лицензией всегда будут бесплатными.\n\nЛицензия привязывается навсегда к нику и IP сервера (с которых был активирован код через это окно), т.е. вы сможете играть с любого устройства.\nЕсли вы хотите пользоваться полноценным мессенджером с нескольких аккаунтов, для каждого из них вам нужно купить лицензию, иначе PREMIUM будет только у одного."))
   imgui.Text("")
   imgui.PushItemWidth(200)
   if imgui.InputText(u8"Введите код", toActivate, imgui.InputTextFlags.EnterReturnsTrue) then
@@ -4101,63 +3842,7 @@ function imgui_activate()
     end
   end
   imgui.Text("")
-  imgui.TextWrapped(u8:encode(string.format([[Список ништяков, которые вы получите при покупке:
-1. Все ваши диалоги будут сохранятся после выхода из игры.
-2. У вас будет %s звуковых уведомлений вместо 10.
-3. Вы сможете настроить хоткей для быстрого ответа на последнюю смс.
-4. Вы сможете настроить хоткей для быстрого создания диалога.
-5. Появится возможность закрепить собеседника (для друзей).
-6. Появится возможность заблокировать собеседника (для врагов).
-7. Промокод, который даст скидку %s вам или вашему другу.
-8. Бесплатные обновления.
-9. Приоритетная техническая поддержка.]], currentaudiokol, currentpromodis)))
-
-end
-
-function imgui_settings()
-  if not cfg.only.settings then
-    ch5 = imgui.CollapsingHeader(u8"Настройки")
-    if ch5 then
-      imgui_settings_rightclick()
-      imgui_settings_content()
-    end
-    if not ch5 then imgui_settings_rightclick() end
-  else
-    imgui_menu()
-    imgui_settings_content()
-  end
-end
-
-function imgui_settings_content()
-  imgui.PushItemWidth(imgui.GetContentRegionAvailWidth())
-  imgui.SliderInt(u8"##выбор вкладки настроек", iSettingsTab, 1, 15)
-  if iSettingsTab.v ~= cfg.options.settingstab then
-    cfg.options.settingstab = iSettingsTab.v
-    inicfg.save(cfg, "support")
-  end
-  imgui.Separator()
-  if iSettingsTab.v == 1 then imgui_settings_1_sup_hideandcol() end
-  if iSettingsTab.v == 2 then imgui_settings_2_sms_hideandcol() end
-  if iSettingsTab.v == 3 then imgui_settings_3_sup_funcs() end
-  if iSettingsTab.v == 4 then imgui_settings_4_spur() end
-  if iSettingsTab.v == 5 then imgui_settings_5_sup_messanger() end
-  if iSettingsTab.v == 6 then imgui_settings_6_sms_messanger() end
-  if iSettingsTab.v == 7 then imgui_settings_7_notepad() end
-  if iSettingsTab.v == 8 then imgui_settings_8_logger() end
-  if iSettingsTab.v == 9 then imgui_settings_9_logviewer() end
-  if iSettingsTab.v == 10 then imgui_settings_10_histogram() end
-  if iSettingsTab.v == 11 then imgui_settings_11_counter() end
-  if iSettingsTab.v == 12 then imgui_settings_12_sup_sounds() end
-  if iSettingsTab.v == 13 then imgui_settings_13_sms_sounds() end
-  if iSettingsTab.v == 14 then imgui_settings_14_hotkeys() end
-  if iSettingsTab.v == 15 then imgui_settings_15_extra() end
-end
-
-function imgui_settings_rightclick()
-  if imgui.IsItemHovered(imgui.HoveredFlags.RootWindow) and imgui.IsMouseClicked(1) then
-    cfg.only.settings = true
-    inicfg.save(cfg, "support")
-  end
+  imgui.TextWrapped(u8:encode(string.format("Список ништяков, которые вы получите при покупке:\n1. Все ваши диалоги будут сохранятся после выхода из игры.\n2. У вас будет %s звуковых уведомлений вместо 10.\n3. Вы сможете настроить хоткей для быстрого ответа на последнюю смс.\n4. Вы сможете настроить хоткей для быстрого создания диалога.\n5. Появится возможность закрепить собеседника (для друзей).\n6. Появится возможность заблокировать собеседника (для врагов).\n7. Промокод, который даст скидку %s вам или вашему другу.\n8. Бесплатные обновления.\n9. Приоритетная техническая поддержка.", currentaudiokol, currentpromodis)))
 end
 
 function imgui_settings_2_sms_hideandcol()
@@ -4571,45 +4256,6 @@ function imgui_settings_15_extra()
   imgui.TextDisabled("(?)")
   if imgui.IsItemHovered() then
     imgui.SetTooltip(u8"Вкл/выкл звуковое уведомление об успешной проверки лицензии.")
-  end
-end
-
-function imgui_settings_extra_setupFRbase()
-  imgui.SameLine()
-  imgui.TextDisabled(u8"Как настроить ответы?")
-  if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8"Одна строка - один быстрый ответ, всё просто.\nНумеровать не нужно, при сохранении каждой строке будет присвоен номер.\nCtrl+Enter - сохранить, Esc - Отменить изменения, Ctrl+Z, Ctrl+A, Ctrl+C, Ctrl+X, Ctrl+V - работают!")
-  end
-  if imgui.InputTextMultiline("##notepad3", fr, imgui.ImVec2(-1, imgui.GetContentRegionAvail().y), imgui.InputTextFlags.EnterReturnsTrue) then
-    frtext = fr.v
-    str = 1
-    frtextF = ""
-    for s in string.gmatch(u8:decode(frtext), "[^\n]+") do
-      number, text = string.match(s, "(%d+%.) (.+)")
-      if number == nil then
-        frtextF = frtextF..str..". "..s.."\n"
-      else
-        frtextF = frtextF..str..". "..text.."\n"
-      end
-      str = str + 1
-    end
-    frtextF = string.gsub(frtextF, "\n$", "")
-    fr.v = u8:encode(frtextF)
-    frtext = fr.v
-    frtext = string.gsub(frtext, "\n", "\\n")
-    frtext = string.gsub(frtext, "\t", "\\t")
-    cfg.notepad.fr = u8:decode(frtext)
-    if inicfg.save(cfg, "support") then
-      printStringNow("Text saved", 1000)
-      sup_ParseFastRespond_fr()
-    else
-      printStringNow("Text not saved", 1000)
-    end
-  end
-  if imgui.IsItemActive() then
-    lockPlayerControl(true)
-  else
-    lockPlayerControl(false)
   end
 end
 
