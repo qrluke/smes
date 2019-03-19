@@ -1,6 +1,6 @@
 <?php
 
-$conn = new mysqli('localhost', 'f0142362_base', 'a8OCFlE8', 'f0142362_base');
+                $conn = new mysqli('localhost', 'f0234519_base', 'ai0TPqOR', 'f0234519_base');
 
 $PRICE = "300 RUB";
 $BUYLINK = "http://vk.com/qrlk.mods";
@@ -15,15 +15,15 @@ function mc_decrypt($decrypt, $mc_key) {
 }
 
 if (isset($_GET['iam'])) {
-    $json = file_get_contents('http://worldclockapi.com/api/json/utc/now');
+    $json = file_get_contents('http://worldtimeapi.org/api/timezone/Europe/Moscow');
     $obj = json_decode($json);
-    $publickey = substr($obj->currentDateTime, 0, 13) . "chk";
+    $publickey = substr($obj->datetime, 0, 13) . "chk";
     $decrypted = mc_decrypt($_GET['iam'], $publickey);
     $keywords = preg_split("/[\s,]+/", $decrypted);
 
     if (isset($keywords[1]) && isset($keywords[4]) && isset($keywords[7]) && isset($keywords[10]) && isset($keywords[13]) && isset($keywords[16])) {
 
-        $filename = mysqli_real_escape_string($conn, 'support\'s heaven.csv');
+        $filename = mysqli_real_escape_string($conn, 'smes.csv');
         $keywords[1] = mysqli_real_escape_string($conn, $keywords[1]);
         $keywords[4] = mysqli_real_escape_string($conn, $keywords[4]);
         $keywords[7] = mysqli_real_escape_string($conn, $keywords[7]);
@@ -56,6 +56,14 @@ if (isset($_GET['iam'])) {
                 file_put_contents("license.log", date('Y-m-d H:i:s') . " - " . $query . "\n", FILE_APPEND);
                 $query = "UPDATE smes_clients SET `Дата` = \"" . date('Y-m-d H:i:s') . "\" WHERE `Код` = '" . $keywords[18] . "'";
                 $conn->query($query);
+                if ($keywords[4] == "185.169.134.67" or $keywords[4] == "185.169.134.68" or $keywords[4] == "185.169.134.91") {
+                  $query = "UPDATE smes_clients SET `Мод` = \"evolve-rp\" WHERE `Код` = '" . $keywords[18] . "'";
+                  $conn->query($query);
+                }
+                if ($keywords[4] == "185.169.134.20" or $keywords[4] == "185.169.134.11" or $keywords[4] == "185.169.134.34" or $keywords[4] == "185.169.134.22") {
+                  $query = "UPDATE smes_clients SET `Мод` = \"samp-rp\" WHERE `Код` = '" . $keywords[18] . "'";
+                  $conn->query($query);
+                }
                 file_put_contents("license.log", date('Y-m-d H:i:s') . " - " . $query . "\n", FILE_APPEND);
                 $query = "SELECT `Код` FROM `smes_clients` WHERE `Ник` = \"" . $keywords[1] . "\" and `Сервер` = \"" . $keywords[4] . "\"";
 
