@@ -35,7 +35,7 @@ do
       while not isPlayerPlaying(PLAYER_HANDLE) do wait(100) end
       wait(1000)
       setPlayerControl(PLAYER_HANDLE, false)
-      setGxtEntry('CMLUTTL', 'Support\'s Heaven')
+      setGxtEntry('CMLUTTL', 'SMES')
       setGxtEntry('CMLUMSG', 'Skriptu nuzhen SAMPFUNCS.asi dlya raboty.~n~~w~Esli net CLEO, to tozhe budet ustanovlen.~n~~w~Hotite chtoby ya ego skachal?~n~~w~')
       setGxtEntry('CMLUYES', 'Da!')
       setGxtEntry('CMLUY', 'Ne, otkroy ssylku, ia sam!')
@@ -248,7 +248,7 @@ do
         for i = 1, currentaudiokolDD do
           local file = getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\"..i..".mp3"
           if not doesFileExist(file) then
-            v = "http://qrlk.me/dev/moonloader/support's_heaven/resource/sup/sounds/"..i..".mp3"
+            v = "http://qrlk.me/dev/moonloader/smes/resource/sup/sounds/"..i..".mp3"
             k = file
             sampAddChatMessage(prefix..v.." -> "..k, color)
             pass = false
@@ -2029,8 +2029,11 @@ function var_require()
   var_main()
   r_smart_get_sounds()
   r_smart_lib_samp_events()
-  if mode == "samp-rp" then 
-    RPC_init_samprp()
+  if mode == "samp-rp" then
+    mode_samprp()
+  end
+  if mode == "evolve-rp" then
+    mode_evolverp()
   end
 end
 
@@ -2039,10 +2042,10 @@ function chklsn()
     createDirectory(getGameDirectory().."\\moonloader\\resource\\smes\\sounds")
   end
   if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3") then
-    downloadUrlToFile("http://qrlk.me/dev/moonloader/support\'s_heaven/resource/sup/sounds/granted.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
+    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/sup/sounds/granted.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
   end
   if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3") then
-    downloadUrlToFile("http://qrlk.me/dev/moonloader/support\'s_heaven/resource/sup/sounds/denied.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
+    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/sup/sounds/denied.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
   end
   Sgranted = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
   Sdenied = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
@@ -2118,26 +2121,12 @@ function chkupd()
             end
           end
         else
-                   thisScript():unload()
+          thisScript():unload()
         end
       end
     end
   )
   while waiter1 do wait(0) end
-end
-
-function getmode(args)
-  local servers = {
-    ["185.169.134.20"] = "samp-rp",
-    ["185.169.134.11"] = "samp-rp",
-    ["185.169.134.34"] = "samp-rp",
-    ["185.169.134.22"] = "samp-rp",
-    ["185.169.134.67"] = "evolve-rp",
-    ["185.169.134.68"] = "evolve-rp",
-    ["185.169.134.91"] = "evolve-rp"
-    
-  }
-  return servers[args]
 end
 
 function nokey()
@@ -2262,18 +2251,20 @@ function checkkey()
               k = aes.asBytes()
               licensenick, licenseserver, licensemod = string.match(string.char(table.unpack(k)), decode("83d3cf86d4ed0285457be6672e4c9fdcbfa95f5317816fe50c5befa7c42eafbe78096895c14c3716107f5a8af596bbbaaa8d10e70d2d55564a1a"))
               if licensenick == nil or licenseserver == nil or licensemod == nil then
-                local prefix = "{ffa500}[Support's Heaven]: {ff0000}"
+                local prefix = "{ffa500}[SMES]: {ff0000}"
                 sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68c16d4f632946f9b658e5ed33c90439d83716880eca743ac3bebe4d61a84671d63be9d7d6c7d13bc47526d246477cf63b792311b4b322562d8"), 0xff0000)
                 sampAddChatMessage(prefix.."Текущая цена: "..currentprice..". Купить можно здесь: "..currentbuylink, 0xff0000)
+                sampAddChatMessage(prefix.."Запущена Lite версия (/smes). Текущая цена лицензии: "..currentprice, 0xff0000)
                 waiter1 = false
                 waitforunload = true
               end
               hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
               if hosts then
                 if string.find(hosts:read("*a"), licenseserver) then
-                  local prefix = "{ffa500}[Support's Heaven]: {ff0000}"
+                  local prefix = "{ffa500}[SMES]: {ff0000}"
                   sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68c16d4f632946f9b658e5ed33c90439d83716880eca743ac3bebe4d61a84671d63be9d7d6c7d13bc47526d246477cf63b792311b4b322562d8"), 0xff0000)
                   sampAddChatMessage(prefix.."Текущая цена: "..currentprice..". Купить можно здесь: "..currentbuylink, 0xff0000)
+                  sampAddChatMessage(prefix.."Запущена Lite версия (/smes). Текущая цена лицензии: "..currentprice, 0xff0000)
                   waiter1 = false
                   waitforunload = true
                 end
@@ -2296,14 +2287,15 @@ function checkkey()
               end
               waiter1 = false
             else
-              local prefix = "{ffa500}[Support's Heaven]: {ff0000}"
+              local prefix = "{ffa500}[SMES]: {ff0000}"
               sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68c16d4f632946f9b658e5ed33c90439d83716880eca743ac3bebe4d61a84671d63be9d7d6c7d13bc47526d246477cf63b792311b4b322562d8"), 0xff0000)
               sampAddChatMessage(prefix.."Текущая цена: "..currentprice..". Купить можно здесь: "..currentbuylink, 0xff0000)
+              sampAddChatMessage(prefix.."Запущена Lite версия (/smes). Текущая цена лицензии: "..currentprice, 0xff0000)
               waiter1 = false
               waitforunload = true
             end
           else
-            local prefix = "{ffa500}[Support's Heaven]: {ff0000}"
+            local prefix = "{ffa500}[SMES]: {ff0000}"
             sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68c16d4f632946f9b658e5ed33c90439d83716880eca743ac3bebe4d61a84671d63be9d7d6c7d13bc47526d246477cf63b792311b4b322562d8"), 0xff0000)
             sampAddChatMessage(prefix.."Текущая цена: "..currentprice..". Купить можно здесь: "..currentbuylink, 0xff0000)
             waiter1 = false
@@ -2644,9 +2636,32 @@ function main_while_playsounds()
     end
   end
 end
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+function getmode(args)
+  local servers = {
+    ["185.169.134.20"] = "samp-rp",
+    ["185.169.134.11"] = "samp-rp",
+    ["185.169.134.34"] = "samp-rp",
+    ["185.169.134.22"] = "samp-rp",
+    ["185.169.134.67"] = "evolve-rp",
+    ["185.169.134.68"] = "evolve-rp",
+    ["185.169.134.91"] = "evolve-rp"
+  }
+  return servers[args]
+end
 
-
-function RPC_init_samprp()
+function mode_samprp()
   function RPC.onPlaySound(sound)
     if sound == 1052 and iSoundSmsOut.v then
       return false
@@ -2655,27 +2670,27 @@ function RPC_init_samprp()
 
   function RPC.onServerMessage(color, text)
     if main_window_state.v and text:match(" "..tostring(selecteddialogSMS).." %[(%d+)%]") then
-    if string.find(text, "AFK") then
+      if string.find(text, "AFK") then
         smsafk[selecteddialogSMS] = "AFK "..string.match(text, "AFK: (%d+) сек").." s"
-    else
+      else
         smsafk[selecteddialogSMS] = "NOT AFK"
-    end
-    return false
+      end
+      return false
     end
     if text:find("SMS") then
-    text = string.gsub(text, "{FFFF00}", "")
-    text = string.gsub(text, "{FF8000}", "")
-    local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%. Отправитель%: (.*)%[(%d+)%]")
-    if smsText and smsNick and smsId then
+      text = string.gsub(text, "{FFFF00}", "")
+      text = string.gsub(text, "{FF8000}", "")
+      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%. Отправитель%: (.*)%[(%d+)%]")
+      if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if sms[smsNick] and sms[smsNick].Chat then
 
         else
-        sms[smsNick] = {}
-        sms[smsNick]["Chat"] = {}
-        sms[smsNick]["Checked"] = 0
-        sms[smsNick]["Pinned"] = 0
+          sms[smsNick] = {}
+          sms[smsNick]["Chat"] = {}
+          sms[smsNick]["Checked"] = 0
+          sms[smsNick]["Pinned"] = 0
         end
         if sms[smsNick]["Blocked"] ~= nil and sms[smsNick]["Blocked"] == 1 then return false end
         if iSoundSmsIn.v then PLAYSMSIN = true end
@@ -2683,18 +2698,18 @@ function RPC_init_samprp()
         if selecteddialogSMS == smsNick then ScrollToDialogSMS = true end
         SSDB_trigger = true
         if not iHideSmsIn.v then
-        if iReplaceSmsInColor.v then
+          if iReplaceSmsInColor.v then
             sampAddChatMessage(text, SmsInColor_HEX)
             return false
-        else
+          else
             --do nothing
-        end
+          end
         else
-        return false
+          return false
         end
-    end
-    local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%. Получатель%: (.*)%[(%d+)%]")
-    if smsText and smsNick and smsId then
+      end
+      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%. Получатель%: (.*)%[(%d+)%]")
+      if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if iSoundSmsOut.v then PLAYSMSOUT = true end
@@ -2702,74 +2717,181 @@ function RPC_init_samprp()
         if sms[smsNick] and sms[smsNick].Chat then
 
         else
-        sms[smsNick] = {}
-        sms[smsNick]["Chat"] = {}
-        sms[smsNick]["Checked"] = 0
-        sms[smsNick]["Pinned"] = 0
+          sms[smsNick] = {}
+          sms[smsNick]["Chat"] = {}
+          sms[smsNick]["Checked"] = 0
+          sms[smsNick]["Pinned"] = 0
         end
         table.insert(sms[smsNick]["Chat"], {text = smsText, Nick = sampGetPlayerNickname(myid), type = "TO", time = os.time()})
         if selecteddialogSMS == smsNick then ScrollToDialogSMS = true end
         if sampIsPlayerConnected(smsId) then
-        if sms ~= nil and sms[sampGetPlayerNickname(smsId)] ~= nil and sms[sampGetPlayerNickname(smsId)]["Checked"] ~= nil then
+          if sms ~= nil and sms[sampGetPlayerNickname(smsId)] ~= nil and sms[sampGetPlayerNickname(smsId)]["Checked"] ~= nil then
             sms[sampGetPlayerNickname(smsId)]["Checked"] = os.time()
-        end
+          end
         end
         SSDB_trigger = true
         if not iHideSmsOut.v then
-        if iReplaceSmsOutColor.v then
+          if iReplaceSmsOutColor.v then
             sampAddChatMessage(text, SmsOutColor_HEX)
             return false
-        else
+          else
             --do nothing
-        end
+          end
         else
-        return false
+          return false
         end
-    end
+      end
     end
     if text == " Сообщение доставлено" then
-    if iHideSmsReceived.v then return false end
-    if not iHideSmsReceived.v then
+      if iHideSmsReceived.v then return false end
+      if not iHideSmsReceived.v then
         if iReplaceSmsReceivedColor.v then
-        sampAddChatMessage(text, SmsReceivedColor_HEX)
-        return false
+          sampAddChatMessage(text, SmsReceivedColor_HEX)
+          return false
         else
-        --do nothing
+          --do nothing
         end
-    else
+      else
         return false
+      end
     end
-    end
-end
-function getafk(i)
+  end
+  function sendsms(k, vv)
+    sampSendChat("/t " .. k .. " " .. vv)
+    toAnswerSMS.v = ''
+  end
+  function getafk(i)
     sampSendChat("/id "..i)
-end
-function sendsms(k,vv)
-          sampSendChat("/t " .. k .. " " .. vv)
-          toAnswerSMS.v = ''
-end
-function getafkbutton()
+  end
+  function getafkbutton()
     if smsafk[selecteddialogSMS] == nil then smsafk[selecteddialogSMS] = "CHECK AFK" end
-      imgui.SameLine(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(smsafk[selecteddialogSMS]).x)
-      if smsafk[selecteddialogSMS]:find("s") then
-        imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(255, 0, 0, 113):GetVec4())
+    imgui.SameLine(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(smsafk[selecteddialogSMS]).x)
+    if smsafk[selecteddialogSMS]:find("s") then
+      imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(255, 0, 0, 113):GetVec4())
+    end
+    if smsafk[selecteddialogSMS]:find("NOT") then
+      imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(0, 255, 0, 113):GetVec4())
+    end
+    if imgui.Button(smsafk[selecteddialogSMS]) then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then
+          getafk(i)
+          break
+        end
       end
-      if smsafk[selecteddialogSMS]:find("NOT") then
-        imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(0, 255, 0, 113):GetVec4())
+    end
+    if smsafk[selecteddialogSMS]:find("s") or smsafk[selecteddialogSMS]:find("NOT") then
+      imgui.PopStyleColor()
+    end
+  end
+end
+
+function mode_evolverp()
+  function RPC.onPlaySound(sound)
+    if sound == 1052 and iSoundSmsOut.v then
+      return false
+    end
+  end
+
+  function RPC.onServerMessage(color, text)
+    if text:find("SMS") then
+      text = string.gsub(text, "{FFFF00}", "")
+      text = string.gsub(text, "{FF8000}", "")
+      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Отправитель%: (.*)%[(%d+)%]")
+      if smsText and smsNick and smsId then
+        LASTID_SMS = smsId
+        LASTNICK_SMS = smsNick
+        if sms[smsNick] and sms[smsNick].Chat then
+
+        else
+          sms[smsNick] = {}
+          sms[smsNick]["Chat"] = {}
+          sms[smsNick]["Checked"] = 0
+          sms[smsNick]["Pinned"] = 0
+        end
+        if sms[smsNick]["Blocked"] ~= nil and sms[smsNick]["Blocked"] == 1 then return false end
+        if iSoundSmsIn.v then PLAYSMSIN = true end
+        table.insert(sms[smsNick]["Chat"], {text = smsText, Nick = smsNick, type = "FROM", time = os.time()})
+        if selecteddialogSMS == smsNick then ScrollToDialogSMS = true end
+        SSDB_trigger = true
+        if not iHideSmsIn.v then
+          if iReplaceSmsInColor.v then
+            sampAddChatMessage(text, SmsInColor_HEX)
+            return false
+          else
+            --do nothing
+          end
+        else
+          return false
+        end
       end
-      if imgui.Button(smsafk[selecteddialogSMS]) then
-        for i = 0, sampGetMaxPlayerId() do
-          if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then
-            getafk(i)
-            break
+      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Получатель%: (.*)%[(%d+)%]")
+      if smsText and smsNick and smsId then
+        LASTID_SMS = smsId
+        LASTNICK_SMS = smsNick
+        if iSoundSmsOut.v then PLAYSMSOUT = true end
+        local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+        if sms[smsNick] and sms[smsNick].Chat then
+
+        else
+          sms[smsNick] = {}
+          sms[smsNick]["Chat"] = {}
+          sms[smsNick]["Checked"] = 0
+          sms[smsNick]["Pinned"] = 0
+        end
+        table.insert(sms[smsNick]["Chat"], {text = smsText, Nick = sampGetPlayerNickname(myid), type = "TO", time = os.time()})
+        if selecteddialogSMS == smsNick then ScrollToDialogSMS = true end
+        if sampIsPlayerConnected(smsId) then
+          if sms ~= nil and sms[sampGetPlayerNickname(smsId)] ~= nil and sms[sampGetPlayerNickname(smsId)]["Checked"] ~= nil then
+            sms[sampGetPlayerNickname(smsId)]["Checked"] = os.time()
           end
         end
+        SSDB_trigger = true
+        if not iHideSmsOut.v then
+          if iReplaceSmsOutColor.v then
+            sampAddChatMessage(text, SmsOutColor_HEX)
+            return false
+          else
+            --do nothing
+          end
+        else
+          return false
+        end
       end
-      if smsafk[selecteddialogSMS]:find("s") or smsafk[selecteddialogSMS]:find("NOT") then
-        imgui.PopStyleColor()
+    end
+    if text == " Сообщение доставлено" then
+      if iHideSmsReceived.v then return false end
+      if not iHideSmsReceived.v then
+        if iReplaceSmsReceivedColor.v then
+          sampAddChatMessage(text, SmsReceivedColor_HEX)
+          return false
+        else
+          --do nothing
+        end
+      else
+        return false
       end
+    end
+  end
+  function sendsms(k, vv)
+    sampSendChat("/t " .. k .. " " .. vv)
+    toAnswerSMS.v = ''
+  end
+  function getafk(i) end
+  function getafkbutton() end
 end
-end
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
+----------------------------------WORKING MODE AREA
 
 function imgui_init()
   function imgui.OnDrawFrame()
@@ -2887,7 +3009,7 @@ function imgui_messanger_content()
   if cfg.messanger.mode == 2 then imgui_messanger_sms_settings() end
   if cfg.messanger.mode == 1 then imgui_messanger_sup_player_list() end
   if cfg.messanger.mode == 2 then imgui_messanger_sms_player_list() end
-   imgui_messanger_switchmode()
+  imgui_messanger_switchmode()
   imgui.NextColumn()
   if cfg.messanger.mode == 1 then imgui_messanger_sup_header() end
   if cfg.messanger.mode == 2 then imgui_messanger_sms_header() end
@@ -3343,7 +3465,7 @@ end
 
 function imgui_messanger_sup_header()
   imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
-	imgui.Text("")
+  imgui.Text("")
   imgui.EndChild()
 end
 
@@ -3491,7 +3613,7 @@ end
 
 function imgui_messanger_sup_keyboard()
   imgui.BeginChild("##keyboard", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
-	imgui.Text("")
+  imgui.Text("")
   imgui.EndChild()
 end
 
@@ -3515,7 +3637,7 @@ function imgui_messanger_sms_keyboard()
         if i == sampGetMaxPlayerId() then k = "-" end
       end
       if k ~= "-" then
-          sendsms(k,u8:decode(toAnswerSMS.v))
+        sendsms(k, u8:decode(toAnswerSMS.v))
       end
       KeyboardFocusReset = true
     end
@@ -3530,7 +3652,7 @@ function imgui_messanger_sms_keyboard()
         if i == sampGetMaxPlayerId() then k = "-" end
       end
       if k ~= "-" then
-          sendsms(k,u8:decode(toAnswerSMS.v))
+        sendsms(k, u8:decode(toAnswerSMS.v))
       end
       KeyboardFocusReset = true
     end
@@ -3565,10 +3687,11 @@ end
 
 function imgui_messanger_sms_kostilsaveDB()
   while true do
-    wait(3000)
-    if SSDB1_trigger == true then
+    wait(1500)
+    if SSDB1_trigger or SSDB_trigger then
       imgui_messanger_sms_saveDB()
       SSDB1_trigger = false
+			SSDB_trigger = false
       wait(1000)
     end
   end
@@ -3594,7 +3717,7 @@ function imgui_info_content()
     imgui.TreePop()
   end
   imgui.Text("")
-  if PREMIUM then imgui.TextWrapped(u8:encode("Лицензия принадлежит: "..licensenick..", сервер: "..licenseserver..", купленный мод: "..mode..".")) end
+  if PREMIUM then imgui.TextWrapped(u8:encode("Спасибо, что пользуетесь лицензией!")) imgui.TextWrapped(u8:encode("Лицензия принадлежит: "..licensenick..", сервер: "..licenseserver..", купленный мод: "..mode..".")) end
   imgui.TextWrapped(u8:encode("Текущая цена: "..currentprice..". Купить можно тут: "..currentbuylink))
   imgui_info_open(currentbuylink)
   imgui.Text("")
