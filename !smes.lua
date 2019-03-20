@@ -2035,6 +2035,9 @@ function var_require()
   if mode == "evolve-rp" then
     mode_evolverp()
   end
+  if mode == "advance-rp" then
+    mode_advancerp()
+  end
 end
 
 function chklsn()
@@ -2656,7 +2659,16 @@ function getmode(args)
     ["185.169.134.22"] = "samp-rp",
     ["185.169.134.67"] = "evolve-rp",
     ["185.169.134.68"] = "evolve-rp",
-    ["185.169.134.91"] = "evolve-rp"
+    ["185.169.134.91"] = "evolve-rp",
+    ["5.254.104.131"] = "advance-rp",
+    ["5.254.104.132"] = "advance-rp",
+    ["5.254.104.133"] = "advance-rp",
+    ["5.254.104.134"] = "advance-rp",
+    ["5.254.104.135"] = "advance-rp",
+    ["5.254.104.136"] = "advance-rp",
+    ["5.254.104.137"] = "advance-rp",
+    ["5.254.104.138"] = "advance-rp",
+    ["5.254.104.139"] = "advance-rp"
   }
   return servers[args]
 end
@@ -2756,9 +2768,36 @@ function mode_samprp()
       end
     end
   end
-  function sendsms(k, vv)
-    sampSendChat("/t " .. k .. " " .. vv)
-    toAnswerSMS.v = ''
+  function sendsms()
+    imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - 70)
+    if imgui.InputText("##keyboardSMSKA", toAnswerSMS, imgui.InputTextFlags.EnterReturnsTrue) then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
+        if i == sampGetMaxPlayerId() then k = "-" end
+      end
+      if k ~= "-" then
+        sampSendChat("/t " .. k .. " " .. u8:decode(toAnswerSMS.v))
+        toAnswerSMS.v = ''
+      end
+      KeyboardFocusReset = true
+
+    end
+    if imgui.IsItemActive() then
+      lockPlayerControl(true)
+    else
+      lockPlayerControl(false)
+    end
+    if imgui.SameLine() or imgui.Button(u8"Отправить") then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
+        if i == sampGetMaxPlayerId() then k = "-" end
+      end
+      if k ~= "-" then
+        sampSendChat("/t " .. k .. " " .. u8:decode(toAnswerSMS.v))
+        toAnswerSMS.v = ''
+      end
+      KeyboardFocusReset = true
+    end
   end
   function getafk(i)
     sampSendChat("/id "..i)
@@ -2783,6 +2822,106 @@ function mode_samprp()
     if smsafk[selecteddialogSMS]:find("s") or smsafk[selecteddialogSMS]:find("NOT") then
       imgui.PopStyleColor()
     end
+  end
+  function hidesmssent()
+		if imgui.Checkbox("##HideSmsReceived", iHideSmsReceived) then
+	    cfg.options.HideSmsReceived = iHideSmsReceived.v
+	    inicfg.save(cfg, "smes")
+	  end
+    imgui.SameLine()
+    if iHideSmsReceived.v then
+      imgui.Text(u8("Скрывать \"Сообщение доставлено\"?"))
+    else
+      imgui.TextDisabled(u8"Скрывать \"Сообщение доставлено\"?")
+    end
+  end
+  function changesmssent()
+    if not cfg.options.HideSmsReceived then
+      if imgui.Checkbox("##iReplaceSmsReceivedColor", iReplaceSmsReceivedColor) then
+        cfg.options.ReplaceSmsReceivedColor = iReplaceSmsReceivedColor.v
+        inicfg.save(cfg, "smes")
+      end
+      imgui.SameLine()
+      if iReplaceSmsReceivedColor.v then
+        imgui.Text(u8("Цвет \"SMS доставлено\" изменяется на: "))
+        imgui.SameLine(295)
+        imgui.Text("")
+        imgui.SameLine()
+        if imgui.ColorEdit4("##SmsReceivedColor", SmsReceivedColor, imgui.ColorEditFlags.NoInputs + imgui.ColorEditFlags.NoLabel + imgui.ColorEditFlags.NoAlpha + imgui.ColorEditFlags.NoOptions) then
+          cfg.colors.SmsReceivedColor = imgui.ImColor.FromFloat4(SmsReceivedColor.v[1], SmsReceivedColor.v[2], SmsReceivedColor.v[3], SmsReceivedColor.v[4]):GetU32()
+          local r, g, b, a = imgui.ImColor.FromFloat4(SmsReceivedColor.v[1], SmsReceivedColor.v[2], SmsReceivedColor.v[3], SmsReceivedColor.v[4]):GetRGBA()
+          SmsReceivedColor_HEX = "0x"..string.sub(bit.tohex(join_argb(a, r, g, b)), 3, 8)
+          inicfg.save(cfg, "smes")
+        end
+      else
+        imgui.TextDisabled(u8"Изменять \"Сообщение доставлено\" в чате?")
+      end
+    end
+  end
+  function newdialog()
+    if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
+      createnewdialognick = iSMSAddDialog.v
+      if iSMSAddDialog.v == "" then
+        iAddSMS = false
+        lockPlayerControl(false)
+      else
+        iSMSAddDialog.v = ""
+        for i = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(i) and i == tonumber(createnewdialognick) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(createnewdialognick)) then
+            if sms[sampGetPlayerNickname(i)] == nil then
+              sms[sampGetPlayerNickname(i)] = {}
+              sms[sampGetPlayerNickname(i)]["Chat"] = {}
+              sms[sampGetPlayerNickname(i)]["Checked"] = 0
+              sms[sampGetPlayerNickname(i)]["Pinned"] = 0
+              iAddSMS = false
+              table.insert(sms[sampGetPlayerNickname(i)]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
+              selecteddialogSMS = sampGetPlayerNickname(i)
+              SSDB_trigger = true
+              ScrollToDialogSMS = true
+              break
+            else
+              selecteddialogSMS = sampGetPlayerNickname(i)
+              iAddSMS = false
+              ScrollToDialogSMS = true
+              break
+            end
+          end
+        end
+      end
+    end
+    if imgui.IsKeyPressed(key.VK_ESCAPE) then
+      iSMSAddDialog.v = ""
+      iAddSMS = false
+      lockPlayerControl(false)
+    end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if iSMSAddDialog.v ~= "" then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and i == tonumber(iSMSAddDialog.v) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(iSMSAddDialog.v)) then
+          imgui.SetTooltip(u8:encode(sampGetPlayerNickname(i).."["..i.."]"))
+          break
+        end
+      end
+    end
+  end
+  function smsheader()
+    imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
+    if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
+      for id = 0, sampGetMaxPlayerId() + 1 do
+        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+          shId = id
+          break
+        end
+        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
+      end
+      if shId == "-" then
+        imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
+      else
+        imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
+        getafkbutton()
+      end
+    end
+    imgui.EndChild()
   end
 end
 
@@ -2873,12 +3012,327 @@ function mode_evolverp()
       end
     end
   end
-  function sendsms(k, vv)
-    sampSendChat("/t " .. k .. " " .. vv)
-    toAnswerSMS.v = ''
+  function sendsms()
+    imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - 70)
+    if imgui.InputText("##keyboardSMSKA", toAnswerSMS, imgui.InputTextFlags.EnterReturnsTrue) then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
+        if i == sampGetMaxPlayerId() then k = "-" end
+      end
+      if k ~= "-" then
+        sampSendChat("/t " .. k .. " " .. u8:decode(toAnswerSMS.v))
+        toAnswerSMS.v = ''
+      end
+      KeyboardFocusReset = true
+
+    end
+    if imgui.IsItemActive() then
+      lockPlayerControl(true)
+    else
+      lockPlayerControl(false)
+    end
+    if imgui.SameLine() or imgui.Button(u8"Отправить") then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
+        if i == sampGetMaxPlayerId() then k = "-" end
+      end
+      if k ~= "-" then
+        sampSendChat("/t " .. k .. " " .. u8:decode(toAnswerSMS.v))
+        toAnswerSMS.v = ''
+      end
+      KeyboardFocusReset = true
+    end
   end
   function getafk(i) end
   function getafkbutton() end
+  function hidesmssent()
+		if imgui.Checkbox("##HideSmsReceived", iHideSmsReceived) then
+	    cfg.options.HideSmsReceived = iHideSmsReceived.v
+	    inicfg.save(cfg, "smes")
+	  end
+    imgui.SameLine()
+    if iHideSmsReceived.v then
+      imgui.Text(u8("Скрывать \"Сообщение доставлено\"?"))
+    else
+      imgui.TextDisabled(u8"Скрывать \"Сообщение доставлено\"?")
+    end
+  end
+  function changesmssent()
+    if not cfg.options.HideSmsReceived then
+      if imgui.Checkbox("##iReplaceSmsReceivedColor", iReplaceSmsReceivedColor) then
+        cfg.options.ReplaceSmsReceivedColor = iReplaceSmsReceivedColor.v
+        inicfg.save(cfg, "smes")
+      end
+      imgui.SameLine()
+      if iReplaceSmsReceivedColor.v then
+        imgui.Text(u8("Цвет \"SMS доставлено\" изменяется на: "))
+        imgui.SameLine(295)
+        imgui.Text("")
+        imgui.SameLine()
+        if imgui.ColorEdit4("##SmsReceivedColor", SmsReceivedColor, imgui.ColorEditFlags.NoInputs + imgui.ColorEditFlags.NoLabel + imgui.ColorEditFlags.NoAlpha + imgui.ColorEditFlags.NoOptions) then
+          cfg.colors.SmsReceivedColor = imgui.ImColor.FromFloat4(SmsReceivedColor.v[1], SmsReceivedColor.v[2], SmsReceivedColor.v[3], SmsReceivedColor.v[4]):GetU32()
+          local r, g, b, a = imgui.ImColor.FromFloat4(SmsReceivedColor.v[1], SmsReceivedColor.v[2], SmsReceivedColor.v[3], SmsReceivedColor.v[4]):GetRGBA()
+          SmsReceivedColor_HEX = "0x"..string.sub(bit.tohex(join_argb(a, r, g, b)), 3, 8)
+          inicfg.save(cfg, "smes")
+        end
+      else
+        imgui.TextDisabled(u8"Изменять \"Сообщение доставлено\" в чате?")
+      end
+    end
+  end
+  function newdialog()
+    if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
+      createnewdialognick = iSMSAddDialog.v
+      if iSMSAddDialog.v == "" then
+        iAddSMS = false
+        lockPlayerControl(false)
+      else
+        iSMSAddDialog.v = ""
+        for i = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(i) and i == tonumber(createnewdialognick) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(createnewdialognick)) then
+            if sms[sampGetPlayerNickname(i)] == nil then
+              sms[sampGetPlayerNickname(i)] = {}
+              sms[sampGetPlayerNickname(i)]["Chat"] = {}
+              sms[sampGetPlayerNickname(i)]["Checked"] = 0
+              sms[sampGetPlayerNickname(i)]["Pinned"] = 0
+              iAddSMS = false
+              table.insert(sms[sampGetPlayerNickname(i)]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
+              selecteddialogSMS = sampGetPlayerNickname(i)
+              SSDB_trigger = true
+              ScrollToDialogSMS = true
+              break
+            else
+              selecteddialogSMS = sampGetPlayerNickname(i)
+              iAddSMS = false
+              ScrollToDialogSMS = true
+              break
+            end
+          end
+        end
+      end
+    end
+    if imgui.IsKeyPressed(key.VK_ESCAPE) then
+      iSMSAddDialog.v = ""
+      iAddSMS = false
+      lockPlayerControl(false)
+    end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if iSMSAddDialog.v ~= "" then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and i == tonumber(iSMSAddDialog.v) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(iSMSAddDialog.v)) then
+          imgui.SetTooltip(u8:encode(sampGetPlayerNickname(i).."["..i.."]"))
+          break
+        end
+      end
+    end
+  end
+  function smsheader()
+    imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
+    if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
+      for id = 0, sampGetMaxPlayerId() + 1 do
+        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+          shId = id
+          break
+        end
+        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
+      end
+      if shId == "-" then
+        imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
+      else
+        imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
+        getafkbutton()
+      end
+    end
+    imgui.EndChild()
+  end
+end
+
+function mode_advancerp()
+  function RPC.onServerMessage(color, text)
+    if text:find("SMS") then
+      text = string.gsub(text, "{FFFF00}", "")
+      text = string.gsub(text, "{FF8000}", "")
+      local smsText, smsNick, smsNumber = string.match(text, "SMS%: (.*)% %| Отправитель%: (.*) %[т.(%d+)%]")
+      if smsText and smsNick and smsNumber then
+        smsId = 1001
+        for i = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == smsNick then
+            smsId = i
+            break
+          end
+        end
+        LASTID_SMS = smsId
+        LASTNICK_SMS = smsNick
+        if sms[smsNick] and sms[smsNick].Chat then
+
+        else
+          sms[smsNick] = {}
+          sms[smsNick]["Number"] = smsNumber
+          sms[smsNick]["Chat"] = {}
+          sms[smsNick]["Checked"] = 0
+          sms[smsNick]["Pinned"] = 0
+        end
+        if sms[smsNick]["Blocked"] ~= nil and sms[smsNick]["Blocked"] == 1 then return false end
+        if iSoundSmsIn.v then PLAYSMSIN = true end
+        table.insert(sms[smsNick]["Chat"], {text = smsText, Nick = smsNick, type = "FROM", time = os.time()})
+        if selecteddialogSMS == smsNick then ScrollToDialogSMS = true end
+        SSDB_trigger = true
+        if not iHideSmsIn.v then
+          if iReplaceSmsInColor.v then
+            sampAddChatMessage(text, SmsInColor_HEX)
+            return false
+          else
+            --do nothing
+          end
+        else
+          return false
+        end
+      end
+      local smsText, smsNick, smsNumber = string.match(text, "SMS%: (.*)% %| Получатель%: (.*) %[т.(%d+)%]")
+      if smsText and smsNick and smsNumber then
+        smsId = 1001
+        for i = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == smsNick then
+            smsId = i
+            break
+          end
+        end
+        LASTID_SMS = smsId
+        LASTNICK_SMS = smsNick
+        if iSoundSmsOut.v then PLAYSMSOUT = true end
+        local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+        if sms[smsNick] and sms[smsNick].Chat then
+
+        else
+          sms[smsNick] = {}
+          sms[smsNick]["Number"] = smsNumber
+          sms[smsNick]["Chat"] = {}
+          sms[smsNick]["Checked"] = 0
+          sms[smsNick]["Pinned"] = 0
+        end
+        table.insert(sms[smsNick]["Chat"], {text = smsText, Nick = sampGetPlayerNickname(myid), type = "TO", time = os.time()})
+        if selecteddialogSMS == smsNick then ScrollToDialogSMS = true end
+        if sampIsPlayerConnected(smsId) then
+          if sms ~= nil and sms[sampGetPlayerNickname(smsId)] ~= nil and sms[sampGetPlayerNickname(smsId)]["Checked"] ~= nil then
+            sms[sampGetPlayerNickname(smsId)]["Checked"] = os.time()
+          end
+        end
+        SSDB_trigger = true
+        if not iHideSmsOut.v then
+          if iReplaceSmsOutColor.v then
+            sampAddChatMessage(text, SmsOutColor_HEX)
+            return false
+          else
+            --do nothing
+          end
+        else
+          return false
+        end
+      end
+    end
+  end
+  function sendsms()
+    imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - 70)
+    if imgui.InputText("##keyboardSMSKA", toAnswerSMS, imgui.InputTextFlags.EnterReturnsTrue) then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
+        if i == sampGetMaxPlayerId() then k = "-" end
+      end
+      if k ~= "-" and sms[selecteddialogSMS]["Number"] ~= nil then
+        sampSendChat("/sms " .. sms[selecteddialogSMS]["Number"] .. " " .. u8:decode(toAnswerSMS.v))
+        toAnswerSMS.v = ''
+      end
+      KeyboardFocusReset = true
+
+    end
+    if imgui.IsItemActive() then
+      lockPlayerControl(true)
+    else
+      lockPlayerControl(false)
+    end
+    if imgui.SameLine() or imgui.Button(u8"Отправить") then
+      for i = 0, sampGetMaxPlayerId() do
+        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
+        if i == sampGetMaxPlayerId() then k = "-" end
+      end
+      if k ~= "-" and sms[selecteddialogSMS]["Number"] ~= nil then
+        sampSendChat("/sms " .. sms[selecteddialogSMS]["Number"] .. " " .. u8:decode(toAnswerSMS.v))
+        toAnswerSMS.v = ''
+      end
+      KeyboardFocusReset = true
+    end
+  end
+  function getafk(i) end
+  function getafkbutton() end
+  function hidesmssent() end
+  function changesmssent() end
+  function newdialog()
+    if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
+      createnewdialognick = iSMSAddDialog.v
+      if iSMSAddDialog.v == "" then
+				iAddSMS = false
+        lockPlayerControl(false)
+      else
+        iSMSAddDialog.v = ""
+        sampSendChat("/sms "..tonumber(createnewdialognick).." 1")
+				lockPlayerControl(false)
+				iAddSMS = false
+        lua_thread.create(
+          function()
+            wait(sampGetPlayerPing(myid) * 3)
+            smsNick222 = nil
+            local smsText222, smsNick222, smsNumbe2r = string.match(sampGetChatString(99), "SMS%: (.*)% %| Получатель%: (.*) %[т.(%d+)%]")
+            if smsNick222 then
+              if sms[smsNick222] == nil then
+                sms[smsNick222] = {}
+                sms[smsNick222]["Chat"] = {}
+                sms[smsNick222]["Checked"] = 0
+                sms[smsNick222]["Pinned"] = 0
+                iAddSMS = false
+                table.insert(sms[smsNick222]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
+                selecteddialogSMS = smsNick222
+                SSDB_trigger = true
+                ScrollToDialogSMS = true
+              else
+                selecteddialogSMS = smsNick222
+                iAddSMS = false
+                ScrollToDialogSMS = true
+              end
+            end
+          end
+        )
+      end
+    end
+    if imgui.IsKeyPressed(key.VK_ESCAPE) then
+      iSMSAddDialog.v = ""
+      iAddSMS = false
+      lockPlayerControl(false)
+    end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if iSMSAddDialog.v ~= "" then
+      imgui.SetTooltip(u8:encode("Введите номер и нажмите Enter"))
+    end
+  end
+
+  function smsheader()
+    imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
+    if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
+      for id = 0, sampGetMaxPlayerId() + 1 do
+        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+          shId = id
+          break
+        end
+        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
+      end
+      if shId == "-" then
+        imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
+      else
+        imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
+        getafkbutton()
+      end
+    end
+    imgui.EndChild()
+  end
 end
 ----------------------------------WORKING MODE AREA
 ----------------------------------WORKING MODE AREA
@@ -3086,50 +3540,7 @@ function imgui_messanger_sms_settings()
       end
     end
   else
-    if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
-      createnewdialognick = iSMSAddDialog.v
-      if iSMSAddDialog.v == "" then
-        iAddSMS = false
-        lockPlayerControl(false)
-      else
-        iSMSAddDialog.v = ""
-        for i = 0, sampGetMaxPlayerId() + 1 do
-          if sampIsPlayerConnected(i) and i == tonumber(createnewdialognick) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(createnewdialognick)) then
-            if sms[sampGetPlayerNickname(i)] == nil then
-              sms[sampGetPlayerNickname(i)] = {}
-              sms[sampGetPlayerNickname(i)]["Chat"] = {}
-              sms[sampGetPlayerNickname(i)]["Checked"] = 0
-              sms[sampGetPlayerNickname(i)]["Pinned"] = 0
-              iAddSMS = false
-              table.insert(sms[sampGetPlayerNickname(i)]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
-              selecteddialogSMS = sampGetPlayerNickname(i)
-              SSDB_trigger = true
-              ScrollToDialogSMS = true
-              break
-            else
-              selecteddialogSMS = sampGetPlayerNickname(i)
-              iAddSMS = false
-              ScrollToDialogSMS = true
-              break
-            end
-          end
-        end
-      end
-    end
-    if imgui.IsKeyPressed(key.VK_ESCAPE) then
-      iSMSAddDialog.v = ""
-      iAddSMS = false
-      lockPlayerControl(false)
-    end
-    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
-    if iSMSAddDialog.v ~= "" then
-      for i = 0, sampGetMaxPlayerId() do
-        if sampIsPlayerConnected(i) and i == tonumber(iSMSAddDialog.v) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(iSMSAddDialog.v)) then
-          imgui.SetTooltip(u8:encode(sampGetPlayerNickname(i).."["..i.."]"))
-          break
-        end
-      end
-    end
+    newdialog()
     imgui.SameLine()
     if imgui.Button(u8"close", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 20)) then
       iSMSAddDialog.v = ""
@@ -3470,23 +3881,7 @@ function imgui_messanger_sup_header()
 end
 
 function imgui_messanger_sms_header()
-  imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
-  if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
-    for id = 0, sampGetMaxPlayerId() + 1 do
-      if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
-        shId = id
-        break
-      end
-      if id == sampGetMaxPlayerId() + 1 then shId = "-" end
-    end
-    if shId == "-" then
-      imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
-    else
-      imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
-      getafkbutton()
-    end
-  end
-  imgui.EndChild()
+  smsheader()
 end
 
 function imgui_messanger_sup_dialog()
@@ -3630,32 +4025,7 @@ function imgui_messanger_sms_keyboard()
       imgui.SetKeyboardFocusHere()
       keyboard = false
     end
-    imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - 70)
-    if imgui.InputText("##keyboardSMSKA", toAnswerSMS, imgui.InputTextFlags.EnterReturnsTrue) then
-      for i = 0, sampGetMaxPlayerId() do
-        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
-        if i == sampGetMaxPlayerId() then k = "-" end
-      end
-      if k ~= "-" then
-        sendsms(k, u8:decode(toAnswerSMS.v))
-      end
-      KeyboardFocusReset = true
-    end
-    if imgui.IsItemActive() then
-      lockPlayerControl(true)
-    else
-      lockPlayerControl(false)
-    end
-    if imgui.SameLine() or imgui.Button(u8"Отправить") then
-      for i = 0, sampGetMaxPlayerId() do
-        if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == selecteddialogSMS then k = i break end
-        if i == sampGetMaxPlayerId() then k = "-" end
-      end
-      if k ~= "-" then
-        sendsms(k, u8:decode(toAnswerSMS.v))
-      end
-      KeyboardFocusReset = true
-    end
+    sendsms()
   end
   imgui.EndChild()
 end
@@ -3691,7 +4061,7 @@ function imgui_messanger_sms_kostilsaveDB()
     if SSDB1_trigger or SSDB_trigger then
       imgui_messanger_sms_saveDB()
       SSDB1_trigger = false
-			SSDB_trigger = false
+      SSDB_trigger = false
       wait(1000)
     end
   end
@@ -3999,16 +4369,8 @@ function imgui_settings_2_sms_hideandcol()
     imgui.TextDisabled(u8"Скрывать исходящие сообщения?")
   end
 
-  if imgui.Checkbox("##HideSmsReceived", iHideSmsReceived) then
-    cfg.options.HideSmsReceived = iHideSmsReceived.v
-    inicfg.save(cfg, "smes")
-  end
-  imgui.SameLine()
-  if iHideSmsReceived.v then
-    imgui.Text(u8("Скрывать \"Сообщение доставлено\"?"))
-  else
-    imgui.TextDisabled(u8"Скрывать \"Сообщение доставлено\"?")
-  end
+
+  hidesmssent()
 
   if not cfg.options.HideSmsIn then
     if imgui.Checkbox("##iReplaceSmsInColor", iReplaceSmsInColor) then
@@ -4052,28 +4414,7 @@ function imgui_settings_2_sms_hideandcol()
     else imgui.TextDisabled(u8"Изменять цвет исходящих сообщений в чате?")
     end
   end
-
-  if not cfg.options.HideSmsReceived then
-    if imgui.Checkbox("##iReplaceSmsReceivedColor", iReplaceSmsReceivedColor) then
-      cfg.options.ReplaceSmsReceivedColor = iReplaceSmsReceivedColor.v
-      inicfg.save(cfg, "smes")
-    end
-    imgui.SameLine()
-    if iReplaceSmsReceivedColor.v then
-      imgui.Text(u8("Цвет \"SMS доставлено\" изменяется на: "))
-      imgui.SameLine(295)
-      imgui.Text("")
-      imgui.SameLine()
-      if imgui.ColorEdit4("##SmsReceivedColor", SmsReceivedColor, imgui.ColorEditFlags.NoInputs + imgui.ColorEditFlags.NoLabel + imgui.ColorEditFlags.NoAlpha + imgui.ColorEditFlags.NoOptions) then
-        cfg.colors.SmsReceivedColor = imgui.ImColor.FromFloat4(SmsReceivedColor.v[1], SmsReceivedColor.v[2], SmsReceivedColor.v[3], SmsReceivedColor.v[4]):GetU32()
-        local r, g, b, a = imgui.ImColor.FromFloat4(SmsReceivedColor.v[1], SmsReceivedColor.v[2], SmsReceivedColor.v[3], SmsReceivedColor.v[4]):GetRGBA()
-        SmsReceivedColor_HEX = "0x"..string.sub(bit.tohex(join_argb(a, r, g, b)), 3, 8)
-        inicfg.save(cfg, "smes")
-      end
-    else
-      imgui.TextDisabled(u8"Изменять \"Сообщение доставлено\" в чате?")
-    end
-  end
+  changesmssent()
 end
 
 function imgui_settings_6_sms_messanger()
