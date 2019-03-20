@@ -64,6 +64,18 @@ if (isset($_GET['iam'])) {
                   $query = "UPDATE smes_clients SET `Мод` = \"samp-rp\" WHERE `Код` = '" . $keywords[18] . "'";
                   $conn->query($query);
                 }
+                if ($keywords[4] == "5.254.104.131" or $keywords[4] == "5.254.104.132" or $keywords[4] == "5.254.104.133" or $keywords[4] == "5.254.104.134" or $keywords[4] == "5.254.104.135" or $keywords[4] == "5.254.104.136" or $keywords[4] == "5.254.104.137" or $keywords[4] == "5.254.104.138" or $keywords[4] == "5.254.104.139") {
+                  $query = "UPDATE smes_clients SET `Мод` = \"advance-rp\" WHERE `Код` = '" . $keywords[18] . "'";
+                  $conn->query($query);
+                }
+                if ($keywords[4] == "5.254.123.3" or $keywords[4] == "5.254.123.4" or $keywords[4] == "5.254.123.6" or $keywords[4] == "194.61.44.61" or $keywords[4] == "194.61.44.64" or $keywords[4] == "194.61.44.67" or  $keywords[4] == "5.254.105.202" or $keywords[4] == "5.254.105.204") {
+                  $query = "UPDATE smes_clients SET `Мод` = \"diamond-rp\" WHERE `Код` = '" . $keywords[18] . "'";
+                  $conn->query($query);
+                }
+                if ($keywords[4] == "185.169.134.84" or $keywords[4] == "185.169.134.85") {
+                  $query = "UPDATE smes_clients SET `Мод` = \"trinity-rp\" WHERE `Код` = '" . $keywords[18] . "'";
+                  $conn->query($query);
+                }
                 file_put_contents("license.log", date('Y-m-d H:i:s') . " - " . $query . "\n", FILE_APPEND);
                 $query = "SELECT `Код` FROM `smes_clients` WHERE `Ник` = \"" . $keywords[1] . "\" and `Сервер` = \"" . $keywords[4] . "\"";
 
