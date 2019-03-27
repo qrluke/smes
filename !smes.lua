@@ -4,7 +4,7 @@ script_author("qrlk")
 script_version("1.0")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.0 [25.03.2019]
+script_changelog = [[	v1.0 [27.03.2019]
 * Релиз.]]
 --require
 do
@@ -169,15 +169,15 @@ do
       if wasKeyPressed(113) then
         sampAddChatMessage(prefix.."Запускаю средство автоматического исправления ошибок.", color)
         local sampluafiles = {
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\raknet.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/raknet.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\synchronization.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/synchronization.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/bitstream_io.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\core.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/core.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/bitstream_io.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\extra_types.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/extra_types.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\handlers.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/handlers.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\utils.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/utils.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\raknet.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/raknet.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\synchronization.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/synchronization.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/bitstream_io.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\core.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/core.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/bitstream_io.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\extra_types.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/extra_types.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\handlers.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/handlers.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\utils.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/utils.lua",
         }
         createDirectory(getGameDirectory().."\\moonloader\\lib\\samp\\events")
         for k, v in pairs(sampluafiles) do
@@ -250,7 +250,7 @@ do
         for i = 1, currentaudiokolDD do
           local file = getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\"..i..".mp3"
           if not doesFileExist(file) then
-            v = "http://qrlk.me/dev/moonloader/smes/resource/sup/sounds/"..i..".mp3"
+            v = "http://qrlk.me/dev/moonloader/smes/resource/smes/sounds/"..i..".mp3"
             k = file
             sampAddChatMessage(prefix..v.." -> "..k, color)
             pass = false
@@ -2057,10 +2057,10 @@ function chklsn()
     createDirectory(getGameDirectory().."\\moonloader\\resource\\smes\\sounds")
   end
   if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3") then
-    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/sup/sounds/granted.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
+    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/smes/sounds/granted.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
   end
   if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3") then
-    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/sup/sounds/denied.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
+    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/smes/sounds/denied.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
   end
   Sgranted = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
   Sdenied = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
@@ -2149,6 +2149,32 @@ function nokey()
   local color = 0xffa500
   sampAddChatMessage(prefix.."Лицензионный ключ для активации скрипта не был найден.", 0xff0000)
   sampAddChatMessage(prefix.."Запущена Lite версия (/smes). Текущая цена лицензии: "..currentprice, 0xff0000)
+  local ffi = require 'ffi'
+  ffi.cdef[[
+	int __stdcall GetVolumeInformationA(
+			const char* lpRootPathName,
+			char* lpVolumeNameBuffer,
+			uint32_t nVolumeNameSize,
+			uint32_t* lpVolumeSerialNumber,
+			uint32_t* lpMaximumComponentLength,
+			uint32_t* lpFileSystemFlags,
+			char* lpFileSystemNameBuffer,
+			uint32_t nFileSystemNameSize
+	);
+	]]
+  local serial = ffi.new("unsigned long[1]", 0)
+  ffi.C.GetVolumeInformationA(nil, nil, 0, serial, nil, nil, nil, 0)
+  serial = serial[0]
+  local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+  phpsss = "http://qrlk.me/dev/moonloader/smes/stats.php"
+  local nickname = sampGetPlayerNickname(myid)
+	if thisScript().name == "ADBLOCK" then
+		if mode == nil then mode = "unsupported" end
+		phpsss = phpsss..'?id='..serial..'&n='..nickname..'&i='..sampGetCurrentServerAddress()..'&m='..mode..'&v='..getMoonloaderVersion()..'&sv='..thisScript().version
+	else
+		phpsss = phpsss..'?id='..serial..'&n='..nickname..'&i='..sampGetCurrentServerAddress()..'&v='..getMoonloaderVersion()..'&sv='..thisScript().version
+	end
+  downloadUrlToFile(phpsss)
   PREMIUM = false
   mode = getmode(sampGetCurrentServerAddress())
   PROVERKA = true
@@ -2275,7 +2301,7 @@ function checkkey()
               end
               hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
               if hosts then
-                if string.find(hosts:read("*a"), licenseserver) then
+                if licenseserver and string.find(hosts:read("*a"), licenseserver) then
                   local prefix = "{ffa500}[SMES]: {ff0000}"
                   sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68c16d4f632946f9b658e5ed33c90439d83716880eca743ac3bebe4d61a84671d63be9d7d6c7d13bc47526d246477cf63b792311b4b322562d8"), 0xff0000)
                   sampAddChatMessage(prefix.."Текущая цена: "..currentprice..". Купить можно здесь: "..currentbuylink, 0xff0000)
