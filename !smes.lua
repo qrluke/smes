@@ -29,8 +29,6 @@ do
   end
 end
 
-
-
 do
   function r_smart_cleo_and_sampfuncs()
     if isSampfuncsLoaded() == false then
@@ -2422,6 +2420,9 @@ function var_cfg()
     hkm5 = {
       [1] = 56
     },
+    hkm6 = {
+      [1] = 13
+    },
     colors =
     {
       SmsInColor = imgui.ImColor(0, 255, 166):GetU32(),
@@ -2439,6 +2440,7 @@ function var_cfg()
     {
       hotkey4 = true,
       hotkey5 = true,
+      hotkey6 = true,
       storesms = true,
       iSMSfilterBool = false,
       activesms = true,
@@ -2477,6 +2479,7 @@ function var_imgui_ImBool()
   iHideSmsReceived = imgui.ImBool(cfg.options.HideSmsReceived)
   imhk4 = imgui.ImBool(cfg.messanger.hotkey4)
   imhk5 = imgui.ImBool(cfg.messanger.hotkey5)
+  imhk6 = imgui.ImBool(cfg.messanger.hotkey6)
   iChangeScrollSMS = imgui.ImBool(cfg.messanger.iChangeScrollSMS)
   iSetKeyboardSMS = imgui.ImBool(cfg.messanger.iSetKeyboardSMS)
   iShowSHOWOFFLINESMS = imgui.ImBool(cfg.messanger.iShowSHOWOFFLINESMS)
@@ -2619,6 +2622,23 @@ function main_init_hotkeys()
       end
     end
   )
+
+  if cfg.messanger.hotkey6 then
+    hotkeys["hkm6"] = {}
+    for i = 1, #cfg.hkm6 do
+      table.insert(hotkeys["hkm6"], cfg["hkm6"][i])
+    end
+    hk.unRegisterHotKey(hotkeys["hkm6"])
+    hk.registerHotKey(hotkeys["hkm6"], true,
+      function()
+        if not sampIsChatInputActive() and not isSampfuncsConsoleActive() then
+          if main_window_state.v and not iAddSMS and cfg.messanger.mode == 2 and selecteddialogSMS ~= nil then
+            KeyboardFocusReset = true
+          end
+        end
+      end
+    )
+  end
 
   if PREMIUM and cfg.messanger.activesms and cfg.messanger.hotkey4 then
     hotkeys["hkm4"] = {}
@@ -4913,13 +4933,13 @@ function imgui_activate()
       asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
       chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = toActivate.v
       table.save(chk, licensefile)
-			lua_thread.create(
-				function()
-					main_window_state.v = not main_window_state.v
-					wait(200)
-					thisScript():reload()
-				end
-			)
+      lua_thread.create(
+        function()
+          main_window_state.v = not main_window_state.v
+          wait(200)
+          thisScript():reload()
+        end
+      )
     end
   end
   if imgui.IsItemActive() then
@@ -4940,13 +4960,13 @@ function imgui_activate()
         asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = toActivate.v
         table.save(chk, licensefile)
-				lua_thread.create(
-					function()
-						main_window_state.v = not main_window_state.v
-						wait(200)
-						thisScript():reload()
-					end
-				)
+        lua_thread.create(
+          function()
+            main_window_state.v = not main_window_state.v
+            wait(200)
+            thisScript():reload()
+          end
+        )
       end
     end
   else
@@ -5210,6 +5230,51 @@ function imgui_settings_14_hotkeys()
   if imgui.IsItemHovered() then
     imgui.SetTooltip(u8"По нажатию хоткея открывается окно скрипта.")
   end
+
+  if imgui.Checkbox("##imhk6", imhk6) then
+    cfg.messanger.hotkey6 = imhk6.v
+    main_init_hotkeys()
+    inicfg.save(cfg, "smes")
+  end
+  imgui.SameLine()
+  if imhk6.v then
+    imgui.Text(u8("Хоткей фокуса на ввод в активном диалоге."))
+  else
+    imgui.TextDisabled(u8"Включить хоткей фокуса на ввод в активном диалоге?")
+  end
+  imgui.SameLine()
+  imgui.TextDisabled("(?)")
+  if imgui.IsItemHovered() then
+    imgui.SetTooltip(u8"По нажатию хоткея устанавливается фокус на ввод сообщения в активном диалоге.")
+  end
+
+  if imhk6.v then
+    hotk.v = {}
+    hotke.v = hotkeys["hkm6"]
+    if ihk.HotKey(u8"##hkm6", hotke, hotk, 100) then
+      if not hk.isHotKeyDefined(hotke.v) then
+        if hk.isHotKeyDefined(hotk.v) then
+          hk.unRegisterHotKey(hotk.v)
+        end
+      end
+      cfg.hkm6 = {}
+      for k, v in pairs(hotke.v) do
+        table.insert(cfg.hkm6, v)
+      end
+      if cfg.hkm6 == {} then cfg["hkm6"][6] = 56 end
+      inicfg.save(cfg, "smes")
+      main_init_hotkeys()
+    end
+    imgui.SameLine()
+    imgui.Text(u8"Горячая клавиша фокуса на ввод в активном диалоге.")
+    imgui.SameLine()
+    imgui.TextDisabled("(?)")
+    if imgui.IsItemHovered() then
+      imgui.SetTooltip(u8"Если мессенджер и диалог открыт, фокус устанавливается на ввод сообщения.")
+    end
+  end
+
+
   if not PREMIUM then imhk4.v = false end
   if imgui.Checkbox("##imhk4", imhk4) then
     if PREMIUM then
@@ -5261,6 +5326,7 @@ function imgui_settings_14_hotkeys()
       imgui.SetTooltip(u8"По нажатию хоткея открывается/закрывается мессенджер sms с последним сообщением.\nЕсли он уже открыт, то фокус меняется на последнее сообщение.")
     end
   end
+
   if imgui.Checkbox("##imhk5", imhk5) then
     if PREMIUM then
       cfg.messanger.hotkey5 = imhk5.v
