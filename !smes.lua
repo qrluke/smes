@@ -1,10 +1,22 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.0")
+script_version("1.11")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.0 [27.03.2019]
+script_changelog = [[	v1.11 [28.03.2019]
+* NEW: Добавлен хоткей фокуса на ввод: при нажатии устанавливается фокус на ввод сообщения в активном диалоге.
+* NEW: Добавлена поддержка Trinity-RPG.
+* UPD: Размеры селектора звуков увеличены.
+* FIX: Исправлен баг хоткея быстрого ответа на смс (мессенджер не открывался если уже был выбран нужный диалог).
+* FIX: Исправлен баг, когда хоткей создания диалога не работал как нужно.
+* FIX: Уведомление о запуске скрипта больше не показывается на неподдерживаемых серверах (скрипт не запускался, но уведомление показывалось).
+* FIX: Исправлен баг, когда курсор оставался после ввода кода активации PREMIUM.
+* FIX: Исправлен баг, когда курсор оставался после перезапуска скрипта через менеджер лицензий.
+* FIX: Исправлен баг, когда машина тормозила после фокуса на окно ввода текста.
+* FIX: Исправлен редкий баг, когда управление персонажем блокировалось, если было закрыто окно мессенджера с активным окном созданием диалога.
+
+	v1.0 [27.03.2019]
 * Релиз.]]
 --require
 do
@@ -2752,6 +2764,14 @@ function getmode(args)
   return servers[args]
 end
 
+function fixforcarstop()
+  if isCharInAnyCar(playerPed) and getDriverOfCar(getCarCharIsUsing(playerPed)) == playerPed and getCarSpeed(getCarCharIsUsing(playerPed)) > 10 then
+  --  printString("control not locked", 1000)
+  else
+    lockPlayerControl(true)
+  end
+end
+
 function mode_samprp()
   function RPC.onPlaySound(sound)
     if sound == 1052 and iSoundSmsOut.v then
@@ -2862,9 +2882,9 @@ function mode_samprp()
 
     end
     if imgui.IsItemActive() then
-      lockPlayerControl(true)
+      fixforcarstop()
     else
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
     if imgui.SameLine() or imgui.Button(u8"Отправить") then
       for i = 0, sampGetMaxPlayerId() do
@@ -2943,7 +2963,7 @@ function mode_samprp()
       if iSMSAddDialog.v == "" then
         ikkk = 0
         iAddSMS = false
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
       else
         iSMSAddDialog.v = ""
         for i = 0, sampGetMaxPlayerId() + 1 do
@@ -2959,14 +2979,14 @@ function mode_samprp()
               selecteddialogSMS = sampGetPlayerNickname(i)
               SSDB_trigger = true
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+              keyboard = true
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
               ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+              keyboard = true
               break
             end
           end
@@ -2977,9 +2997,9 @@ function mode_samprp()
       iSMSAddDialog.v = ""
       ikkk = 0
       iAddSMS = false
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
-    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() fixforcarstop() KeyboardFocusResetForNewDialog = false end
     if iSMSAddDialog.v ~= "" then
       for i = 0, sampGetMaxPlayerId() do
         if sampIsPlayerConnected(i) and i == tonumber(iSMSAddDialog.v) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(iSMSAddDialog.v)) then
@@ -3112,9 +3132,9 @@ function mode_evolverp()
 
     end
     if imgui.IsItemActive() then
-      lockPlayerControl(true)
+      fixforcarstop()
     else
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
     if imgui.SameLine() or imgui.Button(u8"Отправить") then
       for i = 0, sampGetMaxPlayerId() do
@@ -3171,7 +3191,7 @@ function mode_evolverp()
       if iSMSAddDialog.v == "" then
         ikkk = 0
         iAddSMS = false
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
       else
         iSMSAddDialog.v = ""
         for i = 0, sampGetMaxPlayerId() + 1 do
@@ -3187,14 +3207,14 @@ function mode_evolverp()
               selecteddialogSMS = sampGetPlayerNickname(i)
               SSDB_trigger = true
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+            keyboard = true
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
               ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+              keyboard = true
               break
             end
           end
@@ -3205,9 +3225,9 @@ function mode_evolverp()
       iSMSAddDialog.v = ""
       ikkk = 0
       iAddSMS = false
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
-    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() fixforcarstop() KeyboardFocusResetForNewDialog = false end
     if iSMSAddDialog.v ~= "" then
       for i = 0, sampGetMaxPlayerId() do
         if sampIsPlayerConnected(i) and i == tonumber(iSMSAddDialog.v) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(iSMSAddDialog.v)) then
@@ -3337,9 +3357,9 @@ function mode_advancerp()
 
     end
     if imgui.IsItemActive() then
-      lockPlayerControl(true)
+      fixforcarstop()
     else
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
     if imgui.SameLine() or imgui.Button(u8"Отправить") then
       for i = 0, sampGetMaxPlayerId() do
@@ -3363,11 +3383,11 @@ function mode_advancerp()
       if iSMSAddDialog.v == "" then
         ikkk = 0
         iAddSMS = false
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
       else
         iSMSAddDialog.v = ""
         sampSendChat("/sms "..tonumber(createnewdialognick).." 1")
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
         ikkk = 0
         iAddSMS = false
         lua_thread.create(
@@ -3387,13 +3407,13 @@ function mode_advancerp()
                 selecteddialogSMS = smsNick222
                 SSDB_trigger = true
                 ScrollToDialogSMS = true
-                if not isCharInAnyCar(playerPed) then keyboard = true end
+                keyboard = true
               else
                 selecteddialogSMS = smsNick222
                 ikkk = 0
                 iAddSMS = false
                 ScrollToDialogSMS = true
-                if not isCharInAnyCar(playerPed) then keyboard = true end
+              keyboard = true
               end
             end
           end
@@ -3404,9 +3424,9 @@ function mode_advancerp()
       iSMSAddDialog.v = ""
       ikkk = 0
       iAddSMS = false
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
-    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() fixforcarstop() KeyboardFocusResetForNewDialog = false end
     if iSMSAddDialog.v ~= "" then
       imgui.SetTooltip(u8:encode("Введите номер и нажмите Enter"))
     end
@@ -3553,9 +3573,9 @@ function mode_diamondrp()
 
     end
     if imgui.IsItemActive() then
-      lockPlayerControl(true)
+      fixforcarstop()
     else
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
     if imgui.SameLine() or imgui.Button(u8"Отправить") then
       for i = 0, sampGetMaxPlayerId() do
@@ -3590,7 +3610,7 @@ function mode_diamondrp()
       if iSMSAddDialog.v == "" then
         ikkk = 0
         iAddSMS = false
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
       else
         iSMSAddDialog.v = ""
         for i = 0, sampGetMaxPlayerId() + 1 do
@@ -3607,14 +3627,14 @@ function mode_diamondrp()
               selecteddialogSMS = sampGetPlayerNickname(i)
               SSDB_trigger = true
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+              keyboard = true
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
               ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+              keyboard = true
               break
             end
           end
@@ -3625,9 +3645,9 @@ function mode_diamondrp()
       iSMSAddDialog.v = ""
       ikkk = 0
       iAddSMS = false
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
-    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() fixforcarstop() KeyboardFocusResetForNewDialog = false end
     if iSMSAddDialog.v ~= "" then
       for i = 0, sampGetMaxPlayerId() do
         if sampIsPlayerConnected(i) and i == tonumber(iSMSAddDialog.v) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(iSMSAddDialog.v)) then
@@ -3777,9 +3797,9 @@ function mode_trinityrp()
 
     end
     if imgui.IsItemActive() then
-      lockPlayerControl(true)
+      fixforcarstop()
     else
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
     if imgui.SameLine() or imgui.Button(u8"Отправить") then
       for i = 0, sampGetMaxPlayerId() do
@@ -3814,7 +3834,7 @@ function mode_trinityrp()
       if iSMSAddDialog.v == "" then
         ikkk = 0
         iAddSMS = false
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
       else
         iSMSAddDialog.v = ""
         for i = 0, sampGetMaxPlayerId() + 1 do
@@ -3831,14 +3851,14 @@ function mode_trinityrp()
               selecteddialogSMS = sampGetPlayerNickname(i)
               SSDB_trigger = true
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+              keyboard = true
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
               ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
-              if not isCharInAnyCar(playerPed) then keyboard = true end
+            keyboard = true
               break
             end
           end
@@ -3849,9 +3869,9 @@ function mode_trinityrp()
       iSMSAddDialog.v = ""
       ikkk = 0
       iAddSMS = false
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
-    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() lockPlayerControl(true) KeyboardFocusResetForNewDialog = false end
+    if KeyboardFocusResetForNewDialog then imgui.SetKeyboardFocusHere() fixforcarstop() KeyboardFocusResetForNewDialog = false end
     if iSMSAddDialog.v ~= "" then
       for i = 0, sampGetMaxPlayerId() do
         if sampIsPlayerConnected(i) and i == tonumber(iSMSAddDialog.v) or sampIsPlayerConnected(i) and string.find(string.rlower(sampGetPlayerNickname(i)), string.rlower(iSMSAddDialog.v)) then
@@ -3980,7 +4000,7 @@ function imgui_messanger_FO(mode)
         end
         selecteddialogSMS = LASTNICK_SMS
         smsafk[selecteddialogSMS] = "CHECK AFK"
-        if not isCharInAnyCar(playerPed) then keyboard = true end
+        keyboard = true
         cfg.messanger.mode = 2
         ScrollToDialogSMS = true
         inicfg.save(cfg, "smes")
@@ -3993,9 +4013,9 @@ function imgui_messanger_FO(mode)
     end
     if not main_window_state.v then main_window_state.v = true end
     if cfg.messanger.activesms and cfg.messanger.hotkey5 then
-      ikkk = 0
+      ikkk = -20
       iAddSMS = true
-      if not isCharInAnyCar(playerPed) then KeyboardFocusResetForNewDialog = true end
+      KeyboardFocusResetForNewDialog = true
       cfg.messanger.mode = 2
       inicfg.save(cfg, "smes")
     end
@@ -4097,6 +4117,7 @@ function imgui_messanger_sms_settings()
       ikkk = ikkk + 1
       if ikkk > 5 then
         ikkk = 0
+        if isPlayerControlLocked() then lockPlayerControl(false) end
         ikkk = 0
         iAddSMS = false
       end
@@ -4107,7 +4128,7 @@ function imgui_messanger_sms_settings()
       iSMSAddDialog.v = ""
       ikkk = 0
       iAddSMS = false
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
     end
   end
   imgui.PopStyleColor()
@@ -4876,9 +4897,9 @@ function imgui_licensemen()
     end
   end
   if imgui.IsItemActive() then
-    lockPlayerControl(true)
+    fixforcarstop()
   else
-    lockPlayerControl(false)
+    if isPlayerControlLocked() then lockPlayerControl(false) end
   end
 end
 
@@ -4927,7 +4948,7 @@ function imgui_activate()
   imgui.PushItemWidth(200)
   if imgui.InputText(u8"", toActivate, imgui.InputTextFlags.EnterReturnsTrue) then
     if toActivate.v:len() == 16 then
-      lockPlayerControl(false)
+      if isPlayerControlLocked() then lockPlayerControl(false) end
       if chk == nil then chk = {} end
       if chk[sampGetCurrentServerAddress()] == nil then chk[sampGetCurrentServerAddress()] = {} end
       asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
@@ -4943,18 +4964,18 @@ function imgui_activate()
     end
   end
   if imgui.IsItemActive() then
-    lockPlayerControl(true)
+    fixforcarstop()
   else
-    lockPlayerControl(false)
+    if isPlayerControlLocked() then lockPlayerControl(false) end
   end
   imgui.SameLine()
   if toActivate.v:len() == 16 then
     if imgui.Button(u8"Активировать") then
       if toActivate.v == "" then
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
       end
       if toActivate.v:len() == 16 then
-        lockPlayerControl(false)
+        if isPlayerControlLocked() then lockPlayerControl(false) end
         if chk == nil then chk = {} end
         if chk[sampGetCurrentServerAddress()] == nil then chk[sampGetCurrentServerAddress()] = {} end
         asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
@@ -5233,8 +5254,8 @@ function imgui_settings_14_hotkeys()
 
   if imgui.Checkbox("##imhk6", imhk6) then
     cfg.messanger.hotkey6 = imhk6.v
-    main_init_hotkeys()
     inicfg.save(cfg, "smes")
+    main_init_hotkeys()
   end
   imgui.SameLine()
   if imhk6.v then
@@ -5261,7 +5282,7 @@ function imgui_settings_14_hotkeys()
       for k, v in pairs(hotke.v) do
         table.insert(cfg.hkm6, v)
       end
-      if cfg.hkm6 == {} then cfg["hkm6"][6] = 56 end
+      if cfg.hkm6 == {} then cfg["hkm6"][6] = 13 end
       inicfg.save(cfg, "smes")
       main_init_hotkeys()
     end
