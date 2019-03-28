@@ -2008,6 +2008,10 @@ function var_require()
     thisScript():unload()
   end
   chkupd()
+	if getmode(sampGetCurrentServerAddress()) == nil then
+		print('сервер не поддерживается, завершаю работу')
+		thisScript():unload()
+	end
   r_smart_lib_imgui()
   ihk = r_lib_imcustom_hotkey()
   hk = r_lib_rkeys()
