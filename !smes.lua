@@ -3921,7 +3921,6 @@ function imgui_messanger_FO(mode)
     if LASTNICK_SMS == " " then
       sampAddChatMessage("ќшибка: вам/вы ещЄ не писали смс.", color)
     else
-      main_window_state.v = true
       cfg.messanger.mode = 2
       if selecteddialogSMS ~= LASTNICK_SMS then
         --do nothing
