@@ -4913,7 +4913,13 @@ function imgui_activate()
       asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
       chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = toActivate.v
       table.save(chk, licensefile)
-      thisScript():reload()
+			lua_thread.create(
+				function()
+					main_window_state.v = not main_window_state.v
+					wait(200)
+					thisScript():reload()
+				end
+			)
     end
   end
   if imgui.IsItemActive() then
@@ -4934,7 +4940,13 @@ function imgui_activate()
         asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = toActivate.v
         table.save(chk, licensefile)
-        thisScript():reload()
+				lua_thread.create(
+					function()
+						main_window_state.v = not main_window_state.v
+						wait(200)
+						thisScript():reload()
+					end
+				)
       end
     end
   else
