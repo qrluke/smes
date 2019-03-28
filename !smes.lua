@@ -2008,10 +2008,10 @@ function var_require()
     thisScript():unload()
   end
   chkupd()
-	if getmode(sampGetCurrentServerAddress()) == nil then
-		print('сервер не поддерживается, завершаю работу')
-		thisScript():unload()
-	end
+  if getmode(sampGetCurrentServerAddress()) == nil then
+    print('сервер не поддерживается, завершаю работу')
+    thisScript():unload()
+  end
   r_smart_lib_imgui()
   ihk = r_lib_imcustom_hotkey()
   hk = r_lib_rkeys()
@@ -2538,9 +2538,11 @@ function var_main()
   players = {}
   iYears = {}
   countall = 0
+  ikkk = 0
   ScrollToDialogSMS = false
   LASTNICK_SMS = " "
   LASTID_SMS = -1
+  ikkk = 0
   iAddSMS = false
   PLAYSMSIN = false
   PLAYSMSOUT = false
@@ -2580,6 +2582,7 @@ function main()
     inicfg.save(cfg, "smes")
     while true do
       wait(0)
+      if iAddSMS then main_window_state.v = true end
       if os.date("%m") ~= "03" and os.date("%m") ~= "04" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
       asdsadasads, myidasdas = sampGetPlayerIdByCharHandle(PLAYER_PED)
       if PREMIUM and (licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver) then
@@ -2918,6 +2921,7 @@ function mode_samprp()
     if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
       createnewdialognick = iSMSAddDialog.v
       if iSMSAddDialog.v == "" then
+        ikkk = 0
         iAddSMS = false
         lockPlayerControl(false)
       else
@@ -2929,6 +2933,7 @@ function mode_samprp()
               sms[sampGetPlayerNickname(i)]["Chat"] = {}
               sms[sampGetPlayerNickname(i)]["Checked"] = 0
               sms[sampGetPlayerNickname(i)]["Pinned"] = 0
+              ikkk = 0
               iAddSMS = false
               table.insert(sms[sampGetPlayerNickname(i)]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
               selecteddialogSMS = sampGetPlayerNickname(i)
@@ -2938,6 +2943,7 @@ function mode_samprp()
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
+              ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
               if not isCharInAnyCar(playerPed) then keyboard = true end
@@ -2949,6 +2955,7 @@ function mode_samprp()
     end
     if imgui.IsKeyPressed(key.VK_ESCAPE) then
       iSMSAddDialog.v = ""
+      ikkk = 0
       iAddSMS = false
       lockPlayerControl(false)
     end
@@ -3142,6 +3149,7 @@ function mode_evolverp()
     if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
       createnewdialognick = iSMSAddDialog.v
       if iSMSAddDialog.v == "" then
+        ikkk = 0
         iAddSMS = false
         lockPlayerControl(false)
       else
@@ -3153,6 +3161,7 @@ function mode_evolverp()
               sms[sampGetPlayerNickname(i)]["Chat"] = {}
               sms[sampGetPlayerNickname(i)]["Checked"] = 0
               sms[sampGetPlayerNickname(i)]["Pinned"] = 0
+              ikkk = 0
               iAddSMS = false
               table.insert(sms[sampGetPlayerNickname(i)]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
               selecteddialogSMS = sampGetPlayerNickname(i)
@@ -3162,6 +3171,7 @@ function mode_evolverp()
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
+              ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
               if not isCharInAnyCar(playerPed) then keyboard = true end
@@ -3173,6 +3183,7 @@ function mode_evolverp()
     end
     if imgui.IsKeyPressed(key.VK_ESCAPE) then
       iSMSAddDialog.v = ""
+      ikkk = 0
       iAddSMS = false
       lockPlayerControl(false)
     end
@@ -3330,12 +3341,14 @@ function mode_advancerp()
     if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
       createnewdialognick = iSMSAddDialog.v
       if iSMSAddDialog.v == "" then
+        ikkk = 0
         iAddSMS = false
         lockPlayerControl(false)
       else
         iSMSAddDialog.v = ""
         sampSendChat("/sms "..tonumber(createnewdialognick).." 1")
         lockPlayerControl(false)
+        ikkk = 0
         iAddSMS = false
         lua_thread.create(
           function()
@@ -3348,6 +3361,7 @@ function mode_advancerp()
                 sms[smsNick222]["Chat"] = {}
                 sms[smsNick222]["Checked"] = 0
                 sms[smsNick222]["Pinned"] = 0
+                ikkk = 0
                 iAddSMS = false
                 table.insert(sms[smsNick222]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
                 selecteddialogSMS = smsNick222
@@ -3356,6 +3370,7 @@ function mode_advancerp()
                 if not isCharInAnyCar(playerPed) then keyboard = true end
               else
                 selecteddialogSMS = smsNick222
+                ikkk = 0
                 iAddSMS = false
                 ScrollToDialogSMS = true
                 if not isCharInAnyCar(playerPed) then keyboard = true end
@@ -3367,6 +3382,7 @@ function mode_advancerp()
     end
     if imgui.IsKeyPressed(key.VK_ESCAPE) then
       iSMSAddDialog.v = ""
+      ikkk = 0
       iAddSMS = false
       lockPlayerControl(false)
     end
@@ -3552,6 +3568,7 @@ function mode_diamondrp()
     if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
       createnewdialognick = iSMSAddDialog.v
       if iSMSAddDialog.v == "" then
+        ikkk = 0
         iAddSMS = false
         lockPlayerControl(false)
       else
@@ -3564,6 +3581,7 @@ function mode_diamondrp()
               sms[sampGetPlayerNickname(i)]["Checked"] = 0
               sms[sampGetPlayerNickname(i)]["Number"] = "?"
               sms[sampGetPlayerNickname(i)]["Pinned"] = 0
+              ikkk = 0
               iAddSMS = false
               table.insert(sms[sampGetPlayerNickname(i)]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
               selecteddialogSMS = sampGetPlayerNickname(i)
@@ -3573,6 +3591,7 @@ function mode_diamondrp()
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
+              ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
               if not isCharInAnyCar(playerPed) then keyboard = true end
@@ -3584,6 +3603,7 @@ function mode_diamondrp()
     end
     if imgui.IsKeyPressed(key.VK_ESCAPE) then
       iSMSAddDialog.v = ""
+      ikkk = 0
       iAddSMS = false
       lockPlayerControl(false)
     end
@@ -3637,7 +3657,7 @@ function mode_trinityrp()
       return false
     end
     if text:find("SMS") then
-			local smsText, smsNick, smsNumber = string.match(text, "SMS%:{......}% (.+)% {......}От%: {......}(.+) {......}Тел%: {......}(.+)")
+      local smsText, smsNick, smsNumber = string.match(text, "SMS%:{......}% (.+)% {......}От%: {......}(.+) {......}Тел%: {......}(.+)")
       if smsText and smsNick and smsNumber then
         smsId = 1001
         for i = 0, sampGetMaxPlayerId() + 1 do
@@ -3666,7 +3686,7 @@ function mode_trinityrp()
           if iReplaceSmsInColor.v then
             text = string.gsub(text, "{FFFF00}", "")
             text = string.gsub(text, "{FFFFFF}", "")
-						text = string.gsub(text, "{ffffff}", "")
+            text = string.gsub(text, "{ffffff}", "")
 
             sampAddChatMessage(text, SmsInColor_HEX)
             return false
@@ -3772,6 +3792,7 @@ function mode_trinityrp()
     if imgui.InputText("##keyboardSMADD", iSMSAddDialog, imgui.InputTextFlags.EnterReturnsTrue) then
       createnewdialognick = iSMSAddDialog.v
       if iSMSAddDialog.v == "" then
+        ikkk = 0
         iAddSMS = false
         lockPlayerControl(false)
       else
@@ -3784,6 +3805,7 @@ function mode_trinityrp()
               sms[sampGetPlayerNickname(i)]["Checked"] = 0
               sms[sampGetPlayerNickname(i)]["Number"] = "?"
               sms[sampGetPlayerNickname(i)]["Pinned"] = 0
+              ikkk = 0
               iAddSMS = false
               table.insert(sms[sampGetPlayerNickname(i)]["Chat"], {text = "Диалог создан", Nick = "мессенджер", type = "service", time = os.time()})
               selecteddialogSMS = sampGetPlayerNickname(i)
@@ -3793,6 +3815,7 @@ function mode_trinityrp()
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
+              ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
               if not isCharInAnyCar(playerPed) then keyboard = true end
@@ -3804,6 +3827,7 @@ function mode_trinityrp()
     end
     if imgui.IsKeyPressed(key.VK_ESCAPE) then
       iSMSAddDialog.v = ""
+      ikkk = 0
       iAddSMS = false
       lockPlayerControl(false)
     end
@@ -3949,6 +3973,7 @@ function imgui_messanger_FO(mode)
     end
     if not main_window_state.v then main_window_state.v = true end
     if cfg.messanger.activesms and cfg.messanger.hotkey5 then
+      ikkk = 0
       iAddSMS = true
       if not isCharInAnyCar(playerPed) then KeyboardFocusResetForNewDialog = true end
       cfg.messanger.mode = 2
@@ -4041,15 +4066,26 @@ function imgui_messanger_sms_settings()
       end
       imgui.SameLine()
       if imgui.Button(u8"Добавить", imgui.ImVec2(imgui.GetContentRegionAvailWidth() + 1, 20)) then
+        ikkk = 0
         iAddSMS = true
         KeyboardFocusResetForNewDialog = true
       end
     end
   else
     newdialog()
+    if iAddSMS and not imgui.IsItemActive() then
+      ikkk = ikkk + 1
+      if ikkk > 5 then
+        ikkk = 0
+        ikkk = 0
+        iAddSMS = false
+      end
+    end
+
     imgui.SameLine()
     if imgui.Button(u8"close", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 20)) then
       iSMSAddDialog.v = ""
+      ikkk = 0
       iAddSMS = false
       lockPlayerControl(false)
     end
