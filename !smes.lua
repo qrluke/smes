@@ -4775,7 +4775,7 @@ function imgui_licensemen()
     lua_thread.create(
       function()
         main_window_state.v = not main_window_state.v
-				wait(200)
+        wait(200)
         thisScript():reload()
       end
     )
@@ -5102,7 +5102,7 @@ function imgui_settings_13_sms_sounds()
   end
   if iSoundSmsIn.v then
     imgui.SameLine()
-    imgui.PushItemWidth(300)
+    imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(u8"Звук исходящего сообщения").x)
     imgui.SliderInt(u8"Звук входящего сообщения", iSoundSmsInNumber, 1, currentaudiokolDD)
     if iSoundSmsInNumber.v ~= cfg.options.SoundSmsInNumber then
       PLAYSMSIN = true
@@ -5120,7 +5120,7 @@ function imgui_settings_13_sms_sounds()
   end
   if iSoundSmsOut.v then
     imgui.SameLine()
-    imgui.PushItemWidth(300)
+    imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(u8"Звук исходящего сообщения").x)
     imgui.SliderInt(u8"Звук исходящего сообщения", iSoundSmsOutNumber, 1, currentaudiokolDD)
     if iSoundSmsOutNumber.v ~= cfg.options.SoundSmsOutNumber then
       PLAYSMSOUT = true
