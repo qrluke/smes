@@ -2717,6 +2717,7 @@ function getmode(args)
     ["194.61.44.67"] = "diamond-rp",
     ["5.254.105.202"] = "diamond-rp",
     ["5.254.105.204"] = "diamond-rp",
+    ["185.169.134.83"] = "trinity-rp",
     ["185.169.134.84"] = "trinity-rp",
     ["185.169.134.85"] = "trinity-rp"
 
@@ -3632,7 +3633,7 @@ function mode_trinityrp()
       return false
     end
     if text:find("SMS") then
-      local smsText, smsNick, smsNumber = string.match(text, "SMS%:{FFFFFF}% (.*)% {FFFF00}От%: {FFFFFF}(.+) {FFFF00}Тел%: {FFFFFF}(.+)")
+			local smsText, smsNick, smsNumber = string.match(text, "SMS%:{......}% (.+)% {......}От%: {......}(.+) {......}Тел%: {......}(.+)")
       if smsText and smsNick and smsNumber then
         smsId = 1001
         for i = 0, sampGetMaxPlayerId() + 1 do
@@ -3661,6 +3662,7 @@ function mode_trinityrp()
           if iReplaceSmsInColor.v then
             text = string.gsub(text, "{FFFF00}", "")
             text = string.gsub(text, "{FFFFFF}", "")
+						text = string.gsub(text, "{ffffff}", "")
 
             sampAddChatMessage(text, SmsInColor_HEX)
             return false
@@ -3671,7 +3673,7 @@ function mode_trinityrp()
           return false
         end
       end
-      local smsText, smsNick, smsNumber = string.match(text, "SMS%:{FFFFFF}% (.*)% {FFFF00}Для%: {FFFFFF}(.+) {FFFF00}Тел%: {FFFFFF}(.+)")
+      local smsText, smsNick, smsNumber = string.match(text, "SMS%:{......}% (.*)% {......}Для%: {......}(.+) {......}Тел%: {......}(.+)")
       if smsText and smsNick and smsNumber then
         smsId = 1001
         for i = 0, sampGetMaxPlayerId() + 1 do

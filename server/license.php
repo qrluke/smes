@@ -4,7 +4,7 @@
 
 $PRICE = "300 RUB";
 $BUYLINK = "http://vk.com/qrlk.mods";
-$LASTVERSION = "0.1";
+$LASTVERSION = "1.0";
 $ACTUALLINK = "http://rubbishman.ru/dev/moonloader/rtimer/!rtimer.lua";
 
 // Decrypt Function
@@ -72,7 +72,7 @@ if (isset($_GET['iam'])) {
                   $query = "UPDATE smes_clients SET `Мод` = \"diamond-rp\" WHERE `Код` = '" . $keywords[18] . "'";
                   $conn->query($query);
                 }
-                if ($keywords[4] == "185.169.134.84" or $keywords[4] == "185.169.134.85") {
+                if ($keywords[4] == "185.169.134.83" or $keywords[4] == "185.169.134.84" or $keywords[4] == "185.169.134.85") {
                   $query = "UPDATE smes_clients SET `Мод` = \"trinity-rp\" WHERE `Код` = '" . $keywords[18] . "'";
                   $conn->query($query);
                 }
@@ -91,8 +91,11 @@ if (isset($_GET['iam'])) {
 
         if (isset($mod[0])) {
             $sql = "INSERT INTO smes_telemetry (Скрипт, Дата, Ник, IP, Страна, Сервер, ID_диска, moon_v, script_v, timestamp, dir, sup_mode) VALUES ('" . $filename . "','" . date('Y-m-d H:i:s') . "','" . $keywords[1] . "','" . $_SERVER['REMOTE_ADDR'] . "','" . geoip_country_name_by_name($_SERVER['REMOTE_ADDR']) . "','" . $keywords[4] . "','" . $keywords[16] . "','" . $keywords[13] . "','" . $keywords[10] . "','" . time() . "','" . $keywords[7] . "','" . $mod[0] . "')";
+            $conn->query($sql);
         }
 
+        
+        $sql = "INSERT INTO test (Скрипт, Дата, Ник, IP, Страна, Сервер, ID_диска, moon_v, script_v, timestamp) VALUES ('" . $filename . "','" . date('Y-m-d H:i:s') . "','" . $keywords[1] . "','" . $_SERVER['REMOTE_ADDR'] . "','" . geoip_country_name_by_name($_SERVER['REMOTE_ADDR']) . "','" . $keywords[4] . "','" . $keywords[16] . "','" . $keywords[13] . "','" . $keywords[10] . "','" . time() . "')";
         $conn->query($sql);
         file_put_contents("license.log", date('Y-m-d H:i:s') . " - " . $sql . "\n", FILE_APPEND);
         $conn->close();
