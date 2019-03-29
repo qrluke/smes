@@ -2558,6 +2558,13 @@ function var_main()
   LASTNICK_SMS = " "
   LASTID_SMS = -1
   ikkk = 0
+  iooooo = 0
+  iaaaaa = 0
+  iccccc = 0
+   icccccb = 0
+  iooooob = 0
+  iaaaaab = 0
+  DEBUG = false
   iAddSMS = false
   PLAYSMSIN = false
   PLAYSMSOUT = false
@@ -2593,7 +2600,21 @@ function main()
         main_window_state.v = not main_window_state.v
       end
     )
+	sampRegisterChatCommand("smesdebug",
+      function()
+	  lua_thread.create(
+	  function()
+	  DEBUG = not DEBUG
+	  math.randomseed(os.time())
+	    for i = 1, 7000 do
+			RPC.onServerMessage(-1, " SMS: Тестовое сообщения для проблемы ааа. Получатель: rubbishman[16]")
+		end
+      end
+	  )
+	  end
+    )
     lua_thread.create(imgui_messanger_scrollkostil)
+	lua_thread.create(render)
     inicfg.save(cfg, "smes")
     while true do
       wait(0)
@@ -2780,6 +2801,7 @@ function mode_samprp()
   end
 
   function RPC.onServerMessage(color, text)
+  print(color, text)
     if main_window_state.v and text:match(" "..tostring(selecteddialogSMS).." %[(%d+)%]") then
       if string.find(text, "AFK") then
         smsafk[selecteddialogSMS] = "AFK "..string.match(text, "AFK: (%d+) сек").." s"
@@ -3917,6 +3939,7 @@ end
 
 function imgui_init()
   function imgui.OnDrawFrame()
+    iccccc = os.clock()
     if os.date("%m") ~= "03" and os.date("%m") ~= "04" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
 
     if main_window_state.v then
@@ -3936,6 +3959,7 @@ function imgui_init()
       imgui_messanger()
       imgui.End()
     end
+	icccccb = os.clock() - iccccc
   end
 end
 
@@ -4217,6 +4241,8 @@ function imgui_messanger_sup_player_list()
 end
 
 function imgui_messanger_sms_showdialogs(table, typ)
+  iooooo
+  = os.clock()
   for _, v in ipairs(table) do
     k = v
     v = sms[v]
@@ -4329,6 +4355,28 @@ function imgui_messanger_sms_showdialogs(table, typ)
         imgui.PopStyleColor(2)
         imgui.PopID()
       end
+    end
+  end
+  iooooob = os.clock() - iooooo
+end
+
+function render()
+  resX, resY = getScreenResolution()
+  font = renderCreateFont("Arial", 16, 5)
+  local memory = require "memory"
+sf =
+[[Time to render:
+Full frame: "%s"
+Dialog list: "%s"
+Dialog: "%s"
+Max FPS Possible: "%s"
+Imgui FPS: "%s"
+Game FPS: "%s"]]
+  while true do
+    wait(0)
+    while DEBUG do
+      wait(0)
+      renderFontDrawText(font, string.format(sf, icccccb, iooooob, iaaaaab, tonumber(1/icccccb), imgui.GetIO().Framerate, memory.getfloat(0xB7CB50, 4, false)), resX / 50, resY / 3.5, 0xFF00FF00)
     end
   end
 end
@@ -4484,6 +4532,7 @@ end
 
 function imgui_messanger_sms_dialog()
   dialogY = imgui.GetContentRegionAvail().y - 35
+  iaaaaa = os.clock()
   imgui.BeginChild("##middle", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), dialogY), true)
   if selecteddialogSMS ~= nil and sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
     for k, v in ipairs(sms[selecteddialogSMS]["Chat"]) do
@@ -4587,6 +4636,7 @@ function imgui_messanger_sms_dialog()
     end
   end
   imgui.EndChild()
+  iaaaaab = os.clock()-iaaaaa
 end
 
 function imgui_messanger_sup_keyboard()
