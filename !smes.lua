@@ -2590,7 +2590,7 @@ function getonlinelist()
   while true do
     wait(500)
     onlineplayers = {}
-    maxidnow = sampGetMaxPlayerId(false)
+    maxidnow = sampGetMaxPlayerId()
 
     for id = 0, maxidnow do
       if sampIsPlayerConnected(id) then
@@ -2600,29 +2600,18 @@ function getonlinelist()
     end
     for k in pairs(sms) do
       if type(sms[k]) == "table" then
-        for id, v in ipairs(onlineplayers) do
+        for id in pairs(onlineplayers) do
+					v = onlineplayers[id]
           if k == v and sms ~= nil and sms[k] ~= nil then
             sms[k]["id"] = id
             break
           end
-          if id == maxid and sms ~= nil and sms[k] ~= nil then sms[k]["id"] = "-" end
+          if id == maxid and sms ~= nil and sms[k] ~= nil then
+            sms[k]["id"] = "-"
+          end
         end
       end
     end
-    --[[for k in pairs(sms) do
-      if type(sms[k]) == "table" then
-        for id = 0, maxidnow + 1 do
-          if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == k then
-            sms[k]["id"] = id
-            break
-          end
-          if id == maxidnow + 1 then
-            sms[k]["id"] = "-"
-            break
-          end
-        end
-      end
-    end]]
   end
 end
 
