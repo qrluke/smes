@@ -3329,7 +3329,7 @@ function mode_advancerp()
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if sms[smsNick] and sms[smsNick].Chat then
-
+					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3367,7 +3367,7 @@ function mode_advancerp()
         if iSoundSmsOut.v then PLAYSMSOUT = true end
         local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         if sms[smsNick] and sms[smsNick].Chat then
-
+					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3540,7 +3540,7 @@ function mode_diamondrp()
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if sms[smsNick] and sms[smsNick].Chat then
-
+					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3581,7 +3581,7 @@ function mode_diamondrp()
         if iSoundSmsOut.v then PLAYSMSOUT = true end
         local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         if sms[smsNick] and sms[smsNick].Chat then
-
+					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3763,7 +3763,7 @@ function mode_trinityrp()
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if sms[smsNick] and sms[smsNick].Chat then
-
+					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3805,7 +3805,7 @@ function mode_trinityrp()
         if iSoundSmsOut.v then PLAYSMSOUT = true end
         local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         if sms[smsNick] and sms[smsNick].Chat then
-
+					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
