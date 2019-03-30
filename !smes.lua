@@ -1,10 +1,10 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.21")
+script_version("1.22")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.21 [30.03.2019]
+script_changelog = [[	v1.22 [30.03.2019]
 * UPD: Переписана логика отрисовки диалогов, теперь количество сообщений активного диалога влияет на фпс в ~500 раз меньше.
 * UPD: Оптимизирован модуль информации о собеседнике: скорость отрисовки кадра увеличена в три раза.
 * UPD: Оптимизирован список диалогов для лучшей производительности.
@@ -2601,11 +2601,11 @@ function getonlinelist()
     for k in pairs(sms) do
       if type(sms[k]) == "table" then
         for id, v in ipairs(onlineplayers) do
-          if k == v then
+          if k == v and sms ~= nil and sms[k] ~= nil then
             sms[k]["id"] = id
             break
           end
-          if id == maxid then sms[k]["id"] = "-" end
+          if id == maxid and sms ~= nil and sms[k] ~= nil then sms[k]["id"] = "-" end
         end
       end
     end
@@ -4364,8 +4364,7 @@ end
 function imgui_messanger_sms_showdialogs(table, typ)
   for _, v in ipairs(table) do
     k = v
-    if iShowSHOWOFFLINESMS.v or sms[k]["id"] == "-" then
-
+    if sms ~= nil and sms[k] ~= nil and ((sms[k]["id"] == "-" and iShowSHOWOFFLINESMS.v) or (sms[k]["id"] ~= "-")) then
       v = sms[v]
       if k ~= " " then
         if sms[k]["id"] == nil then
