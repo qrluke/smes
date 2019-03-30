@@ -3092,7 +3092,7 @@ function mode_evolverp()
   end
 
   function RPC.onServerMessage(color, text)
-    if text:find("SMS") then
+    if text:find("SMS") and not string.find(text, "Малевич$") then
       text = string.gsub(text, "{FFFF00}", "")
       text = string.gsub(text, "{FF8000}", "")
       local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Отправитель%: (.*)%[(%d+)%]")
