@@ -2584,6 +2584,46 @@ function var_main()
   math.randomseed(os.time())
 end
 -------------------------------------MAIN---------------------------------------
+function getonlinelist()
+  while true do
+    wait(1000)
+    onlineplayers = {}
+    maxidnow = sampGetMaxPlayerId(false)
+
+    for id = 0, maxidnow do
+      if sampIsPlayerConnected(id) then
+        onlineplayers[id] = sampGetPlayerNickname(id)
+        maxid = id
+      end
+    end
+    for k in pairs(sms) do
+      if type(sms[k]) == "table" then
+        for id, v in ipairs(onlineplayers) do
+          if k == v then
+            sms[k]["id"] = id
+            break
+          end
+          if id == maxid then sms[k]["id"] = "-" end
+        end
+      end
+    end
+    --[[for k in pairs(sms) do
+      if type(sms[k]) == "table" then
+        for id = 0, maxidnow + 1 do
+          if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == k then
+            sms[k]["id"] = id
+            break
+          end
+          if id == maxidnow + 1 then
+            sms[k]["id"] = "-"
+            break
+          end
+        end
+      end
+    end]]
+  end
+end
+
 function main()
   require_status = lua_thread.create(var_require)
   if not isSampfuncsLoaded() or not isSampLoaded() then return end
@@ -2619,14 +2659,17 @@ function main()
             main_window_state.v = true
             selecteddialogSMS = "qrlk"
             math.randomseed(os.time())
-            for i = 1, 1000 do
+            --[[for i = 1, 1000 do
               --RPC.onServerMessage(-1, " SMS: Тестовое сообщения для проблемы BBB. Отправитель: qrlk[16]")
-              RPC.onServerMessage(-1, " SMS: Привет. Получатель: qrlk[16]")
+							RPC.onServerMessage(-1, " SMS: Привет. Получатель: qrlk[16]")
               RPC.onServerMessage(-1, " SMS: Привет. Отправитель: qrlk[16]")
               RPC.onServerMessage(-1, " SMS: Я пажилая струя. Получатель: qrlk[16]")
               RPC.onServerMessage(-1, " SMS: Кто я пажилая струя?. Отправитель: qrlk[16]")
               RPC.onServerMessage(-1, " SMS: Да ты!. Получатель: qrlk[16]")
               RPC.onServerMessage(-1, " SMS: А, ну тогда давай!. Отправитель: qrlk[16]")
+            end]]
+            for i = 1, 50 do
+              RPC.onServerMessage(-1, " SMS: Привет. Получатель: qrlk"..math.random(1, 3000).."[16]")
             end
           end
         )
@@ -2653,11 +2696,11 @@ function main()
         end
       end
     )
+    lua_thread.create(getonlinelist)
     inicfg.save(cfg, "smes")
     while true do
       wait(0)
       if iAddSMS then main_window_state.v = true end
-
       if os.date("%m") ~= "03" and os.date("%m") ~= "04" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
       asdsadasads, myidasdas = sampGetPlayerIdByCharHandle(PLAYER_PED)
       if PREMIUM and (licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver) then
@@ -4110,15 +4153,15 @@ function imgui_messanger_content()
   if cfg.messanger.mode == 2 then imgui_messanger_sms_settings() end
   if cfg.messanger.mode == 1 then imgui_messanger_sup_player_list() end
   if cfg.messanger.mode == 2 then
+
     imgui_messanger_sms_player_list()
+
   end
   imgui_messanger_switchmode()
   imgui.NextColumn()
   if cfg.messanger.mode == 1 then imgui_messanger_sup_header() end
-  iooooo = os.clock()
 
   if cfg.messanger.mode == 2 then imgui_messanger_sms_header() end
-  iooooob = os.clock() - iooooo
   if cfg.messanger.mode == 1 then imgui_messanger_sup_dialog() end
   if cfg.messanger.mode == 2 then
     iaaaaa = os.clock()
@@ -4221,34 +4264,49 @@ function imgui_messanger_sms_settings()
 end
 
 function imgui_messanger_sms_player_list()
+  iooooo = os.clock()
   playerlistY = imgui.GetContentRegionAvail().y - 35
   imgui.BeginChild("список ников", imgui.ImVec2(192, playerlistY), true)
-  smsindex_PINNED = {}
-  smsindex_PINNEDVIEWED = {}
-  smsindex_NEW = {}
-  smsindex_NEWVIEWED = {}
-  for k in pairs(sms) do
-    if cfg.messanger.iSMSfilterBool and cfg.messanger.smsfiltertext ~= nil then
-      if cfg.messanger.smsfiltertext ~= "" then
-        if string.find(string.rlower(k), string.rlower(cfg.messanger.smsfiltertext)) ~= nil then
+  if counter == nil then counter = 0 end
+  if counter > 10 then
+    counter = 0
+    smsindex_PINNED = {}
+    smsindex_PINNEDVIEWED = {}
+    smsindex_NEW = {}
+    smsindex_NEWVIEWED = {}
+
+    for k in pairs(sms) do
+      if cfg.messanger.iSMSfilterBool and cfg.messanger.smsfiltertext ~= nil then
+        if cfg.messanger.smsfiltertext ~= "" then
+          if string.find(string.rlower(k), string.rlower(cfg.messanger.smsfiltertext)) ~= nil then
+            imgui_messanger_sms_player_list_filter(k)
+          end
+        else
           imgui_messanger_sms_player_list_filter(k)
         end
       else
         imgui_messanger_sms_player_list_filter(k)
       end
-    else
-      imgui_messanger_sms_player_list_filter(k)
     end
+
+    table.sort(smsindex_PINNED, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
+    table.sort(smsindex_PINNEDVIEWED, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
+    table.sort(smsindex_NEW, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
+    table.sort(smsindex_NEWVIEWED, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
+  else
+    counter = counter + 1
   end
-  table.sort(smsindex_PINNED, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
-  table.sort(smsindex_PINNEDVIEWED, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
-  table.sort(smsindex_NEW, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
-  table.sort(smsindex_NEWVIEWED, function(a, b) return sms[a]["Chat"][#sms[a]["Chat"]]["time"] > sms[b]["Chat"][#sms[b]["Chat"]]["time"] end)
-  imgui_messanger_sms_showdialogs(smsindex_PINNED, "Pinned")
-  imgui_messanger_sms_showdialogs(smsindex_PINNEDVIEWED, "Pinned")
-  imgui_messanger_sms_showdialogs(smsindex_NEW, "NotPinned")
-  imgui_messanger_sms_showdialogs(smsindex_NEWVIEWED, "NotPinned")
+  if smsindex_PINNED ~= nil and smsindex_PINNEDVIEWED ~= nil and smsindex_NEW ~= nil and smsindex_NEWVIEWED ~= nil then
+    imgui_messanger_sms_showdialogs(smsindex_PINNED, "Pinned")
+    imgui_messanger_sms_showdialogs(smsindex_PINNEDVIEWED, "Pinned")
+    imgui_messanger_sms_showdialogs(smsindex_NEW, "NotPinned")
+    imgui_messanger_sms_showdialogs(smsindex_NEWVIEWED, "NotPinned")
+  end
+  iooooob = os.clock() - iooooo
+
+
   imgui.EndChild()
+
 end
 
 function imgui_messanger_sms_player_list_filter(k)
@@ -4302,124 +4360,122 @@ function imgui_messanger_sup_player_list()
 end
 
 function imgui_messanger_sms_showdialogs(table, typ)
-
   for _, v in ipairs(table) do
     k = v
-    v = sms[v]
-    if k ~= " " then
-      for id = 0, sampGetMaxPlayerId() do
-        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == k then
-          pId = id
-          break
+    if iShowSHOWOFFLINESMS.v or sms[k]["id"] == "-" then
+
+      v = sms[v]
+      if k ~= " " then
+        if sms[k]["id"] == nil then
+          pId = "-"
+        else
+          pId = sms[k]["id"]
         end
-      end
-      kolvo = 0
-      if #v["Chat"] ~= 0 then
-        for i, z in pairs(v["Chat"]) do
-          if z["type"] == "FROM" and z["time"] > v["Checked"] then
-            kolvo = kolvo + 1
+        kolvo = 0
+        if #v["Chat"] ~= 0 then
+          for i, z in pairs(v["Chat"]) do
+            if z["type"] == "FROM" and z["time"] > v["Checked"] then
+              kolvo = kolvo + 1
+            end
           end
         end
-      end
 
-      if typ == "Pinned" then
-        imgui.PushID(1)
-        imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(0, 0, 0, 113):GetVec4())
-        if kolvo > 0 then
-          imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(0, 255, 0, 255):GetVec4())
-        else
-          imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(255, 255, 255, 255):GetVec4())
+        if typ == "Pinned" then
+          imgui.PushID(1)
+          imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(0, 0, 0, 113):GetVec4())
+          if kolvo > 0 then
+            imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(0, 255, 0, 255):GetVec4())
+          else
+            imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(255, 255, 255, 255):GetVec4())
+          end
+          if k == selecteddialogSMS then
+            imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(54, 12, 42, 113):GetVec4())
+            sms[selecteddialogSMS]["Checked"] = os.time()
+
+            --  elseif #iMessanger[k]["A"] == 0 then
+          else
+            imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(255, 0, 0, 113):GetVec4())
+          end
         end
         if k == selecteddialogSMS then
-          imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(54, 12, 42, 113):GetVec4())
           sms[selecteddialogSMS]["Checked"] = os.time()
-
-          --  elseif #iMessanger[k]["A"] == 0 then
-        else
-          imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(255, 0, 0, 113):GetVec4())
         end
-      end
-      if k == selecteddialogSMS then
-        sms[selecteddialogSMS]["Checked"] = os.time()
+        if typ == "NotPinned" then
+          imgui.PushID(2)
+          imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(0, 0, 0, 113):GetVec4())
+          if kolvo > 0 then
+            imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(0, 255, 0, 255):GetVec4())
+          else
+            imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(255, 255, 255, 255):GetVec4())
+          end
+          if k == selecteddialogSMS then
+            imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(54, 12, 42, 113):GetVec4())
+            sms[selecteddialogSMS]["Checked"] = os.time()
+          else
+            imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0.26, 0.59, 0.98, 0.40))
+          end
+        end
 
-      end
-      if typ == "NotPinned" then
-        imgui.PushID(2)
-        imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(0, 0, 0, 113):GetVec4())
         if kolvo > 0 then
-          imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(0, 255, 0, 255):GetVec4())
+          if pId ~= nil and pId ~= "-" then
+            if imgui.Button(u8(k .. "[" .. pId .. "] - "..kolvo), imgui.ImVec2(-0.0001, 30)) then
+              selecteddialogSMS = k
+              ScrollToDialogSMS = true
+              online = "Онлайн"
+              smsafk[selecteddialogSMS] = "CHECK AFK"
+              scroll = true
+              keyboard = true
+              SSDB1_trigger = true
+            end
+          elseif iShowSHOWOFFLINESMS.v then
+            if imgui.Button(u8(k .. "[-] - "..kolvo), imgui.ImVec2(-0.0001, 30)) then
+              selecteddialogSMS = k
+              ScrollToDialogSMS = true
+              online = "Оффлайн"
+              scroll = true
+              keyboard = true
+              SSDB1_trigger = true
+            end
+          end
         else
-          imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(255, 255, 255, 255):GetVec4())
-        end
-        if k == selecteddialogSMS then
-          imgui.PushStyleColor(imgui.Col.Button, imgui.ImColor(54, 12, 42, 113):GetVec4())
-          sms[selecteddialogSMS]["Checked"] = os.time()
-        else
-          imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0.26, 0.59, 0.98, 0.40))
-        end
-      end
-
-      if kolvo > 0 then
-        if pId ~= nil and sampIsPlayerConnected(pId) and sampGetPlayerNickname(pId) == k then
-          if imgui.Button(u8(k .. "[" .. pId .. "] - "..kolvo), imgui.ImVec2(-0.0001, 30)) then
-            selecteddialogSMS = k
-            ScrollToDialogSMS = true
-            online = "Онлайн"
-            smsafk[selecteddialogSMS] = "CHECK AFK"
-            scroll = true
-            keyboard = true
-            SSDB1_trigger = true
-          end
-        elseif iShowSHOWOFFLINESMS.v then
-          if imgui.Button(u8(k .. "[-] - "..kolvo), imgui.ImVec2(-0.0001, 30)) then
-            selecteddialogSMS = k
-            ScrollToDialogSMS = true
-            online = "Оффлайн"
-            scroll = true
-            keyboard = true
-            SSDB1_trigger = true
+          if pId ~= nil and pId ~= "-" then
+            if imgui.Button(u8(k .. "[" .. pId .. "]"), imgui.ImVec2(-0.0001, 30)) then
+              selecteddialogSMS = k
+              ScrollToDialogSMS = true
+              smsafk[selecteddialogSMS] = "CHECK AFK"
+              online = "Онлайн"
+              scroll = true
+              keyboard = true
+              SSDB1_trigger = true
+            end
+          elseif iShowSHOWOFFLINESMS.v then
+            if imgui.Button(u8(k .. "[-]"), imgui.ImVec2(-0.0001, 30)) then
+              selecteddialogSMS = k
+              ScrollToDialogSMS = true
+              online = "Оффлайн"
+              scroll = true
+              keyboard = true
+              SSDB1_trigger = true
+            end
           end
         end
-      else
-        if pId ~= nil and sampIsPlayerConnected(pId) and sampGetPlayerNickname(pId) == k then
-          if imgui.Button(u8(k .. "[" .. pId .. "]"), imgui.ImVec2(-0.0001, 30)) then
-            selecteddialogSMS = k
-            ScrollToDialogSMS = true
-            smsafk[selecteddialogSMS] = "CHECK AFK"
-            online = "Онлайн"
-            scroll = true
-            keyboard = true
-            SSDB1_trigger = true
-          end
-        elseif iShowSHOWOFFLINESMS.v then
-          if imgui.Button(u8(k .. "[-]"), imgui.ImVec2(-0.0001, 30)) then
-            selecteddialogSMS = k
-            ScrollToDialogSMS = true
-            online = "Оффлайн"
-            scroll = true
-            keyboard = true
-            SSDB1_trigger = true
-          end
+        if scroll and selecteddialogSMS == k and iChangeScrollSMS.v then
+          imgui.SetScrollHere()
         end
-      end
-      if scroll and selecteddialogSMS == k and iChangeScrollSMS.v then
-        imgui.SetScrollHere()
-      end
-      imgui.PopStyleColor()
-      imgui_messanger_sms_player_list_contextmenu(k, typ)
-      if typ == "Pinned" then
-        imgui.PopStyleColor(2)
-        imgui.PopID()
-      end
-      if typ == "NotPinned" then
-        imgui.PopStyleColor(2)
-        imgui.PopID()
+        imgui.PopStyleColor()
+        imgui_messanger_sms_player_list_contextmenu(k, typ)
+        if typ == "Pinned" then
+          imgui.PopStyleColor(2)
+          imgui.PopID()
+        end
+        if typ == "NotPinned" then
+          imgui.PopStyleColor(2)
+          imgui.PopID()
+        end
       end
     end
   end
 end
-
-
 
 function imgui_messanger_sms_player_list_contextmenu(k, typ)
   if imgui.BeginPopupContextItem("item context menu"..k) then
@@ -5376,7 +5432,7 @@ function imgui_settings_13_sms_sounds()
     imgui.SameLine()
     imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(u8"Звук исходящего сообщения").x)
     imgui.SliderInt(u8"Звук входящего сообщения", iSoundSmsInNumber, 1, currentaudiokolDD)
-    if iSoundSmsInNumber.v ~= cfg.options.SoundSmsInNumber then
+    if iSoundSmsInNumber.v ~= cfg.options.SoundSmsInNumber and iSoundSmsOutNumber.v <= currentaudiokolDD then
       PLAYSMSIN = true
       cfg.options.SoundSmsInNumber = iSoundSmsInNumber.v
       inicfg.save(cfg, "smes")
@@ -5394,7 +5450,7 @@ function imgui_settings_13_sms_sounds()
     imgui.SameLine()
     imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(u8"Звук исходящего сообщения").x)
     imgui.SliderInt(u8"Звук исходящего сообщения", iSoundSmsOutNumber, 1, currentaudiokolDD)
-    if iSoundSmsOutNumber.v ~= cfg.options.SoundSmsOutNumber then
+    if iSoundSmsOutNumber.v ~= cfg.options.SoundSmsOutNumber and iSoundSmsOutNumber.v <= currentaudiokolDD then
       PLAYSMSOUT = true
       cfg.options.SoundSmsOutNumber = iSoundSmsOutNumber.v
       inicfg.save(cfg, "smes")
