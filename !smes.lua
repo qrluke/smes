@@ -2608,18 +2608,19 @@ function main()
       function()
         lua_thread.create(
           function()
-            DEBUG = not DEBUG
+            --DEBUG = not DEBUG
             main_window_state.v = true
-            selecteddialogSMS = "rubbishman"
+            selecteddialogSMS = "qrlk"
             math.randomseed(os.time())
             for i = 1, 1000 do
-              --RPC.onServerMessage(-1, " SMS: Тестовое сообщения для проблемы BBB. Отправитель: rubbishman[16]")
-              RPC.onServerMessage(-1, " SMS: Привет. Получатель: rubbishman[16]")
-              RPC.onServerMessage(-1, " SMS: Привет. Отправитель: rubbishman[16]")
-              RPC.onServerMessage(-1, " SMS: Я пажилая струя. Получатель: rubbishman[16]")
-              RPC.onServerMessage(-1, " SMS: Кто я пажилая струя?. Отправитель: rubbishman[16]")
-							RPC.onServerMessage(-1, " SMS: Да ты!. Получатель: rubbishman[16]")
-							RPC.onServerMessage(-1, " SMS: А, ну тогда давай!. Отправитель: rubbishman[16]")
+              --RPC.onServerMessage(-1, " SMS: Тестовое сообщения для проблемы BBB. Отправитель: qrlk[16]")
+              RPC.onServerMessage(-1, " SMS: Привет. Получатель: qrlk[16]")
+              RPC.onServerMessage(-1, " SMS: Привет. Отправитель: qrlk[16]")
+              RPC.onServerMessage(-1, " SMS: Я пажилая струя. Получатель: qrlk[16]")
+              RPC.onServerMessage(-1, " SMS: Кто я пажилая струя?. Отправитель: qrlk[16]")
+			  RPC.onServerMessage(-1, " SMS: Да ты!. Получатель: qrlk[16]")
+			  RPC.onServerMessage(-1, " SMS: А, ну тогда давай!. Отправитель: qrlk[16]")
+			  wait(0.01)
             end
           end
         )
@@ -4584,13 +4585,13 @@ function imgui_messanger_sms_dialog()
         X = imgui.CalcTextSize("^").x + 15
         Y = imgui.CalcTextSize("^").y + 5
         imgui.NewLine()
-        imgui.SameLine(width / 2 - calc.x / 2 - 3)
+        imgui.SameLine(width / 2 - calc.x / 2 - 15)
         imgui.BeginChild("##msgfe" .. kkk, imgui.ImVec2(X, Y), false, imgui.WindowFlags.AlwaysUseWindowPadding + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)
         imgui.Text("^")
-        imgui.EndChild()
         if imgui.IsItemVisible() then
           scroller = true
         end
+		imgui.EndChild()
         if imgui.IsItemClicked() then
           sms[selecteddialogSMS]["maxpos"] = 1
         end
@@ -4703,13 +4704,13 @@ function imgui_messanger_sms_dialog()
         X = imgui.CalcTextSize(".").x + 15
         Y = imgui.CalcTextSize(".").y + 8
         imgui.NewLine()
-        imgui.SameLine(width / 2 - calc.x / 2 - 3)
+        imgui.SameLine(width / 2 - calc.x / 2 - 15)
         imgui.BeginChild("##msgfhe" .. kkk, imgui.ImVec2(X, Y), false, imgui.WindowFlags.AlwaysUseWindowPadding + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)
         imgui.Text(".")
-        imgui.EndChild()
-        if imgui.IsItemVisible() then
+		if imgui.IsItemVisible() then
           scroller = true
         end
+        imgui.EndChild()
         if imgui.IsItemClicked() then
           sms[selecteddialogSMS]["maxpos"] = #sms[selecteddialogSMS]["Chat"]
         end
@@ -4728,6 +4729,7 @@ function imgui_messanger_sms_dialog()
 				ScrollToDialogSMS = false
 				scrolldone = false
 			else
+			sms[selecteddialogSMS]["maxpos"] = #sms[selecteddialogSMS]["Chat"]
 				scrolldone = true
 			end
     end
