@@ -1,10 +1,17 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.11")
+script_version("1.2")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.11 [28.03.2019]
+script_changelog = [[	v1.2 [30.03.2019]
+* UPD: Переписана логика отрисовки диалогов, теперь количество сообщений активного диалога влияет на фпс в ~500 раз меньше.
+* UPD: Оптимизирован модуль информации о собеседнике: скорость отрисовки кадра увеличена в три раза.
+* UPD: Теперь "Ваш_Ник достает мобильник скрывается если скрыты исходящие смс (ERP)".
+* UPD: Теперь smes игнорирует смс от бота Малевича (ERP).
+* UPD: Теперь smes сверяет номер собеседника. Если собеседник изменил номер, напишите ему одну смс вручную/пусть он вам напишет и номер обновится в БД (ARP/TRP/DRP).
+
+	v1.11 [28.03.2019]
 * NEW: Добавлен хоткей фокуса на ввод: при нажатии устанавливается фокус на ввод сообщения в активном диалоге.
 * NEW: Добавлена поддержка Trinity-RPG.
 * UPD: Размеры селектора звуков увеличены.
@@ -2608,7 +2615,7 @@ function main()
       function()
         lua_thread.create(
           function()
-            --DEBUG = not DEBUG
+            DEBUG = not DEBUG
             main_window_state.v = true
             selecteddialogSMS = "qrlk"
             math.randomseed(os.time())
@@ -2618,9 +2625,8 @@ function main()
               RPC.onServerMessage(-1, " SMS: Привет. Отправитель: qrlk[16]")
               RPC.onServerMessage(-1, " SMS: Я пажилая струя. Получатель: qrlk[16]")
               RPC.onServerMessage(-1, " SMS: Кто я пажилая струя?. Отправитель: qrlk[16]")
-			  RPC.onServerMessage(-1, " SMS: Да ты!. Получатель: qrlk[16]")
-			  RPC.onServerMessage(-1, " SMS: А, ну тогда давай!. Отправитель: qrlk[16]")
-			  wait(0.01)
+              RPC.onServerMessage(-1, " SMS: Да ты!. Получатель: qrlk[16]")
+              RPC.onServerMessage(-1, " SMS: А, ну тогда давай!. Отправитель: qrlk[16]")
             end
           end
         )
@@ -3066,14 +3072,16 @@ function mode_samprp()
   function smsheader()
     imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
     if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
-      for id = 0, sampGetMaxPlayerId() + 1 do
-        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
-          shId = id
-          break
+      if math.random(1, 9999) % 20 < 1 then
+        for id = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+            shId = id
+            break
+          end
+          if id == sampGetMaxPlayerId() + 1 then shId = "-" end
         end
-        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
       end
-      if shId == "-" then
+      if shId ~= nil and shId == "-" then
         imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
       else
         imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
@@ -3170,8 +3178,8 @@ function mode_evolverp()
         return false
       end
     end
-		_213, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-		if iHideSmsOut.v and text == " "..sampGetPlayerNickname(myid).." достает мобильник" then return false end
+    _213, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+    if iHideSmsOut.v and text == " "..sampGetPlayerNickname(myid).." достает мобильник" then return false end
 
   end
 
@@ -3298,14 +3306,16 @@ function mode_evolverp()
   function smsheader()
     imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
     if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
-      for id = 0, sampGetMaxPlayerId() + 1 do
-        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
-          shId = id
-          break
+      if math.random(1, 9999) % 20 < 1 then
+        for id = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+            shId = id
+            break
+          end
+          if id == sampGetMaxPlayerId() + 1 then shId = "-" end
         end
-        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
       end
-      if shId == "-" then
+      if shId ~= nil and shId == "-" then
         imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
       else
         imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
@@ -3333,7 +3343,7 @@ function mode_advancerp()
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if sms[smsNick] and sms[smsNick].Chat then
-					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
+          if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3371,7 +3381,7 @@ function mode_advancerp()
         if iSoundSmsOut.v then PLAYSMSOUT = true end
         local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         if sms[smsNick] and sms[smsNick].Chat then
-					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
+          if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3493,14 +3503,16 @@ function mode_advancerp()
   function smsheader()
     imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
     if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
-      for id = 0, sampGetMaxPlayerId() + 1 do
-        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
-          shId = id
-          break
+      if math.random(1, 9999) % 30 < 1 then
+        for id = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+            shId = id
+            break
+          end
+          if id == sampGetMaxPlayerId() + 1 then shId = "-" end
         end
-        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
       end
-      if shId == "-" then
+      if shId ~= nil and shId == "-" then
         imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
       else
         imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
@@ -3544,7 +3556,7 @@ function mode_diamondrp()
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if sms[smsNick] and sms[smsNick].Chat then
-					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
+          if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3585,7 +3597,7 @@ function mode_diamondrp()
         if iSoundSmsOut.v then PLAYSMSOUT = true end
         local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         if sms[smsNick] and sms[smsNick].Chat then
-					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
+          if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3719,14 +3731,16 @@ function mode_diamondrp()
   function smsheader()
     imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
     if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
-      for id = 0, sampGetMaxPlayerId() + 1 do
-        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
-          shId = id
-          break
+      if math.random(1, 9999) % 20 < 1 then
+        for id = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+            shId = id
+            break
+          end
+          if id == sampGetMaxPlayerId() + 1 then shId = "-" end
         end
-        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
       end
-      if shId == "-" then
+      if shId ~= nil and shId == "-" then
         imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
       else
         imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
@@ -3767,7 +3781,7 @@ function mode_trinityrp()
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
         if sms[smsNick] and sms[smsNick].Chat then
-					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
+          if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3809,7 +3823,7 @@ function mode_trinityrp()
         if iSoundSmsOut.v then PLAYSMSOUT = true end
         local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
         if sms[smsNick] and sms[smsNick].Chat then
-					if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
+          if sms[smsNick]["Number"] ~= smsNumber then sms[smsNick]["Number"] = smsNumber end
         else
           sms[smsNick] = {}
           sms[smsNick]["Number"] = smsNumber
@@ -3943,14 +3957,16 @@ function mode_trinityrp()
   function smsheader()
     imgui.BeginChild("##header", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), 35), true)
     if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
-      for id = 0, sampGetMaxPlayerId() + 1 do
-        if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
-          shId = id
-          break
+      if math.random(1, 9999) % 20 < 1 then
+        for id = 0, sampGetMaxPlayerId() + 1 do
+          if sampIsPlayerConnected(id) and sampGetPlayerNickname(id) == tostring(selecteddialogSMS) then
+            shId = id
+            break
+          end
+          if id == sampGetMaxPlayerId() + 1 then shId = "-" end
         end
-        if id == sampGetMaxPlayerId() + 1 then shId = "-" end
       end
-      if shId == "-" then
+      if shId ~= nil and shId == "-" then
         imgui.Text(u8:encode("[Оффлайн] Ник: "..tostring(selecteddialogSMS)..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
       else
         imgui.Text(u8:encode("[Онлайн] Ник: "..tostring(selecteddialogSMS)..". ID: "..tostring(shId)..". LVL: "..tostring(sampGetPlayerScore(tonumber(shId)))..". Номер: "..sms[selecteddialogSMS]["Number"]..". Всего сообщений: "..tostring(#sms[selecteddialogSMS]["Chat"]).."."))
@@ -3976,7 +3992,7 @@ end
 function imgui_init()
   function imgui.OnDrawFrame()
     iccccc = os.clock()
-    if os.date("%m") ~= "03" and os.date("%m") ~= "04" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
+    lua_thread.create(function() if os.date("%m") ~= "03" and os.date("%m") ~= "04" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end end)
 
     if main_window_state.v then
       imgui.SetNextWindowPos(imgui.ImVec2(cfg.menuwindow.PosX, cfg.menuwindow.PosY), imgui.Cond.FirstUseEver)
@@ -4093,13 +4109,22 @@ function imgui_messanger_content()
   if cfg.messanger.mode == 1 then imgui_messanger_sup_settings() end
   if cfg.messanger.mode == 2 then imgui_messanger_sms_settings() end
   if cfg.messanger.mode == 1 then imgui_messanger_sup_player_list() end
-  if cfg.messanger.mode == 2 then imgui_messanger_sms_player_list() end
+  if cfg.messanger.mode == 2 then
+    imgui_messanger_sms_player_list()
+  end
   imgui_messanger_switchmode()
   imgui.NextColumn()
   if cfg.messanger.mode == 1 then imgui_messanger_sup_header() end
+  iooooo = os.clock()
+
   if cfg.messanger.mode == 2 then imgui_messanger_sms_header() end
+  iooooob = os.clock() - iooooo
   if cfg.messanger.mode == 1 then imgui_messanger_sup_dialog() end
-  if cfg.messanger.mode == 2 then imgui_messanger_sms_dialog() end
+  if cfg.messanger.mode == 2 then
+    iaaaaa = os.clock()
+    imgui_messanger_sms_dialog()
+    iaaaaab = os.clock() - iaaaaa
+  end
   if cfg.messanger.mode == 1 then imgui_messanger_sup_keyboard() end
   if cfg.messanger.mode == 2 then imgui_messanger_sms_keyboard() end
   imgui.Columns(1)
@@ -4277,8 +4302,7 @@ function imgui_messanger_sup_player_list()
 end
 
 function imgui_messanger_sms_showdialogs(table, typ)
-  iooooo
-   = os.clock()
+
   for _, v in ipairs(table) do
     k = v
     v = sms[v]
@@ -4393,7 +4417,6 @@ function imgui_messanger_sms_showdialogs(table, typ)
       end
     end
   end
-  iooooob = os.clock() - iooooo
 end
 
 
@@ -4553,27 +4576,21 @@ function render()
   local memory = require "memory"
   sf =
   [[Time to render:
-Full frame: "%s"
-Dialog list: "%s"
-Dialog: "%s"
-Max FPS Possible: "%s"
-
-Max nomer: "%s"
-Max visible: "%s"]]
+Full frame: "%.3f"
+Dialog list: "%.3f"
+Dialog: "%.3f"]]
   while true do
     wait(0)
     while DEBUG do
       wait(0)
-      if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["maxpos"] ~= nil and sms[selecteddialogSMS]["maxvisible"] ~= nil then
-        renderFontDrawText(font, string.format(sf, icccccb, iooooob, iaaaaab, tonumber(1 / icccccb), sms[selecteddialogSMS]["maxpos"], sms[selecteddialogSMS]["maxvisible"] ), resX / 50, resY / 3.5, 0xFF00FF00)
-      end
+      renderFontDrawText(font, string.format(sf, icccccb, iooooob, iaaaaab), resX / 50, resY / 3.5, 0xFF00FF00)
     end
   end
 end
 
 function imgui_messanger_sms_dialog()
   dialogY = imgui.GetContentRegionAvail().y - 35
-  iaaaaa = os.clock()
+
   imgui.BeginChild("##middle", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), dialogY), true)
   if selecteddialogSMS ~= nil and sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
     if sms[selecteddialogSMS]["maxpos"] == nil then sms[selecteddialogSMS]["maxpos"] = #sms[selecteddialogSMS]["Chat"] end
@@ -4581,7 +4598,7 @@ function imgui_messanger_sms_dialog()
     kkkk = -1
     scroller = false
     for kkk, v in ipairs(sms[selecteddialogSMS]["Chat"]) do
-      if kkk == sms[selecteddialogSMS]["maxpos"] - 20 and kkk ~= 1 then
+      if kkk == sms[selecteddialogSMS]["maxpos"] - 10 and kkk ~= 1 then
         local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutColor):GetRGBA()
         imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
         local width = imgui.GetWindowWidth()
@@ -4595,16 +4612,16 @@ function imgui_messanger_sms_dialog()
         if imgui.IsItemVisible() then
           scroller = true
         end
-		imgui.EndChild()
+        imgui.EndChild()
         if imgui.IsItemClicked() then
           sms[selecteddialogSMS]["maxpos"] = 1
         end
 
         imgui.PopStyleColor()
       end
-      if kkk >= sms[selecteddialogSMS]["maxpos"] - 20 and kkk <= sms[selecteddialogSMS]["maxpos"] + 20 then
+      if kkk >= sms[selecteddialogSMS]["maxpos"] - 10 and kkk <= sms[selecteddialogSMS]["maxpos"] + 10 then
 
-				if DEBUG then msg = string.format("%s: %s", kkk, u8:encode(v.text)) else msg = string.format("%s", u8:encode(v.text)) end
+        if DEBUG then msg = string.format("%s: %s", kkk, u8:encode(v.text)) else msg = string.format("%s", u8:encode(v.text)) end
 
         time = u8:encode(os.date("%x %X", v.time))
         if v.type == "FROM" then
@@ -4700,7 +4717,7 @@ function imgui_messanger_sms_dialog()
         imgui.PopStyleVar()
         imgui.PopStyleColor()
       end
-      if kkk == sms[selecteddialogSMS]["maxpos"] + 20 and kkk ~= 1 then
+      if kkk == sms[selecteddialogSMS]["maxpos"] + 10 and kkk ~= 1 then
         local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutColor):GetRGBA()
         imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
         local width = imgui.GetWindowWidth()
@@ -4711,7 +4728,7 @@ function imgui_messanger_sms_dialog()
         imgui.SameLine(width / 2 - calc.x / 2 - 15)
         imgui.BeginChild("##msgfhe" .. kkk, imgui.ImVec2(X, Y), false, imgui.WindowFlags.AlwaysUseWindowPadding + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)
         imgui.Text(".")
-		if imgui.IsItemVisible() then
+        if imgui.IsItemVisible() then
           scroller = true
         end
         imgui.EndChild()
@@ -4728,14 +4745,14 @@ function imgui_messanger_sms_dialog()
       sms[selecteddialogSMS]["mousewheel"] = imgui.GetIO().MouseWheel
     end
     if ScrollToDialogSMS then
-			if scrolldone then
-				imgui.SetScrollHere()
-				ScrollToDialogSMS = false
-				scrolldone = false
-			else
-			sms[selecteddialogSMS]["maxpos"] = #sms[selecteddialogSMS]["Chat"]
-				scrolldone = true
-			end
+      if scrolldone then
+        imgui.SetScrollHere()
+        ScrollToDialogSMS = false
+        scrolldone = false
+      else
+        sms[selecteddialogSMS]["maxpos"] = #sms[selecteddialogSMS]["Chat"]
+        scrolldone = true
+      end
     end
   else
     if sms[selecteddialogSMS] == nil then
@@ -4748,7 +4765,6 @@ function imgui_messanger_sms_dialog()
     end
   end
   imgui.EndChild()
-  iaaaaab = os.clock() - iaaaaa
 end
 
 function imgui_messanger_sup_keyboard()
