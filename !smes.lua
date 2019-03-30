@@ -2559,13 +2559,17 @@ function var_main()
   LASTID_SMS = -1
   ikkk = 0
   iooooo = 0
+  kkk = -1
+  kkkk = -1
   iaaaaa = 0
   iccccc = 0
-   icccccb = 0
+  icccccb = 0
   iooooob = 0
   iaaaaab = 0
   DEBUG = false
   iAddSMS = false
+  scroller = false
+  kostilforscroll = false
   PLAYSMSIN = false
   PLAYSMSOUT = false
   SSDB_trigger = false
@@ -2600,25 +2604,53 @@ function main()
         main_window_state.v = not main_window_state.v
       end
     )
-	sampRegisterChatCommand("smesdebug",
+    sampRegisterChatCommand("smesdebug",
       function()
-	  lua_thread.create(
-	  function()
-	  DEBUG = not DEBUG
-	  math.randomseed(os.time())
-	    for i = 1, 7000 do
-			RPC.onServerMessage(-1, " SMS: Тестовое сообщения для проблемы ааа. Получатель: rubbishman[16]")
-		end
+        lua_thread.create(
+          function()
+            DEBUG = not DEBUG
+            main_window_state.v = true
+            selecteddialogSMS = "rubbishman"
+            math.randomseed(os.time())
+            for i = 1, 1000 do
+              --RPC.onServerMessage(-1, " SMS: Тестовое сообщения для проблемы BBB. Отправитель: rubbishman[16]")
+              RPC.onServerMessage(-1, " SMS: Привет. Получатель: rubbishman[16]")
+              RPC.onServerMessage(-1, " SMS: Привет. Отправитель: rubbishman[16]")
+              RPC.onServerMessage(-1, " SMS: Я пажилая струя. Получатель: rubbishman[16]")
+              RPC.onServerMessage(-1, " SMS: Кто я пажилая струя?. Отправитель: rubbishman[16]")
+							RPC.onServerMessage(-1, " SMS: Да ты!. Получатель: rubbishman[16]")
+							RPC.onServerMessage(-1, " SMS: А, ну тогда давай!. Отправитель: rubbishman[16]")
+            end
+          end
+        )
       end
-	  )
-	  end
     )
     lua_thread.create(imgui_messanger_scrollkostil)
-	lua_thread.create(render)
+    lua_thread.create(render)
+    lua_thread.create(
+      function ()
+        while true do
+          wait(100)
+          if kostilforscroll and sms ~= {} and selecteddialogSMS ~= nil and sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["mousewheel"] ~= nil then
+            if sms[selecteddialogSMS]["maxpos"] < sms[selecteddialogSMS]["maxvisible"] then
+              if sms[selecteddialogSMS]["mousewheel"] < 0 then
+                sms[selecteddialogSMS]["maxpos"] = sms[selecteddialogSMS]["maxpos"] - sms[selecteddialogSMS]["mousewheel"]
+              end
+            else
+              if sms[selecteddialogSMS]["mousewheel"] > 0 then
+                sms[selecteddialogSMS]["maxpos"] = sms[selecteddialogSMS]["maxpos"] - sms[selecteddialogSMS]["mousewheel"]
+              end
+            end
+            kostilforscroll = false
+          end
+        end
+      end
+    )
     inicfg.save(cfg, "smes")
     while true do
       wait(0)
       if iAddSMS then main_window_state.v = true end
+
       if os.date("%m") ~= "03" and os.date("%m") ~= "04" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
       asdsadasads, myidasdas = sampGetPlayerIdByCharHandle(PLAYER_PED)
       if PREMIUM and (licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver) then
@@ -2787,7 +2819,7 @@ end
 
 function fixforcarstop()
   if isCharInAnyCar(playerPed) and getDriverOfCar(getCarCharIsUsing(playerPed)) == playerPed and getCarSpeed(getCarCharIsUsing(playerPed)) > 10 then
-  --  printString("control not locked", 1000)
+    --  printString("control not locked", 1000)
   else
     lockPlayerControl(true)
   end
@@ -2801,7 +2833,6 @@ function mode_samprp()
   end
 
   function RPC.onServerMessage(color, text)
-  print(color, text)
     if main_window_state.v and text:match(" "..tostring(selecteddialogSMS).." %[(%d+)%]") then
       if string.find(text, "AFK") then
         smsafk[selecteddialogSMS] = "AFK "..string.match(text, "AFK: (%d+) сек").." s"
@@ -3229,7 +3260,7 @@ function mode_evolverp()
               selecteddialogSMS = sampGetPlayerNickname(i)
               SSDB_trigger = true
               ScrollToDialogSMS = true
-            keyboard = true
+              keyboard = true
               break
             else
               selecteddialogSMS = sampGetPlayerNickname(i)
@@ -3435,7 +3466,7 @@ function mode_advancerp()
                 ikkk = 0
                 iAddSMS = false
                 ScrollToDialogSMS = true
-              keyboard = true
+                keyboard = true
               end
             end
           end
@@ -3880,7 +3911,7 @@ function mode_trinityrp()
               ikkk = 0
               iAddSMS = false
               ScrollToDialogSMS = true
-            keyboard = true
+              keyboard = true
               break
             end
           end
@@ -3959,7 +3990,7 @@ function imgui_init()
       imgui_messanger()
       imgui.End()
     end
-	icccccb = os.clock() - iccccc
+    icccccb = os.clock() - iccccc
   end
 end
 
@@ -4242,7 +4273,7 @@ end
 
 function imgui_messanger_sms_showdialogs(table, typ)
   iooooo
-  = os.clock()
+   = os.clock()
   for _, v in ipairs(table) do
     k = v
     v = sms[v]
@@ -4360,26 +4391,7 @@ function imgui_messanger_sms_showdialogs(table, typ)
   iooooob = os.clock() - iooooo
 end
 
-function render()
-  resX, resY = getScreenResolution()
-  font = renderCreateFont("Arial", 16, 5)
-  local memory = require "memory"
-sf =
-[[Time to render:
-Full frame: "%s"
-Dialog list: "%s"
-Dialog: "%s"
-Max FPS Possible: "%s"
-Imgui FPS: "%s"
-Game FPS: "%s"]]
-  while true do
-    wait(0)
-    while DEBUG do
-      wait(0)
-      renderFontDrawText(font, string.format(sf, icccccb, iooooob, iaaaaab, tonumber(1/icccccb), imgui.GetIO().Framerate, memory.getfloat(0xB7CB50, 4, false)), resX / 50, resY / 3.5, 0xFF00FF00)
-    end
-  end
-end
+
 
 function imgui_messanger_sms_player_list_contextmenu(k, typ)
   if imgui.BeginPopupContextItem("item context menu"..k) then
@@ -4530,100 +4542,194 @@ function imgui_messanger_sup_dialog()
   imgui.EndChild()
 end
 
+function render()
+  resX, resY = getScreenResolution()
+  font = renderCreateFont("Arial", 16, 5)
+  local memory = require "memory"
+  sf =
+  [[Time to render:
+Full frame: "%s"
+Dialog list: "%s"
+Dialog: "%s"
+Max FPS Possible: "%s"
+
+Max nomer: "%s"
+Max visible: "%s"]]
+  while true do
+    wait(0)
+    while DEBUG do
+      wait(0)
+      if sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["maxpos"] ~= nil and sms[selecteddialogSMS]["maxvisible"] ~= nil then
+        renderFontDrawText(font, string.format(sf, icccccb, iooooob, iaaaaab, tonumber(1 / icccccb), sms[selecteddialogSMS]["maxpos"], sms[selecteddialogSMS]["maxvisible"] ), resX / 50, resY / 3.5, 0xFF00FF00)
+      end
+    end
+  end
+end
+
 function imgui_messanger_sms_dialog()
   dialogY = imgui.GetContentRegionAvail().y - 35
   iaaaaa = os.clock()
   imgui.BeginChild("##middle", imgui.ImVec2(imgui.GetContentRegionAvailWidth(), dialogY), true)
   if selecteddialogSMS ~= nil and sms[selecteddialogSMS] ~= nil and sms[selecteddialogSMS]["Chat"] ~= nil then
-    for k, v in ipairs(sms[selecteddialogSMS]["Chat"]) do
-      msg = string.format("%s", u8:encode(v.text))
-      time = u8:encode(os.date("%x %X", v.time))
-      if v.type == "FROM" then
-        header = u8:encode("->SMS от "..v.Nick)
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInColor):GetRGBA()
-        imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
-      end
-      if v.type == "TO" then
-        header = u8:encode("<-SMS от "..v.Nick)
+    if sms[selecteddialogSMS]["maxpos"] == nil then sms[selecteddialogSMS]["maxpos"] = #sms[selecteddialogSMS]["Chat"] end
+    if sms[selecteddialogSMS]["maxvisible"] == nil then sms[selecteddialogSMS]["maxvisible"] = -999 end
+    kkkk = -1
+    scroller = false
+    for kkk, v in ipairs(sms[selecteddialogSMS]["Chat"]) do
+      if kkk == sms[selecteddialogSMS]["maxpos"] - 20 and kkk ~= 1 then
         local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutColor):GetRGBA()
         imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
-      end
-      if v.type ~= "service" then
-        Xmin = imgui.CalcTextSize(time).x + imgui.CalcTextSize(header).x
-        Xmax = imgui.GetContentRegionAvailWidth() / 2 + imgui.GetContentRegionAvailWidth() / 4
-        Xmes = imgui.CalcTextSize(msg).x
-
-        if Xmin < Xmes then
-          if Xmes < Xmax then
-            X = Xmes + 15
-            if (Xmin + 5) > X then anomaly = true else anomaly = false end
-          else
-            X = Xmax
-            if (Xmin + 5) > X then anomaly = true else anomaly = false end
-          end
-        else
-          if (Xmin + 5) < Xmax then
-            X = Xmin + 15
-            if (Xmin + 5) > X then anomaly = true else anomaly = false end
-          else
-            X = Xmax
-            if (Xmin + 5) > X then anomaly = true else anomaly = false end
-          end
-        end
-        Y = imgui.CalcTextSize(time).y + 7 + (imgui.CalcTextSize(time).y + 5) * math.ceil((imgui.CalcTextSize(msg).x) / (X - 14))
-        if anomaly then Y = Y + imgui.CalcTextSize(time).y + 3 end
-      else
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutColor):GetRGBA()
-        imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
-        X = imgui.CalcTextSize(msg).x + 9
-        Y = imgui.CalcTextSize(msg).y + 5
-      end
-      if v.type == "TO" then
-        imgui.NewLine()
-        imgui.SameLine(imgui.GetContentRegionAvailWidth() - X + 20 - imgui.GetStyle().ScrollbarSize)
-      end
-      if v.type == "service" then
-        imgui.NewLine()
         local width = imgui.GetWindowWidth()
-        local calc = imgui.CalcTextSize(msg)
+        local calc = imgui.CalcTextSize("^")
+        X = imgui.CalcTextSize("^").x + 15
+        Y = imgui.CalcTextSize("^").y + 5
+        imgui.NewLine()
         imgui.SameLine(width / 2 - calc.x / 2 - 3)
+        imgui.BeginChild("##msgfe" .. kkk, imgui.ImVec2(X, Y), false, imgui.WindowFlags.AlwaysUseWindowPadding + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)
+        imgui.Text("^")
+        imgui.EndChild()
+        if imgui.IsItemVisible() then
+          scroller = true
+        end
+        if imgui.IsItemClicked() then
+          sms[selecteddialogSMS]["maxpos"] = 1
+        end
+
+        imgui.PopStyleColor()
       end
-      imgui.PushStyleVar(imgui.StyleVar.WindowPadding, imgui.ImVec2(4.0, 2.0))
-      imgui.BeginChild("##msg" .. k, imgui.ImVec2(X, Y), false, imgui.WindowFlags.AlwaysUseWindowPadding + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)
-      if v.type == "FROM" then
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInTextColor):GetRGBA()
-        imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(r, g, b, a):GetVec4())
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInTimeColor):GetRGBA()
-        imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), time)
-        if not anomaly then imgui.SameLine() end
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInHeaderColor):GetRGBA()
-        imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), header)
+      if kkk >= sms[selecteddialogSMS]["maxpos"] - 20 and kkk <= sms[selecteddialogSMS]["maxpos"] + 20 then
+
+				if DEBUG then msg = string.format("%s: %s", kkk, u8:encode(v.text)) else msg = string.format("%s", u8:encode(v.text)) end
+
+        time = u8:encode(os.date("%x %X", v.time))
+        if v.type == "FROM" then
+          header = u8:encode("->SMS от "..v.Nick)
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInColor):GetRGBA()
+          imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
+        end
+        if v.type == "TO" then
+          header = u8:encode("<-SMS от "..v.Nick)
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutColor):GetRGBA()
+          imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
+        end
+        if v.type ~= "service" then
+          Xmin = imgui.CalcTextSize(time).x + imgui.CalcTextSize(header).x
+          Xmax = imgui.GetContentRegionAvailWidth() / 2 + imgui.GetContentRegionAvailWidth() / 4
+          Xmes = imgui.CalcTextSize(msg).x
+
+          if Xmin < Xmes then
+            if Xmes < Xmax then
+              X = Xmes + 15
+              if (Xmin + 5) > X then anomaly = true else anomaly = false end
+            else
+              X = Xmax
+              if (Xmin + 5) > X then anomaly = true else anomaly = false end
+            end
+          else
+            if (Xmin + 5) < Xmax then
+              X = Xmin + 15
+              if (Xmin + 5) > X then anomaly = true else anomaly = false end
+            else
+              X = Xmax
+              if (Xmin + 5) > X then anomaly = true else anomaly = false end
+            end
+          end
+          Y = imgui.CalcTextSize(time).y + 7 + (imgui.CalcTextSize(time).y + 5) * math.ceil((imgui.CalcTextSize(msg).x) / (X - 14))
+          if anomaly then Y = Y + imgui.CalcTextSize(time).y + 3 end
+        else
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutColor):GetRGBA()
+          imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
+          X = imgui.CalcTextSize(msg).x + 9
+          Y = imgui.CalcTextSize(msg).y + 5
+        end
+        if v.type == "TO" then
+          imgui.NewLine()
+          imgui.SameLine(imgui.GetContentRegionAvailWidth() - X + 20 - imgui.GetStyle().ScrollbarSize)
+        end
+        if v.type == "service" then
+          imgui.NewLine()
+          local width = imgui.GetWindowWidth()
+          local calc = imgui.CalcTextSize(msg)
+          imgui.SameLine(width / 2 - calc.x / 2 - 3)
+        end
+        imgui.PushStyleVar(imgui.StyleVar.WindowPadding, imgui.ImVec2(4.0, 2.0))
+
+        imgui.BeginChild("##msg" .. kkk, imgui.ImVec2(X, Y), false, imgui.WindowFlags.AlwaysUseWindowPadding + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)
+        if v.type == "FROM" then
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInTextColor):GetRGBA()
+          imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(r, g, b, a):GetVec4())
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInTimeColor):GetRGBA()
+          imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), time)
+          if not anomaly then imgui.SameLine() end
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsInHeaderColor):GetRGBA()
+          imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), header)
+        end
+        if v.type == "TO" then
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutTextColor):GetRGBA()
+          imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(r, g, b, a):GetVec4())
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutTimeColor):GetRGBA()
+          imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), time)
+          if not anomaly then imgui.SameLine() end
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutHeaderColor):GetRGBA()
+          imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), header)
+
+
+        end
+        if v.type == "service" then
+          local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutTextColor):GetRGBA()
+          imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(r, g, b, a):GetVec4())
+        end
+        imgui.TextWrapped(msg)
+        if v.type == "service" and imgui.IsItemHovered() then
+          imgui.SetTooltip(time)
+        end
+
+        imgui.PopStyleColor()
+        imgui.EndChild()
+
+        if imgui.IsItemVisible() and kkk > kkkk then kkkk = kkk end
+
+
+
+        --sampAddChatMessage(imgui.GetScrollY(), color)
+        imgui.PopStyleVar()
+        imgui.PopStyleColor()
       end
-      if v.type == "TO" then
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutTextColor):GetRGBA()
-        imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(r, g, b, a):GetVec4())
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutTimeColor):GetRGBA()
-        imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), time)
-        if not anomaly then imgui.SameLine() end
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutHeaderColor):GetRGBA()
-        imgui.TextColored(imgui.ImColor(r, g, b, a):GetVec4(), header)
+      if kkk == sms[selecteddialogSMS]["maxpos"] + 20 and kkk ~= 1 then
+        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutColor):GetRGBA()
+        imgui.PushStyleColor(imgui.Col.ChildWindowBg, imgui.ImColor(r, g, b, a):GetVec4())
+        local width = imgui.GetWindowWidth()
+        local calc = imgui.CalcTextSize(".")
+        X = imgui.CalcTextSize(".").x + 15
+        Y = imgui.CalcTextSize(".").y + 8
+        imgui.NewLine()
+        imgui.SameLine(width / 2 - calc.x / 2 - 3)
+        imgui.BeginChild("##msgfhe" .. kkk, imgui.ImVec2(X, Y), false, imgui.WindowFlags.AlwaysUseWindowPadding + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)
+        imgui.Text(".")
+        imgui.EndChild()
+        if imgui.IsItemVisible() then
+          scroller = true
+        end
+        if imgui.IsItemClicked() then
+          sms[selecteddialogSMS]["maxpos"] = #sms[selecteddialogSMS]["Chat"]
+        end
+
+        imgui.PopStyleColor()
       end
-      if v.type == "service" then
-        local r, g, b, a = imgui.ImColor(cfg.messanger.SmsOutTextColor):GetRGBA()
-        imgui.PushStyleColor(imgui.Col.Text, imgui.ImColor(r, g, b, a):GetVec4())
-      end
-      imgui.TextWrapped(msg)
-      if v.type == "service" and imgui.IsItemHovered() then
-        imgui.SetTooltip(time)
-      end
-      imgui.PopStyleColor()
-      imgui.EndChild()
-      imgui.PopStyleVar()
-      imgui.PopStyleColor()
+    end
+    sms[selecteddialogSMS]["maxvisible"] = kkkk
+    if imgui.GetIO().MouseWheel ~= 0 and scroller then
+      kostilforscroll = true
+      sms[selecteddialogSMS]["mousewheel"] = imgui.GetIO().MouseWheel
     end
     if ScrollToDialogSMS then
-      imgui.SetScrollHere()
-      ScrollToDialogSMS = false
+			if scrolldone then
+				imgui.SetScrollHere()
+				ScrollToDialogSMS = false
+				scrolldone = false
+			else
+				scrolldone = true
+			end
     end
   else
     if sms[selecteddialogSMS] == nil then
@@ -4636,7 +4742,7 @@ function imgui_messanger_sms_dialog()
     end
   end
   imgui.EndChild()
-  iaaaaab = os.clock()-iaaaaa
+  iaaaaab = os.clock() - iaaaaa
 end
 
 function imgui_messanger_sup_keyboard()
