@@ -3170,7 +3170,11 @@ function mode_evolverp()
         return false
       end
     end
+		_213, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+		if iHideSmsOut.v and text == " "..sampGetPlayerNickname(myid).." достает мобильник" then return false end
+
   end
+
   function sendsms()
     imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - 70)
     if imgui.InputText("##keyboardSMSKA", toAnswerSMS, imgui.InputTextFlags.EnterReturnsTrue) then
