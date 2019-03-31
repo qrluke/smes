@@ -1,11 +1,11 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.24")
+script_version("1.25")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.24 [31.03.2019]
-* UPD: Обновлен шаблон смски для EPR, гении зачем-то точку добавили в конце.
+script_changelog = [[	v1.25 [31.03.2019]
+* UPD: Обновлен шаблон смски для ERP, гении зачем-то точку добавили в конце.
 
 	v1.23 [30.03.2019]
 * UPD: Переписана логика отрисовки диалогов, теперь количество сообщений активного диалога влияет на фпс в ~500 раз меньше.
@@ -2405,7 +2405,7 @@ function goupdate()
         end
       elseif status1 == 6 then
         print('Загрузка обновления завершена.')
-        sampAddChatMessage((prefix..'Обновление завершено! Подробнее в changelog (ищите в меню -> информация).'), color)
+        sampAddChatMessage((prefix..'Обновление завершено! Подробнее в changelog (/smes -> SETTINGS -> О скрипте -> changelog).'), color)
         goupdatestatus = true
         thisScript():reload()
       end
