@@ -1,10 +1,13 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.22")
+script_version("1.24")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.22 [30.03.2019]
+script_changelog = [[	v1.24 [31.03.2019]
+* UPD: Обновлен шаблон смски для EPR, гении зачем-то точку добавили в конце.
+
+	v1.23 [30.03.2019]
 * UPD: Переписана логика отрисовки диалогов, теперь количество сообщений активного диалога влияет на фпс в ~500 раз меньше.
 * UPD: Оптимизирован модуль информации о собеседнике: скорость отрисовки кадра увеличена в три раза.
 * UPD: Оптимизирован список диалогов для лучшей производительности.
@@ -3137,7 +3140,7 @@ function mode_evolverp()
     if text:find("SMS") and not string.find(text, "Малевич$") then
       text = string.gsub(text, "{FFFF00}", "")
       text = string.gsub(text, "{FF8000}", "")
-      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Отправитель%: (.*)%[(%d+)%]")
+      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%.% Отправитель%: (.*)%[(%d+)%]")
       if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
@@ -3165,7 +3168,7 @@ function mode_evolverp()
           return false
         end
       end
-      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Получатель%: (.*)%[(%d+)%]")
+      local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%.% Получатель%: (.*)%[(%d+)%]")
       if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
