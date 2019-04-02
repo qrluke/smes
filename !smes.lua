@@ -1,10 +1,14 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.25")
+script_version("1.26")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.25 [31.03.2019]
+script_changelog = [[	v1.26 [02.04.2019]
+* FIX: Улучшен захват смсок на ERP.
+* FIX: Фикс фикса краша при настройке звука через клавиатуру вне доступного диапазона.
+
+	v1.25 [31.03.2019]
 * UPD: Обновлен шаблон смски для ERP, гении зачем-то точку добавили в конце.
 
 	v1.23 [30.03.2019]
@@ -3141,6 +3145,9 @@ function mode_evolverp()
       text = string.gsub(text, "{FFFF00}", "")
       text = string.gsub(text, "{FF8000}", "")
       local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%.% Отправитель%: (.*)%[(%d+)%]")
+			if not string.match(text, "^ SMS%: (.*)%.% Отправитель%: (.*)%[(%d+)%]") then
+				smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Отправитель%: (.*)%[(%d+)%]")
+			end
       if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
@@ -3169,6 +3176,9 @@ function mode_evolverp()
         end
       end
       local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%.% Получатель%: (.*)%[(%d+)%]")
+			if not string.match(text, "^ SMS%: (.*)%.% Получатель%: (.*)%[(%d+)%]") then
+				smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Получатель%: (.*)%[(%d+)%]")
+			end
       if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
@@ -3202,7 +3212,7 @@ function mode_evolverp()
         end
       end
     end
-    if text == " Сообщение доставлено" then
+    if text == " Сообщение доставлено" or text == "- Сообщение доставлено" then
       if iHideSmsReceived.v then return false end
       if not iHideSmsReceived.v then
         if iReplaceSmsReceivedColor.v then
@@ -5425,7 +5435,7 @@ function imgui_settings_13_sms_sounds()
     imgui.SameLine()
     imgui.PushItemWidth(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(u8"Звук исходящего сообщения").x)
     imgui.SliderInt(u8"Звук входящего сообщения", iSoundSmsInNumber, 1, currentaudiokolDD)
-    if iSoundSmsInNumber.v ~= cfg.options.SoundSmsInNumber and iSoundSmsOutNumber.v <= currentaudiokolDD then
+    if iSoundSmsInNumber.v ~= cfg.options.SoundSmsInNumber and iSoundSmsInNumber.v <= currentaudiokolDD then
       PLAYSMSIN = true
       cfg.options.SoundSmsInNumber = iSoundSmsInNumber.v
       inicfg.save(cfg, "smes")
