@@ -1,7 +1,7 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.27")
+script_version("1.296")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
 script_changelog = [[		v1.27 [01.05.2019]
@@ -2644,7 +2644,7 @@ function main()
   while PROVERKA ~= true do wait(10) end
   if PROVERKA == true then
     main_init_sms()
-    if os.date("%m") ~= "03" and os.date("%m") ~= "04" and os.date("%m") ~= "05" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
+    if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
     main_init_hotkeys()
     main_ImColorToHEX()
     main_copyright()
@@ -2703,7 +2703,7 @@ function main()
     while true do
       wait(0)
       if iAddSMS then main_window_state.v = true end
-    if os.date("%m") ~= "03" and os.date("%m") ~= "04" and os.date("%m") ~= "05" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
+    if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
       asdsadasads, myidasdas = sampGetPlayerIdByCharHandle(PLAYER_PED)
       if PREMIUM and (licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver) then
         thisScript():unload()
@@ -4043,7 +4043,7 @@ end
 function imgui_init()
   function imgui.OnDrawFrame()
     iccccc = os.clock()
-    lua_thread.create(function() if os.date("%m") ~= "03" and os.date("%m") ~= "04" and os.date("%m") ~= "05" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end end)
+    lua_thread.create(function() if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08"  then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end end)
 
     if main_window_state.v then
       imgui.SetNextWindowPos(imgui.ImVec2(cfg.menuwindow.PosX, cfg.menuwindow.PosY), imgui.Cond.FirstUseEver)
@@ -4087,7 +4087,7 @@ function imgui_saveposandsize()
     cfg.menuwindow.Height = imgui.GetWindowHeight()
     inicfg.save(cfg, "smes")
   end
-  if os.date("%m") ~= "03" and os.date("%m") ~= "04" and os.date("%m") ~= "05" then print('outdated please update.') cfg = nil loadstring(dsfdddds) imgui = nil PREMIUM = nil thisScript():unload() end
+  if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08"  then print('outdated please update.') cfg = nil loadstring(dsfdddds) imgui = nil PREMIUM = nil thisScript():unload() end
   if cfg.menuwindow.PosX ~= imgui.GetWindowPos().x or cfg.menuwindow.PosY ~= imgui.GetWindowPos().y then
     cfg.menuwindow.PosX = imgui.GetWindowPos().x
     cfg.menuwindow.PosY = imgui.GetWindowPos().y
