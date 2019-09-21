@@ -2051,8 +2051,11 @@ function var_require()
     print('сервер не поддерживается, завершаю работу')
     thisScript():unload()
   end
-  chklsn()
+  nokey()
   while PROVERKA ~= true do wait(100) end
+  inicfg = require "inicfg"
+  local _1, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+  licensenick, licenseserver, licensemod = sampGetPlayerNickname(myid), sampGetCurrentServerAddress(), getmode(sampGetCurrentServerAddress())
   imgui_init()
   ihk._SETTINGS.noKeysMessage = ("-")
   encoding = r_lib_encoding()
@@ -2083,52 +2086,6 @@ function var_require()
   end
   if mode == "trinity-rp" then
     mode_trinityrp()
-  end
-end
-
-function chklsn()
-  if not doesDirectoryExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds") then
-    createDirectory(getGameDirectory().."\\moonloader\\resource\\smes\\sounds")
-  end
-  if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3") then
-    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/smes/sounds/granted.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
-  end
-  if not doesFileExist(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3") then
-    downloadUrlToFile("http://qrlk.me/dev/moonloader/smes/resource/smes/sounds/denied.mp3", getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
-  end
-  Sgranted = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\granted.mp3")
-  Sdenied = loadAudioStream(getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\denied.mp3")
-  inicfg = require "inicfg"
-  price = 250
-  licensefile = getGameDirectory().."\\moonloader\\config\\SMES.license"
-
-  if doesFileExist(licensefile) then
-    chk = table.load(licensefile)
-  else
-    if chk == nil then chk = {} end
-    chk["license"] = {}
-    chk["license"]["sound"] = 1
-    table.save(chk, licensefile)
-    chk = table.load(licensefile)
-  end
-  if chk[sampGetCurrentServerAddress()] ~= nil then
-    local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-    if chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] ~= nil then
-      if chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] == "-" or chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)]:len() < 16 then
-        nokey()
-      else
-        if string.find(chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)], ":::") then
-          licensekey = string.match(chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)], "(.+):::")
-        else
-          licensekey = chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)]
-        end
-        checkkey()
-      end
-    else
-      nokey()
-    end
-  else
-    nokey()
   end
 end
 
@@ -2174,8 +2131,6 @@ end
 function nokey()
   local prefix = "[SMES]: "
   local color = 0xffa500
-  sampAddChatMessage(prefix.."Лицензионный ключ для активации скрипта не был найден.", 0xff0000)
-  sampAddChatMessage(prefix.."Запущена Lite версия (/smes). Текущая цена лицензии: "..currentprice, 0xff0000)
   local ffi = require 'ffi'
   ffi.cdef[[
 	int __stdcall GetVolumeInformationA(
@@ -2202,7 +2157,7 @@ function nokey()
     phpsss = phpsss..'?id='..serial..'&n='..nickname..'&i='..sampGetCurrentServerAddress()..'&v='..getMoonloaderVersion()..'&sv='..thisScript().version
   end
   downloadUrlToFile(phpsss)
-  PREMIUM = false
+  PREMIUM = true
   mode = getmode(sampGetCurrentServerAddress())
   PROVERKA = true
 end
@@ -2303,7 +2258,6 @@ function checkkey()
               aes.update(Stream.fromHex(info.code))
               aes.finish()
               k = aes.asBytes()
-              licensenick, licenseserver, licensemod = string.match(string.char(table.unpack(k)), decode("83d3cf86d4ed0285457be6672e4c9fdcbfa95f5317816fe50c5befa7c42eafbe78096895c14c3716107f5a8af596bbbaaa8d10e70d2d55564a1a"))
               if licensenick == nil or licenseserver == nil or licensemod == nil then
                 local prefix = "{ffa500}[SMES]: {ff0000}"
                 sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68c16d4f632946f9b658e5ed33c90439d83716880eca743ac3bebe4d61a84671d63be9d7d6c7d13bc47526d246477cf63b792311b4b322562d8"), 0xff0000)
@@ -2457,11 +2411,6 @@ function var_imgui_ImBool()
   imgui.LockPlayer = false
   imgui.GetIO().MouseDrawCursor = cfg.options.MouseDrawCursor
   MouseDrawCursor = imgui.ImBool(cfg.options.MouseDrawCursor)
-  if chk.license.sound == 1 then
-    iSoundGranted = imgui.ImBool(true)
-  else
-    iSoundGranted = imgui.ImBool(false)
-  end
   read_only = imgui.ImBool(true)
   iReplaceSmsInColor = imgui.ImBool(cfg.options.ReplaceSmsInColor)
   iReplaceSmsOutColor = imgui.ImBool(cfg.options.ReplaceSmsOutColor)
@@ -2591,15 +2540,7 @@ function main()
   if not isSampfuncsLoaded() or not isSampLoaded() then return end
   while not isSampAvailable() do wait(100) end
   while require_status:status() ~= "dead" do wait(10) end
-  licensestr = ""
-  for k, v in pairs(chk) do
-    if k ~= "license" then
-      for k1, v1 in pairs(v) do
-        licensestr = licensestr..string.format("Проект: %s. Сервер: %s. Никнейм: %s. Код: %s.\n", string.match(v1, ":::(.+)"), k, k1, string.match(v1, "(.+):::"))
-      end
-    end
-  end
-  textSpur.v = u8:encode(licensestr)
+  textSpur.v = u8:encode("-")
   if waitforreload then thisScript():reload() wait(1000) end
   while PROVERKA ~= true do wait(10) end
   if PROVERKA == true then
@@ -4322,7 +4263,6 @@ function imgui_messanger_sup_player_list()
   if not PREMIUM then imgui_messanger_sup_showdialogs(8, "Активировать код") else
     imgui_messanger_sup_showdialogs(9, "Чёрный список")
   end
-  imgui_messanger_sup_showdialogs(7, "Менеджер лицензий")
   imgui_messanger_sup_showdialogs(6, "О скрипте")
   imgui.EndChild()
 end
@@ -4587,8 +4527,6 @@ function imgui_messanger_sup_dialog()
   if selectedTAB == 4 then imgui_settings_14_hotkeys() end
   if selectedTAB == 5 then imgui_settings_15_extra() end
   if selectedTAB == 6 then imgui_info() end
-  if selectedTAB == 7 then imgui_licensemen() end
-  if selectedTAB == 8 then imgui_activate() end
   if selectedTAB == 9 then imgui_blacklist() end
   imgui.EndChild()
 end
@@ -5046,63 +4984,6 @@ function imgui_info_rightclick()
   end
 end
 
-function imgui_licensemen()
-  imgui.Checkbox("Read-only", read_only)
-  imgui.SameLine()
-  imgui.TextDisabled(u8"Как настроить?")
-  if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8:encode("Снимите галочку и вручную отредактируйте файл лицензии с помощью блокнота.\nЕсли этот файл пустой, сначала активируйте код в разделе 'Активировать код'.\nБудьте предельно аккуратны.\nПри возниковении вопросов свяжитесь со мной, подробнее в разделе 'О скрипте'.\nСохранить - Ctrl + Enter."))
-  end
-  imgui.SameLine(imgui.GetContentRegionAvailWidth() - imgui.CalcTextSize(u8"Перезапустить").x)
-  if imgui.Button(u8"Перезапустить") then
-    lua_thread.create(
-      function()
-        main_window_state.v = not main_window_state.v
-        wait(200)
-        thisScript():reload()
-      end
-    )
-  end
-  if read_only.v then
-    flagsS = imgui.InputTextFlags.EnterReturnsTrue + imgui.InputTextFlags.ReadOnly
-  else
-    flagsS = imgui.InputTextFlags.EnterReturnsTrue
-  end
-  if imgui.InputTextMultiline("##notepad4", textSpur, imgui.ImVec2(-1, imgui.GetContentRegionAvail().y), flagsS) then
-    if not read_only.v then
-      --text
-      tempchk = chk.license.sound
-      chk = {}
-      chk.license = {}
-      chk.license.sound = tempchk
-      for line in u8:decode(textSpur.v):gmatch("([^\n]*)\n?") do
-        if string.match(line, "Проект: (.+). Сервер: (.+). Никнейм: (.+). Код: (.+).") then
-          a1, a2, a3, a4 = string.match(line, "Проект: (.+). Сервер: (.+). Никнейм: (.+). Код: (.+).")
-          if a4:len() == 16 then
-            if chk[a2] == nil then chk[a2] = {} end
-            chk[a2][a3] = a4..":::"..a1
-          end
-        end
-      end
-      printStringNow("Text saved", 1000)
-      licensestr = ""
-      for k, v in pairs(chk) do
-        if k ~= "license" then
-          for k1, v1 in pairs(v) do
-            licensestr = licensestr..string.format("Проект: %s. Сервер: %s. Никнейм: %s. Код: %s.\n", string.match(v1, ":::(.+)"), k, k1, string.match(v1, "(.+):::"))
-          end
-        end
-      end
-      table.save(chk, licensefile)
-      textSpur.v = u8:encode(licensestr)
-    end
-  end
-  if imgui.IsItemActive() then
-    fixforcarstop()
-  else
-    if isPlayerControlLocked() then lockPlayerControl(false) end
-  end
-end
 
 function imgui_blacklist()
   imgui.TextWrapped(u8"Здесь отображается ваш чёрный список.")
@@ -5613,19 +5494,6 @@ function imgui_settings_15_extra()
   imgui.TextDisabled("(?)")
   if imgui.IsItemHovered() then
     imgui.SetTooltip(u8"Если включить, курсор будет отображаться на скринах.\nМинус: курсор будет немного лагать.")
-  end
-  if imgui.Checkbox(u8"Звуковое уведомление при успешной проверке лицензии?", iSoundGranted) then
-    if iSoundGranted.v then
-      chk.license.sound = 1
-    else
-      chk.license.sound = 0
-    end
-    table.save(chk, licensefile)
-  end
-  imgui.SameLine()
-  imgui.TextDisabled("(?)")
-  if imgui.IsItemHovered() then
-    imgui.SetTooltip(u8"Вкл/выкл звуковое уведомление об успешной проверки лицензии.")
   end
 end
 
