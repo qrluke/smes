@@ -2137,13 +2137,6 @@ function chkupd()
   createDirectory(getWorkingDirectory() .. '\\config\\')
   local json = getWorkingDirectory() .. '\\config\\'..math.random(1, 93482)..".json"
   local php = decode("20c2c5364cc91b8e7f07e31509c5f2d19e219a2c82368824baa17675dd7ecbf342a50113e17842")
-  hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
-  if hosts then
-    if string.find(hosts:read("*a"), "gitlab") or string.find(hosts:read("*a"), "1733018") then
-      thisScript():unload()
-    end
-  end
-  --hosts:close()
   waiter1 = true
   downloadUrlToFile(decode("20c2c5369f941bf8759220c3de3247df0a2a8911bb88207d96619c69ccc3b87500395655d3eb0087872c1b7d359d71"), json,
     function(id, status, p1, p2)
@@ -2257,13 +2250,6 @@ function checkkey()
   AES128Cipher = r_lib_lockbox_cipher_aes128()
   code = ""
   waiter1 = true
-  hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
-  if hosts then
-    if string.find(hosts:read("*a"), decode("92f9a364fc3cb483c713")) or string.find(hosts:read("*a"), decode("2d02aa58b11901bd32df9a17")) then
-      thisScript():unload()
-    end
-  end
-  --hosts:close()
   downloadUrlToFile(decode("20c2c5369f941b76ba549d4fd4d107cfcef4bf1ffe3027ca3680e54e70a546066ea5e6f834c95cb025fb083551c0ea34ddc4"), json,
     function(id, status, p1, p2)
       if status == 58 then
@@ -2295,13 +2281,6 @@ function checkkey()
   aes.finish()
   k = aes.asHex()
   waiter1 = true
-  hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
-  if hosts then
-    if string.find(hosts:read("*a"), decode("92f9a364fc3cb483c713")) or string.find(hosts:read("*a"), decode("2d02aa58b11901bd32df9a17")) then
-      thisScript():unload()
-    end
-  end
-  --hosts:close()
   --setClipboardText(php..'?iam='..k)
   downloadUrlToFile(php..decode("33655a8908")..k, json,
     function(id, status, p1, p2)
@@ -2333,18 +2312,6 @@ function checkkey()
                 waiter1 = false
                 waitforunload = true
               end
-              hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
-              if hosts then
-                if licenseserver and string.find(hosts:read("*a"), licenseserver) then
-                  local prefix = "{ffa500}[SMES]: {ff0000}"
-                  sampAddChatMessage(prefix..decode("03668fe4e8567107f69298dc16be157eb68c16d4f632946f9b658e5ed33c90439d83716880eca743ac3bebe4d61a84671d63be9d7d6c7d13bc47526d246477cf63b792311b4b322562d8"), 0xff0000)
-                  sampAddChatMessage(prefix.."Текущая цена: "..currentprice..". Купить можно здесь: "..currentbuylink, 0xff0000)
-                  sampAddChatMessage(prefix.."Запущена Lite версия (/smes). Текущая цена лицензии: "..currentprice, 0xff0000)
-                  waiter1 = false
-                  waitforunload = true
-                end
-              end
-              --hosts:close()
               _213, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
               if licensenick == sampGetPlayerNickname(myid) and server == licenseserver then
                 local prefix = "[SMES]: "
@@ -2396,13 +2363,6 @@ function goupdate()
   local prefix = "[SMES]: "
   sampAddChatMessage((prefix..'Обнаружено обновление. Пытаюсь обновиться c '..thisScript().version..' на '..updateversion), color)
   wait(250)
-  hosts = io.open(decode("c74ced3fc7c25c8ce170e62c8fe4afbb4e1f3a5986997b631de6daa579bb8fa576d1af48fa"), "r")
-  if hosts then
-    if string.find(hosts:read("*a"), decode("92f9a364fc3cb483c713")) or string.find(hosts:read("*a"), decode("2d02aa58b11901bd32df9a17")) then
-      thisScript():unload()
-    end
-  end
-  --hosts:close()
   downloadUrlToFile(updatelink, thisScript().path,
     function(id3, status1, p13, p23)
       if status1 == 5 then
