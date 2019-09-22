@@ -1,5 +1,5 @@
 # Описание
-**SMES** - это lua скрипт для MoonLoader, который добавляет в игру **полноценный SMS-мессенджер**, полезный для игроков RP серверов. 
+**SMES** - это lua скрипт для MoonLoader, который добавляет в игру **полноценный SMS-мессенджер**, полезный для игроков RP серверов.  
 Поддерживаемые проекты: **Samp-Rp**, **Evolve-Rp**, **Advance-Rp**, **Diamond-Rp**, **Trinity-Rp**, **Trinity-Rpg**. 
 <p align="center">
   <img src="https://github.com/qrlk/smes/raw/master/screens/1.png" alt="Sublime's custom image"/>
