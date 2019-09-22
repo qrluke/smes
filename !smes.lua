@@ -280,7 +280,7 @@ do
         for i = 1, currentaudiokolDD do
           local file = getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\"..i..".mp3"
           if not doesFileExist(file) then
-            v = "http://qrlk.me/dev/moonloader/smes/resource/smes/sounds/"..i..".mp3"
+            v = "https://github.com/qrlk/smes/raw/master/resource/smes/sounds/"..i..".mp3"
             k = file
             sampAddChatMessage(prefix..v.." -> "..k, color)
             pass = false
