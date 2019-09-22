@@ -4,11 +4,11 @@ script_author("qrlk")
 script_version("1.296")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[		v1.27 [01.05.2019]
+script_changelog = [[	v1.27 [01.05.2019]
 * FIX: Восстановление работоспособности
 * UPD: Изменён формат отображения даты с европейского на СНГ.
 
-v1.26 [02.04.2019]
+	v1.26 [02.04.2019]
 * FIX: Улучшен захват смсок на ERP.
 * FIX: Фикс фикса краша при настройке звука через клавиатуру вне доступного диапазона.
 
@@ -276,7 +276,6 @@ do
       sampAddChatMessage(prefix.."Нажмите F2, чтобы запустить скачивание аудиофайлов.", color)
       while not wasKeyPressed(113) do wait(10) end
       if wasKeyPressed(113) then
-        createDirectory(getGameDirectory().."\\moonloader\\resource\\smes\\"..mode)
         for i = 1, currentaudiokolDD do
           local file = getGameDirectory().."\\moonloader\\resource\\smes\\sounds\\"..i..".mp3"
           if not doesFileExist(file) then
