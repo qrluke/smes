@@ -1,10 +1,13 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("1.296")
+script_version("2.0")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v1.27 [01.05.2019]
+script_changelog = [[	v2.00 [22.09.2019]
+* INFO: Open Source.
+
+	v1.27 [01.05.2019]
 * FIX: Восстановление работоспособности
 * UPD: Изменён формат отображения даты с европейского на СНГ.
 
