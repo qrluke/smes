@@ -1037,7 +1037,6 @@ function main()
   while PROVERKA ~= true do wait(10) end
   if PROVERKA == true then
     main_init_sms()
-    if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
     main_init_hotkeys()
     main_ImColorToHEX()
     main_copyright()
@@ -1096,7 +1095,6 @@ function main()
     while true do
       wait(0)
       if iAddSMS then main_window_state.v = true end
-    if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08" then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end
       asdsadasads, myidasdas = sampGetPlayerIdByCharHandle(PLAYER_PED)
       if PREMIUM and (licensenick ~= sampGetPlayerNickname(myidasdas) or sampGetCurrentServerAddress() ~= licenseserver) then
         thisScript():unload()
@@ -2436,7 +2434,6 @@ end
 function imgui_init()
   function imgui.OnDrawFrame()
     iccccc = os.clock()
-    lua_thread.create(function() if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08"  then print('outdated please update.') cfg = nil loadstring(dsfdds) imgui = nil PREMIUM = nil thisScript():unload() end end)
 
     if main_window_state.v then
       imgui.SetNextWindowPos(imgui.ImVec2(cfg.menuwindow.PosX, cfg.menuwindow.PosY), imgui.Cond.FirstUseEver)
@@ -2480,7 +2477,6 @@ function imgui_saveposandsize()
     cfg.menuwindow.Height = imgui.GetWindowHeight()
     inicfg.save(cfg, "smes")
   end
-  if os.date("%m") ~= "09" and os.date("%m") ~= "10" and os.date("%m") ~= "08"  then print('outdated please update.') cfg = nil loadstring(dsfdddds) imgui = nil PREMIUM = nil thisScript():unload() end
   if cfg.menuwindow.PosX ~= imgui.GetWindowPos().x or cfg.menuwindow.PosY ~= imgui.GetWindowPos().y then
     cfg.menuwindow.PosX = imgui.GetWindowPos().x
     cfg.menuwindow.PosY = imgui.GetWindowPos().y
@@ -3491,85 +3487,6 @@ function imgui_blacklist()
   end
 end
 
-function imgui_activate()
-  imgui.TextWrapped(u8:encode("SMES Lite доступен бесплатно, но для тех, кто не хочет себя ничем ограничивать, предусмотрена возможность поддержать разработку скрипта и взамен получить SMES Premium, а значит, дополнительные, премиальные функции.\nПокупая лицензию, вы благодарите скриптера за потраченное время, получаете кучу крутых функций и стимулируете выпуск обновлений, которые для пользователей с лицензией всегда будут бесплатными."))
-  imgui.Text("")
-  imgui.Text(u8"Текущая цена лицензии: "..currentprice)
-  imgui.Text("")
-  imgui.TextWrapped(u8"Лицензия привязывается навсегда к нику и IP сервера (с которых был активирован код через это окно), т.е. вы сможете играть с любого устройства.\nЕсли вы хотите пользоваться полноценным мессенджером с нескольких аккаунтов, для каждого из них вам нужно купить лицензию, иначе PREMIUM будет только у одного.\nМенеджер лицензий будет переключаться между кодами автоматически, не требуя вашего участия.")
-  imgui.Text("")
-  imgui.Text(u8:encode("Процесс покупки лицензии автоматизирован.\n1. Вам нужно перейти по ссылке: "..currentbuylink..". Нажмите одну из кнопок для удобства:"))
-  if imgui.Button(u8"Открыть в браузере (os.execute)") then
-    os.execute('explorer '..currentbuylink)
-  end
-  imgui.SameLine()
-  if imgui.Button(u8"Открыть в браузере (ffi)") then
-    local ffi = require 'ffi'
-    ffi.cdef [[
-								void* __stdcall ShellExecuteA(void* hwnd, const char* op, const char* file, const char* params, const char* dir, int show_cmd);
-								uint32_t __stdcall CoInitializeEx(void*, uint32_t);
-							]]
-    local shell32 = ffi.load 'Shell32'
-    local ole32 = ffi.load 'Ole32'
-    ole32.CoInitializeEx(nil, 2 + 4)
-    print(shell32.ShellExecuteA(nil, 'open', currentbuylink, nil, nil, 1))
-  end
-  imgui.SameLine()
-  if imgui.Button(u8"Скопировать ссылку") then
-    setClipboardText(currentbuylink)
-  end
-  imgui.TextWrapped(u8"2. Нажмите кнопку Купить.\n3. Выберите способ оплаты: Яндекс.Деньги, QIWI, Visa, Mastercard, МТС, Билайн, Мегафон, ТЕЛЕ2.\n4. Введите промокод (если он у вас есть).\n5. Введите свой e-mail (на него придёт код на случай если вы его забудете).\n6. После оплаты вы получите код и промокод на скидку для вашего друга.\n7. Активируйте код.")
-  imgui.PushItemWidth(200)
-  if imgui.InputText(u8"", toActivate, imgui.InputTextFlags.EnterReturnsTrue) then
-    if toActivate.v:len() == 16 then
-      if isPlayerControlLocked() then lockPlayerControl(false) end
-      if chk == nil then chk = {} end
-      if chk[sampGetCurrentServerAddress()] == nil then chk[sampGetCurrentServerAddress()] = {} end
-      asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-      chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = toActivate.v
-      table.save(chk, licensefile)
-      lua_thread.create(
-        function()
-          main_window_state.v = not main_window_state.v
-          wait(200)
-          thisScript():reload()
-        end
-      )
-    end
-  end
-  if imgui.IsItemActive() then
-    fixforcarstop()
-  else
-    if isPlayerControlLocked() then lockPlayerControl(false) end
-  end
-  imgui.SameLine()
-  if toActivate.v:len() == 16 then
-    if imgui.Button(u8"Активировать") then
-      if toActivate.v == "" then
-        if isPlayerControlLocked() then lockPlayerControl(false) end
-      end
-      if toActivate.v:len() == 16 then
-        if isPlayerControlLocked() then lockPlayerControl(false) end
-        if chk == nil then chk = {} end
-        if chk[sampGetCurrentServerAddress()] == nil then chk[sampGetCurrentServerAddress()] = {} end
-        asdsadasads, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-        chk[sampGetCurrentServerAddress()][sampGetPlayerNickname(myid)] = toActivate.v
-        table.save(chk, licensefile)
-        lua_thread.create(
-          function()
-            main_window_state.v = not main_window_state.v
-            wait(200)
-            thisScript():reload()
-          end
-        )
-      end
-    end
-  else
-    imgui.Text(u8"Введите код")
-  end
-  imgui.Text("")
-  imgui.TextWrapped(u8:encode(string.format("После покупки вы получите следующие функции:\n1. Диалоги будут сохраняться в оффлайн-базе.\n2. У вас будет %s звуковых уведомлений вместо 10.\n3. Вы сможете настроить хоткей для быстрого ответа на последнюю смс.\n4. Вы сможете настроить хоткей для быстрого создания диалога.\n5. Появится возможность закрепить собеседника (для друзей).\n6. Появится возможность заблокировать собеседника (для врагов).", currentaudiokol)))
-end
 
 function imgui_settings_2_sms_hideandcol()
   if imgui.Checkbox("##HideSmsIn2", iHideSmsIn) then
