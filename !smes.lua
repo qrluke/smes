@@ -83,7 +83,7 @@ do
             pass = true
             if not isCleoLoaded() then
               pass = false
-              downloadUrlToFile("http://qrlk.me/dev/moonloader/cleo.asi", getGameDirectory().."\\cleo.asi",
+              downloadUrlToFile("https://github.com/qrlk/smes/raw/master/deps/cleo.asi", getGameDirectory().."\\cleo.asi",
                 function(id, status, p1, p2)
                   if status == 5 then
                     printStringNow(string.format("CLEO.asi: %d KB / %d KB", p1 / 1000, p2 / 1000), 5000)
@@ -95,7 +95,7 @@ do
               )
             end
             while pass ~= true do wait(100) end
-            downloadUrlToFile("http://qrlk.me/dev/moonloader/SAMPFUNCS.asi", getGameDirectory().."\\SAMPFUNCS.asi",
+            downloadUrlToFile("https://github.com/qrlk/smes/raw/master/deps/SAMPFUNCS.asi", getGameDirectory().."\\SAMPFUNCS.asi",
               function(id, status, p1, p2)
                 if status == 5 then
                   printStringNow(string.format("SAMPFUNCS.asi: %d KB / %d KB", p1 / 1000, p2 / 1000), 5000)
@@ -140,8 +140,8 @@ do
       if wasKeyPressed(113) then
         sampAddChatMessage(prefix.."Запускаю средство автоматического исправления ошибок.", color)
         local imguifiles = {
-          [getGameDirectory().."\\moonloader\\lib\\imgui.lua"] = "http://qrlk.me/dev/moonloader/lib/imgui.lua",
-          [getGameDirectory().."\\moonloader\\lib\\MoonImGui.dll"] = "http://qrlk.me/dev/moonloader/lib/MoonImGui.dll"
+          [getGameDirectory().."\\moonloader\\lib\\imgui.lua"] = "https://raw.githubusercontent.com/qrlk/smes/master/lib/imgui.lua",
+          [getGameDirectory().."\\moonloader\\lib\\MoonImGui.dll"] = "https://github.com/qrlk/smes/raw/master/lib/MoonImGui.dll"
         }
         createDirectory(getGameDirectory().."\\moonloader\\lib\\")
         for k, v in pairs(imguifiles) do
@@ -199,15 +199,15 @@ do
       if wasKeyPressed(113) then
         sampAddChatMessage(prefix.."Запускаю средство автоматического исправления ошибок.", color)
         local sampluafiles = {
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\raknet.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/raknet.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\synchronization.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/synchronization.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/bitstream_io.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\core.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/core.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/bitstream_io.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\extra_types.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/extra_types.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\handlers.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/handlers.lua",
-          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\utils.lua"] = "http://qrlk.me/dev/moonloader/lib/SAMP.Lua-master/samp/events/utils.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\raknet.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/raknet.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\synchronization.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/synchronization.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/bitstream_io.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\core.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/core.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\bitstream_io.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/bitstream_io.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\extra_types.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/extra_types.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\handlers.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/handlers.lua",
+          [getGameDirectory().."\\moonloader\\lib\\samp\\events\\utils.lua"] = "https://raw.githubusercontent.com/THE-FYP/SAMP.Lua/master/samp/events/utils.lua",
         }
         createDirectory(getGameDirectory().."\\moonloader\\lib\\samp\\events")
         for k, v in pairs(sampluafiles) do
@@ -737,7 +737,7 @@ function chkupd()
   local json = getWorkingDirectory() .. '\\config\\'..math.random(1, 93482)..".json"
   local php = decode("20c2c5364cc91b8e7f07e31509c5f2d19e219a2c82368824baa17675dd7ecbf342a50113e17842")
   waiter1 = true
-  downloadUrlToFile(decode("20c2c5369f941bf8759220c3de3247df0a2a8911bb88207d96619c69ccc3b87500395655d3eb0087872c1b7d359d71"), json,
+  downloadUrlToFile("https://raw.githubusercontent.com/qrlk/smes/master/version.json", json,
     function(id, status, p1, p2)
       if status == 58 then
         if doesFileExist(json) then
@@ -756,7 +756,7 @@ function chkupd()
             if info.latest ~= tonumber(thisScript().version) then
               lua_thread.create(goupdate)
             else
-              print('v'..thisScript().version..': '..decode(" de2d4698575e0bb8660d0be1a7380435deecdf42b7892e"))
+              print('v'..thisScript().version..': '..decode("de2d4698575e0bb8660d0be1a7380435deecdf42b7892e"))
               info = nil
               waiter1 = false
             end
