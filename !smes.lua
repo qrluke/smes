@@ -1,10 +1,13 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("2.0")
+script_version("2.1")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[	v2.00 [22.09.2019]
+script_changelog = [[  v2.1 [22.09.2019]
+* FIX: Проверка афк адаптирована под обновление sleep (SRP).
+
+  v2.0 [22.09.2019]
 * INFO: Open Source.
 
 	v1.27 [01.05.2019]
@@ -1280,9 +1283,13 @@ function mode_samprp()
   function RPC.onServerMessage(color, text)
     if main_window_state.v and text:match(" "..tostring(selecteddialogSMS).." %[(%d+)%]") then
       if string.find(text, "AFK") then
-        smsafk[selecteddialogSMS] = "AFK "..string.match(text, "AFK: (%d+) сек").." s"
+        smsafk[selecteddialogSMS] = "AFK "..string.match(text, "AFK: (%d+)").." s"
       else
-        smsafk[selecteddialogSMS] = "NOT AFK"
+        if string.find(text, "SLEEP") then
+          smsafk[selecteddialogSMS] = "SLEEP "..string.match(text, "SLEEP: (%d+)").." s"
+        else
+          smsafk[selecteddialogSMS] = "NOT AFK"
+        end
       end
       return false
     end
