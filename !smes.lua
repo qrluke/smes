@@ -1,10 +1,13 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("2.1")
+script_version("2.15")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[  v2.1 [22.09.2019]
+script_changelog = [[  v2.15 [01.06.2020]
+* UPD: Обновлены IP адреса серверов.
+
+  v2.1 [22.09.2019]
 * FIX: Проверка афк адаптирована под обновление sleep (SRP).
 
   v2.0 [22.09.2019]
@@ -1240,27 +1243,20 @@ function getmode(args)
     ["185.169.134.67"] = "evolve-rp",
     ["185.169.134.68"] = "evolve-rp",
     ["185.169.134.91"] = "evolve-rp",
-    ["5.254.104.131"] = "advance-rp",
-    ["5.254.104.132"] = "advance-rp",
-    ["5.254.104.133"] = "advance-rp",
-    ["5.254.104.134"] = "advance-rp",
-    ["5.254.104.135"] = "advance-rp",
-    ["5.254.104.136"] = "advance-rp",
-    ["5.254.104.137"] = "advance-rp",
-    ["5.254.104.138"] = "advance-rp",
-    ["5.254.104.139"] = "advance-rp",
-    ["5.254.123.3"] = "diamond-rp",
-    ["5.254.123.4"] = "diamond-rp",
-    ["5.254.123.6"] = "diamond-rp",
-    ["194.61.44.61"] = "diamond-rp",
-    ["194.61.44.64"] = "diamond-rp",
-    ["194.61.44.67"] = "diamond-rp",
-    ["5.254.105.202"] = "diamond-rp",
-    ["5.254.105.204"] = "diamond-rp",
+    ["54.37.142.72"] = "advance-rp",
+    ["54.37.142.73"] = "advance-rp",
+    ["54.37.142.74"] = "advance-rp",
+    ["54.37.142.75"] = "advance-rp",
+    ["51.83.207.240"] = "diamond-rp",
+    ["51.75.33.152"] = "diamond-rp",
+    ["51.83.207.241"] = "diamond-rp",
+    ["51.75.33.153"] = "diamond-rp",
+    ["51.83.207.242"] = "diamond-rp",
+    ["51.83.207.243"] = "diamond-rp",
+    ["51.75.33.154"] = "diamond-rp",
     ["185.169.134.83"] = "trinity-rp",
     ["185.169.134.84"] = "trinity-rp",
     ["185.169.134.85"] = "trinity-rp"
-
   }
   return servers[args]
 end
