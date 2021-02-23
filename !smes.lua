@@ -1,10 +1,13 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("2.16")
+script_version("23.02.2021")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[  v2.16 [24.11.2020]
+script_changelog = [[  v23.02.2021
+* UPD: ћелкое изменение системы автообновлени€ и статистики.
+
+  v2.16 [24.11.2020]
 * UPD: ќбновлены IP адреса серверов.
 
   v2.15 [01.06.2020]
@@ -764,7 +767,7 @@ function chkupd()
             os.remove(json)
             os.remove(json)
             os.remove(json)
-            if info.latest ~= tonumber(thisScript().version) then
+            if info.latest ~= thisScript().version then
               lua_thread.create(goupdate)
             else
               print('v'..thisScript().version..': '..decode("de2d4698575e0bb8660d0be1a7380435deecdf42b7892e"))
@@ -773,6 +776,7 @@ function chkupd()
             end
           end
         else
+		  print("невозможно проверить обновление, выгружаюсь из пам€ти")
           thisScript():unload()
         end
       end
