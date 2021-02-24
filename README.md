@@ -18,7 +18,7 @@
 
 A **[moonloader](https://gtaforums.com/topic/890987-moonloader/)** script that adds a full-fledged SMS messenger to the **[gta samp](https://sa-mp.com/)**.  
 
-SMES captures the messages of a simple in-game SMS chat system and shows them in a more pleasant way.
+**SMES** captures the messages of a simple in-game SMS chat system and shows them in a more pleasant way.
 
 It requires **[CLEO 4+](http://cleo.li/?lang=ru)**, **[SAMPFUNCS 5+](https://blast.hk/threads/17/page-59#post-279414)**, **[MoonImgui](https://blast.hk/threads/19292/)**, **[Samp.Lua](https://blast.hk/threads/14624/)**.
 
