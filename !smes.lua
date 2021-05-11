@@ -1,10 +1,13 @@
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("04.05.2021")
+script_version("11.05.2021")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
-script_changelog = [[  v04.05.2021
+script_changelog = [[  v11.05.2021
+* UPD: Обновлены IP адреса серверов.
+
+  v04.05.2021
 * UPD: Обновлены IP адреса серверов.
 
   v23.02.2021
@@ -1246,10 +1249,10 @@ end
 ----------------------------------WORKING MODE AREA
 function getmode(args)
   local servers = {
-    ["91.243.35.11"] = "samp-rp",
-    ["91.243.35.12"] = "samp-rp",
-    ["91.243.35.13"] = "samp-rp",
-    ["91.243.35.14"] = "samp-rp",
+    ["95.181.158.74"] = "samp-rp",
+    ["95.181.158.63"] = "samp-rp",
+    ["95.181.158.69"] = "samp-rp",
+    ["95.181.158.77"] = "samp-rp",
     ["185.169.134.67"] = "evolve-rp",
     ["185.169.134.68"] = "evolve-rp",
     ["185.169.134.91"] = "evolve-rp",
