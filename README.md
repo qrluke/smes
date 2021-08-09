@@ -25,7 +25,9 @@ It requires **[CLEO 4+](http://cleo.li/?lang=ru)**, **[SAMPFUNCS 5+](https://bla
 ---
 
 **The following description is in Russian, because it is the main language of the user base**.
-
+<details>
+  <summary>Описание на русском языке.</summary>
+  
 # Описание
 **SMES** - это lua скрипт для MoonLoader, который добавляет в игру **полноценный SMS-мессенджер**, полезный для игроков RP серверов.  
 Поддерживаемые проекты: **Samp-Rp**, **Evolve-Rp**, **Advance-Rp**, **Diamond-Rp**, **Trinity-Rp**, **Trinity-Rpg**. 
@@ -80,3 +82,4 @@ P.S. Скрипт может установить зависимости сам�
 ## Ссылки
 * [Тема на blasthack](https://blast.hk/threads/32191/)
 * [Авторский обзор](https://www.youtube.com/watch?v=JkdDO7obIJo)
+</details>
