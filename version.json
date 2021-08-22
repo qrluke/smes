@@ -1,7 +1,8 @@
 {
-"latest": "11.05.2021",
-"price": "free forever",
-"audio": "100",
-"buylink": "https://github.com/qrlk/smes",
-"updateurl": "https://github.com/qrlk/smes/raw/master/!smes.lua"
+  "latest": "11.05.2021",
+  "price": "free forever",
+  "audio": "100",
+  "buylink": "https://github.com/qrlk/smes",
+  "updateurl": "https://github.com/qrlk/smes/raw/master/!smes.lua",
+  "changelog": "https://github.com/qrlk/smes/blob/master/CHANGELOG.md"
 }

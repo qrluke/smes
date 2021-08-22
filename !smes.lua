@@ -2,11 +2,15 @@ require "lib.moonloader"
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("11.05.2021")
+script_version("22.08.2021")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
 script_url("https://github.com/qrlk/smes")
-script_changelog = [[  v11.05.2021
+script_changelog = [[  v22.08.2021
+* UPD: ƒобавлено определена мода сервера по его названию.
+* UPD: —истема автообновлени€ обновлена до последней версии.
+
+  v11.05.2021
 * UPD: ќбновлены IP адреса серверов.
 
   v04.05.2021
