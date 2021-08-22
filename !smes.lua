@@ -706,13 +706,13 @@ function var_require()
     thisScript():unload()
   end
 
-	currentprice = "0 RUB"
-	currentbuylink = "http://qrlk.me"
-	currentaudiokol = 100
-	currentpromodis = "-%"
-		update("http://qrlk.me/dev/moonloader/smes/stats.php", '['..string.upper(thisScript().name)..']: ', "http://qrlk.me/sampvk", "smeschangelog")
-		openchangelog("smeschangelog", "http://qrlk.me/changelog/smes")
-	while sampGetCurrentServerName() == "SA-MP" do wait(100) end
+  currentprice = "0 RUB"
+  currentbuylink = "http://qrlk.me"
+  currentaudiokol = 100
+  currentpromodis = "-%"
+  update("http://qrlk.me/dev/moonloader/smes/stats.php", '['..string.upper(thisScript().name)..']: ', "http://qrlk.me/sampvk", "smeschangelog")
+  openchangelog("smeschangelog", "http://qrlk.me/changelog/smes")
+  while sampGetCurrentServerName() == "SA-MP" do wait(100) end
 
   if getmode(sampGetCurrentServerAddress()) == nil then
     print('сервер не поддерживается, завершаю работу')
@@ -728,7 +728,7 @@ function var_require()
     thisScript():unload()
   end
 
-	nokey()
+  nokey()
 
   while PROVERKA ~= true do wait(100) end
   inicfg = require "inicfg"
@@ -954,7 +954,7 @@ function getonlinelist()
     for k in pairs(sms) do
       if type(sms[k]) == "table" then
         for id in pairs(onlineplayers) do
-					v = onlineplayers[id]
+          v = onlineplayers[id]
           if k == v and sms ~= nil and sms[k] ~= nil then
             sms[k]["id"] = id
             break
@@ -1195,8 +1195,8 @@ function getmode(args)
 end
 
 local serversNames = {
-	["Samp-Rp"] = "samp-rp",
-	["Evolve-Rp"] = "evolve-rp",
+  ["Samp-Rp"] = "samp-rp",
+  ["Evolve-Rp"] = "evolve-rp",
   ["Advance"] = "advance-rp",
   ["Diamond"] = "diamond-rp",
   ["Trinity"] = "trinity-rp"
@@ -1494,9 +1494,9 @@ function mode_evolverp()
       text = string.gsub(text, "{FFFF00}", "")
       text = string.gsub(text, "{FF8000}", "")
       local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%.% Отправитель%: (.*)%[(%d+)%]")
-			if not string.match(text, "^ SMS%: (.*)%.% Отправитель%: (.*)%[(%d+)%]") then
-				smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Отправитель%: (.*)%[(%d+)%]")
-			end
+      if not string.match(text, "^ SMS%: (.*)%.% Отправитель%: (.*)%[(%d+)%]") then
+        smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Отправитель%: (.*)%[(%d+)%]")
+      end
       if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
@@ -1525,9 +1525,9 @@ function mode_evolverp()
         end
       end
       local smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)%.% Получатель%: (.*)%[(%d+)%]")
-			if not string.match(text, "^ SMS%: (.*)%.% Получатель%: (.*)%[(%d+)%]") then
-				smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Получатель%: (.*)%[(%d+)%]")
-			end
+      if not string.match(text, "^ SMS%: (.*)%.% Получатель%: (.*)%[(%d+)%]") then
+        smsText, smsNick, smsId = string.match(text, "^ SMS%: (.*)% Получатель%: (.*)%[(%d+)%]")
+      end
       if smsText and smsNick and smsId then
         LASTID_SMS = smsId
         LASTNICK_SMS = smsNick
