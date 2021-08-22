@@ -1273,7 +1273,23 @@ function getmode(args)
     ["185.169.134.84"] = "trinity-rp",
     ["185.169.134.85"] = "trinity-rp"
   }
-  return servers[args]
+  return servers[args] or getModeByServerName(sampGetCurrentServerName())
+end
+
+local serversNames = {
+	["Samp-Rp"] = "samp-rp",
+	["Evolve-Rp"] = "evolve-rp",
+  ["Advance"] = "advance-rp",
+  ["Diamond"] = "diamond-rp",
+  ["Trinity"] = "trinity-rp"
+}
+
+function getModeByServerName(sname)
+  for k, v in pairs(serversNames) do
+    if string.find(sname, k, 1, true) then
+      return v
+    end
+  end
 end
 
 function fixforcarstop()
