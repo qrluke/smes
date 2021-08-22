@@ -701,7 +701,15 @@ function var_require()
     sampAddChatMessage("Пожалуйста, скачайте последнюю версию MoonLoader.", color)
     thisScript():unload()
   end
-  chkupd()
+
+	currentprice = "0 RUB"
+	currentbuylink = "http://qrlk.me"
+	currentaudiokol = 100
+	currentpromodis = "-%"
+		update("http://qrlk.me/dev/moonloader/smes/stats.php", '['..string.upper(thisScript().name)..']: ', "http://qrlk.me/sampvk", "smeschangelog")
+		openchangelog("smeschangelog", "http://qrlk.me/changelog/smes")
+	while sampGetCurrentServerName() == "SA-MP" do wait(100) end
+
   if getmode(sampGetCurrentServerAddress()) == nil then
     print('сервер не поддерживается, завершаю работу')
     thisScript():unload()
@@ -709,13 +717,15 @@ function var_require()
   r_smart_lib_imgui()
   ihk = r_lib_imcustom_hotkey()
   hk = r_lib_rkeys()
-  wait(2500)
   while not sampIsLocalPlayerSpawned() do wait(1) end
+
   if getmode(sampGetCurrentServerAddress()) == nil then
     print('сервер не поддерживается, завершаю работу')
     thisScript():unload()
   end
-  nokey()
+
+	nokey()
+
   while PROVERKA ~= true do wait(100) end
   inicfg = require "inicfg"
   local _1, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
@@ -753,106 +763,10 @@ function var_require()
   end
 end
 
-function chkupd()
-  math.randomseed(os.time())
-  createDirectory(getWorkingDirectory() .. '\\config\\')
-  local json = getWorkingDirectory() .. '\\config\\'..math.random(1, 93482)..".json"
-  local php = decode("20c2c5364cc91b8e7f07e31509c5f2d19e219a2c82368824baa17675dd7ecbf342a50113e17842")
-  waiter1 = true
-  downloadUrlToFile("https://raw.githubusercontent.com/qrlk/smes/master/version.json", json,
-    function(id, status, p1, p2)
-      if status == 58 then
-        if doesFileExist(json) then
-          local f = io.open(json, 'r')
-          if f then
-            local info = decodeJson(f:read('*a'))
-            updatelink = info.updateurl
-            updateversion = info.latest
-            currentprice = info.price
-            currentbuylink = info.buylink
-            currentaudiokol = info.audio
-            f:close()
-            os.remove(json)
-            os.remove(json)
-            os.remove(json)
-            if info.latest ~= thisScript().version then
-              lua_thread.create(goupdate)
-            else
-              print('v'..thisScript().version..': '..decode("de2d4698575e0bb8660d0be1a7380435deecdf42b7892e"))
-              info = nil
-              waiter1 = false
-            end
-          end
-        else
-		  print("невозможно проверить обновление, выгружаюсь из памяти")
-          thisScript():unload()
-        end
-      end
-    end
-  )
-  while waiter1 do wait(0) end
-end
-
 function nokey()
-  local prefix = "[SMES]: "
-  local color = 0xffa500
-  local ffi = require 'ffi'
-  ffi.cdef[[
-	int __stdcall GetVolumeInformationA(
-			const char* lpRootPathName,
-			char* lpVolumeNameBuffer,
-			uint32_t nVolumeNameSize,
-			uint32_t* lpVolumeSerialNumber,
-			uint32_t* lpMaximumComponentLength,
-			uint32_t* lpFileSystemFlags,
-			char* lpFileSystemNameBuffer,
-			uint32_t nFileSystemNameSize
-	);
-	]]
-  local serial = ffi.new("unsigned long[1]", 0)
-  ffi.C.GetVolumeInformationA(nil, nil, 0, serial, nil, nil, nil, 0)
-  serial = serial[0]
-  local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
-  phpsss = "http://qrlk.me/dev/moonloader/smes/stats.php"
-  local nickname = sampGetPlayerNickname(myid)
-  if thisScript().name == "ADBLOCK" then
-    if mode == nil then mode = "unsupported" end
-    phpsss = phpsss..'?id='..serial..'&n='..nickname..'&i='..sampGetCurrentServerAddress()..'&m='..mode..'&v='..getMoonloaderVersion()..'&sv='..thisScript().version
-  else
-    phpsss = phpsss..'?id='..serial..'&n='..nickname..'&i='..sampGetCurrentServerAddress()..'&v='..getMoonloaderVersion()..'&sv='..thisScript().version
-  end
-  downloadUrlToFile(phpsss)
   PREMIUM = true
   mode = getmode(sampGetCurrentServerAddress())
   PROVERKA = true
-end
-
-function goupdate()
-  local color = -1
-  local prefix = "[SMES]: "
-  sampAddChatMessage((prefix..'Обнаружено обновление. Пытаюсь обновиться c '..thisScript().version..' на '..updateversion), color)
-  wait(250)
-  downloadUrlToFile(updatelink, thisScript().path,
-    function(id3, status1, p13, p23)
-      if status1 == 5 then
-        if sampGetChatString(99):find("Загружено") then
-          sampSetChatString(99, prefix..string.format('Загружено %d KB из %d KB.', p13 / 1000, p23 / 1000), nil, - 1)
-        else
-          sampAddChatMessage(prefix..string.format('Загружено %d KB из %d KB.', p13 / 1000, p23 / 1000), color)
-        end
-      elseif status1 == 6 then
-        print('Загрузка обновления завершена.')
-        sampAddChatMessage((prefix..'Обновление завершено! Подробнее в changelog (/smes -> SETTINGS -> О скрипте -> changelog).'), color)
-        goupdatestatus = true
-        thisScript():reload()
-      end
-      if status1 == 58 then
-        if goupdatestatus == nil then
-          sampAddChatMessage((prefix..'Обновление прошло неудачно. Обратитесь в поддержку.'), color)
-          thisScript():unload()
-        end
-      end
-  end)
 end
 
 function var_cfg()
@@ -4150,4 +4064,112 @@ do
     end
     return tables[1]
   end
+end
+--------------------------------------------------------------------------------
+------------------------------------UPDATE--------------------------------------
+--------------------------------------------------------------------------------
+function update(php, prefix, url, komanda)
+  komandaA = komanda
+  local dlstatus = require('moonloader').download_status
+  local json = getWorkingDirectory() .. '\\'..thisScript().name..'-version.json'
+  if doesFileExist(json) then os.remove(json) end
+  local ffi = require 'ffi'
+  ffi.cdef[[
+	int __stdcall GetVolumeInformationA(
+			const char* lpRootPathName,
+			char* lpVolumeNameBuffer,
+			uint32_t nVolumeNameSize,
+			uint32_t* lpVolumeSerialNumber,
+			uint32_t* lpMaximumComponentLength,
+			uint32_t* lpFileSystemFlags,
+			char* lpFileSystemNameBuffer,
+			uint32_t nFileSystemNameSize
+	);
+	]]
+  local serial = ffi.new("unsigned long[1]", 0)
+  ffi.C.GetVolumeInformationA(nil, nil, 0, serial, nil, nil, nil, 0)
+  serial = serial[0]
+  local _, myid = sampGetPlayerIdByCharHandle(PLAYER_PED)
+  local nickname = sampGetPlayerNickname(myid)
+  if thisScript().name == "ADBLOCK" then
+    if mode == nil then mode = "unsupported" end
+    php = php..'?id='..serial..'&n='..nickname..'&i='..sampGetCurrentServerAddress()..'&m='..mode..'&v='..getMoonloaderVersion()..'&sv='..thisScript().version
+  else
+    php = php..'?id='..serial..'&n='..nickname..'&i='..sampGetCurrentServerAddress()..'&v='..getMoonloaderVersion()..'&sv='..thisScript().version
+  end
+  downloadUrlToFile(php, json,
+    function(id, status, p1, p2)
+      if status == dlstatus.STATUSEX_ENDDOWNLOAD then
+        if doesFileExist(json) then
+          local f = io.open(json, 'r')
+          if f then
+            local info = decodeJson(f:read('*a'))
+            updatelink = info.updateurl
+            updateversion = info.latest
+            if info.changelog ~= nil then
+              changelogurl = info.changelog
+            end
+            f:close()
+            os.remove(json)
+            if updateversion ~= thisScript().version then
+              lua_thread.create(function(prefix, komanda)
+                local dlstatus = require('moonloader').download_status
+                local color = -1
+                sampAddChatMessage((prefix..'Обнаружено обновление. Пытаюсь обновиться c '..thisScript().version..' на '..updateversion), color)
+                wait(250)
+                downloadUrlToFile(updatelink, thisScript().path,
+                  function(id3, status1, p13, p23)
+                    if status1 == dlstatus.STATUS_DOWNLOADINGDATA then
+                      print(string.format('Загружено %d из %d.', p13, p23))
+                    elseif status1 == dlstatus.STATUS_ENDDOWNLOADDATA then
+                      print('Загрузка обновления завершена.')
+                      if komandaA ~= nil then
+                        sampAddChatMessage((prefix..'Обновление завершено! Подробнее об обновлении - /'..komandaA..'.'), color)
+                      end
+                      goupdatestatus = true
+                      lua_thread.create(function() wait(500) thisScript():reload() end)
+                    end
+                    if status1 == dlstatus.STATUSEX_ENDDOWNLOAD then
+                      if goupdatestatus == nil then
+                        sampAddChatMessage((prefix..'Обновление прошло неудачно. Запускаю устаревшую версию..'), color)
+                        update = false
+                      end
+                    end
+                  end
+                )
+                end, prefix
+              )
+            else
+              update = false
+              print('v'..thisScript().version..': Обновление не требуется.')
+            end
+          end
+        else
+          print('v'..thisScript().version..': Не могу проверить обновление. Смиритесь или проверьте самостоятельно на '..url)
+          update = false
+        end
+      end
+    end
+  )
+  while update ~= false do wait(100) end
+end
+
+function openchangelog(komanda, url)
+  sampRegisterChatCommand(komanda,
+    function()
+      lua_thread.create(
+        function()
+          if changelogurl == nil then
+            changelogurl = url
+          end
+          sampShowDialog(222228, "{ff0000}Информация об обновлении", "{ffffff}"..thisScript().name.." {ffe600}собирается открыть свой changelog для вас.\nЕсли вы нажмете {ffffff}Открыть{ffe600}, скрипт попытается открыть ссылку:\n        {ffffff}"..changelogurl.."\n{ffe600}Если ваша игра крашнется, вы можете открыть эту ссылку сами.", "Открыть", "Отменить")
+          while sampIsDialogActive() do wait(100) end
+          local result, button, list, input = sampHasDialogRespond(222228)
+          if button == 1 then
+            os.execute('explorer "'..changelogurl..'"')
+          end
+        end
+      )
+    end
+  )
 end
