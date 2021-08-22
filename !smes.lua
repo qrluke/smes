@@ -1,3 +1,4 @@
+require "lib.moonloader"
 --meta
 script_name("SMES")
 script_author("qrlk")
