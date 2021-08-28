@@ -6,7 +6,10 @@ script_version("28.08.2021")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
 script_url("https://github.com/qrlk/smes")
-script_changelog = [[  v22.08.2021
+script_changelog = [[  v28.08.2021
+* UPD: Адаптация под изменения названий серверов самп-рп.  
+
+  v22.08.2021
 * UPD: Добавлено определена мода сервера по его названию.
 * UPD: Система автообновления обновлена до последней версии.
 
