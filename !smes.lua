@@ -2,7 +2,7 @@ require "lib.moonloader"
 --meta
 script_name("SMES")
 script_author("qrlk")
-script_version("22.08.2021")
+script_version("28.08.2021")
 script_dependencies('CLEO 4+', 'SAMPFUNCS', 'Dear Imgui', 'SAMP.Lua')
 script_moonloader(026)
 script_url("https://github.com/qrlk/smes")
@@ -1195,6 +1195,7 @@ function getmode(args)
 end
 
 local serversNames = {
+  ["SRP"] = "samp-rp",
   ["Samp-Rp"] = "samp-rp",
   ["Evolve-Rp"] = "evolve-rp",
   ["Advance"] = "advance-rp",
