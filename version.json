@@ -4,5 +4,6 @@
   "audio": "100",
   "buylink": "https://github.com/qrlk/smes",
   "updateurl": "https://github.com/qrlk/smes/raw/master/!smes.lua",
-  "changelog": "https://github.com/qrlk/smes/blob/master/CHANGELOG.md"
+  "changelog": "https://github.com/qrlk/smes/blob/master/CHANGELOG.md",
+  "telemetry": "http://qrlk.me/dev/moonloader/smes/stats.php"
 }
